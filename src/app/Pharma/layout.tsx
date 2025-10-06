@@ -35,9 +35,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     >
       {/* القائمة الجانبية */}
       <aside
-        className={`${
-          sidebarOpen ? "w-64" : "w-20"
-        } bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col transition-all duration-300 ease-in-out h-screen sticky top-0`}
+        className={`${sidebarOpen ? "w-64" : "w-20"
+          } bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col transition-all duration-300 ease-in-out h-screen sticky top-0`}
       >
         {/* اللوجو */}
         <div className="p-4 flex items-center justify-between border-b border-gray-700">
@@ -65,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* الروابط */}
         <nav className="flex-1 p-4 space-y-2 text-sm overflow-y-auto">
-          <NavLink href="/Pharma/" icon={<Home className="w-5 h-5" />} sidebarOpen={sidebarOpen}>
+          <NavLink href="/Pharma" icon={<Home className="w-5 h-5" />} sidebarOpen={sidebarOpen}>
             الصفحة الرئيسية
           </NavLink>
           <NavLink
@@ -80,7 +79,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             icon={<Send className="w-5 h-5" />}
             sidebarOpen={sidebarOpen}
           >
-           عروض الشركات 
+            عروض الشركات
           </NavLink>
           <NavLink
             href="/Pharma/massgeorder"
@@ -129,7 +128,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             الإعدادات
           </NavLink>
           <NavLink
-            href="/login"
+            href="/auth/login"
             icon={<LogIn className="w-5 h-5" />}
             sidebarOpen={sidebarOpen}
           >
@@ -199,7 +198,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Users className="w-5 h-5" />
               <span>إضافة موظفين</span>
             </Link>
-              <Link
+            <Link
               href="/Pharma/system"
               className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
             >
@@ -239,11 +238,9 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`flex items-center ${
-        sidebarOpen ? "justify-start gap-3 px-4" : "justify-center px-2"
-      } py-2 rounded-md transition-all ${
-        isActive ? "bg-emerald-600/20 text-emerald-400" : "bg-white/5 hover:bg-emerald-600/20"
-      }`}
+      className={`flex items-center ${sidebarOpen ? "justify-start gap-3 px-4" : "justify-center px-2"
+        } py-2 rounded-md transition-all ${isActive ? "bg-emerald-600/20 text-emerald-400" : "bg-white/5 hover:bg-emerald-600/20"
+        }`}
     >
       <span>{icon}</span>
       {sidebarOpen && <span>{children}</span>}
@@ -259,9 +256,8 @@ function SidebarDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
     <div className="transition-all">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center ${
-          sidebarOpen ? "justify-between px-4" : "justify-center px-2"
-        } py-2 rounded-xl bg-white/5 hover:bg-emerald-600/20 transition-all text-white border border-gray-700`}
+        className={`w-full flex items-center ${sidebarOpen ? "justify-between px-4" : "justify-center px-2"
+          } py-2 rounded-xl bg-white/5 hover:bg-emerald-600/20 transition-all text-white border border-gray-700`}
       >
         <div className="flex items-center gap-2">
           <Percent className="w-5 h-5" />
@@ -273,9 +269,8 @@ function SidebarDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
 
       {sidebarOpen && (
         <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="bg-gray-800 border border-gray-700 rounded-xl px-2 py-2 space-y-1 mt-2">
             <Link
