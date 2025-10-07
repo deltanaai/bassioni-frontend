@@ -1,22 +1,16 @@
 "use client";
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { loginSchema } from "@/schemas/login";
+import { LoginFormData } from "@/types";
 
 //التحقق باستخدام Zod
-const loginSchema = z.object({
-  email: z.string().email('البريد الإلكتروني غير صالح'),
-  password: z.string().min(6, 'كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل'),
-  rememberMe: z.boolean().optional(),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
 
 // حل مؤقت لحد ما ال api تجهز
-async function loginUser(data: LoginForm) {
+async function loginUser(data: LoginFormData) {
   const res = await fetch("/api/proxy/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -39,22 +33,23 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>({
+  } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: () => {
-      alert('تم تسجيل الدخول بنجاح ✅');
-      router.push("/Pharma")
+      alert("تم تسجيل الدخول بنجاح ✅");
+      router.push("/Pharma");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       alert(error.message);
-    }
+    },
   });
 
-  const onSubmit = (data: LoginForm) => {
+  const onSubmit = (data: LoginFormData) => {
     mutation.mutate(data);
   };
 
@@ -75,35 +70,45 @@ export default function LoginPage() {
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             {/* البريد الإلكتروني */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 البريد الإلكتروني
               </label>
               <input
                 type="email"
                 id="email"
-                {...register('email')}
-                className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all placeholder-gray-400"
+                {...register("email")}
+                className="form-input"
                 placeholder="example@pharmacy.com"
               />
               {errors.email && (
-                <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
+                <p className="text-red-400 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             {/* كلمة المرور */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 كلمة المرور
               </label>
               <input
                 type="password"
                 id="password"
-                {...register('password')}
-                className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all placeholder-gray-400"
+                {...register("password")}
+                className="form-input"
                 placeholder="••••••••"
               />
               {errors.password && (
-                <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>
+                <p className="text-red-400 text-sm mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -113,14 +118,20 @@ export default function LoginPage() {
                 <input
                   id="remember-me"
                   type="checkbox"
-                  {...register('rememberMe')}
+                  {...register("rememberMe")}
                   className="h-4 w-4 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
                 />
-                <label htmlFor="remember-me" className="mr-2 block text-sm text-gray-300">
+                <label
+                  htmlFor="remember-me"
+                  className="mr-2 block text-sm text-gray-300"
+                >
                   تذكرني
                 </label>
               </div>
-              <Link href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              >
                 نسيت كلمة المرور؟
               </Link>
             </div>
@@ -135,8 +146,19 @@ export default function LoginPage() {
                 <span className="animate-pulse">جارٍ تسجيل الدخول...</span>
               ) : (
                 <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 ml-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
                   </svg>
                   تسجيل الدخول
                 </>
@@ -147,8 +169,11 @@ export default function LoginPage() {
           {/* إنشاء حساب جديد */}
           <div className="mt-6 text-center">
             <p className="text-gray-400 text-sm">
-              ليس لديك حساب؟{' '}
-              <Link href="/auth/register" className="font-medium text-blue-400 hover:text-blue-300 transition-colors">
+              ليس لديك حساب؟{" "}
+              <Link
+                href="/auth/register"
+                className="font-medium text-blue-400 hover:text-blue-300 transition-colors"
+              >
                 إنشاء حساب جديد
               </Link>
             </p>
@@ -156,7 +181,9 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-gray-700 p-3 text-center">
-          <p className="text-xs text-gray-400">© 2023 BassionyCare - جميع الحقوق محفوظة</p>
+          <p className="text-xs text-gray-400">
+            © 2023 BassionyCare - جميع الحقوق محفوظة
+          </p>
         </div>
       </div>
     </div>
