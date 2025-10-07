@@ -4,28 +4,12 @@ import { useEffect, useState } from "react";
 import { MapPin, Package, ShoppingCart, DollarSign, ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
-
-
-const productSchema = z.object({
-  name: z.string().min(1, "اسم المنتج مطلوب"),
-  quantity: z.coerce.number().min(1, "الكمية مطلوبة"),
-  price: z.coerce.number().min(1, "السعر مطلوب"),
-  batchNo: z.string().min(1, "رقم الدفعة مطلوب"),
-  expirationDate: z.string().min(1, "تاريخ الانتهاء مطلوب"),
-});
-
-const warehouseSchema = z.object({
-  name: z.string().min(1, "اسم المخزن مطلوب"),
-  location: z.string().min(1, "الموقع مطلوب"),
-  pharmacy: z.string().min(1, "الصيدلية مطلوبة"),
-});
-
-type ProductInput = z.infer<typeof productSchema>;
-type WarehouseFormData = z.infer<typeof warehouseSchema>;
+import { warehouseSchema } from "@/schemas/Warehouse";
+import { productSchema } from "@/schemas/AddproductWarehouse";
+import { ProductInput, WarehouseFormData } from "@/types";
+// import { useQuery } from "@tanstack/react-query";
 
 interface Warehouse {
   id: number;
@@ -95,7 +79,7 @@ export default function WarehousesPage() {
     defaultValues: { name: "", quantity: 0, price: 0, batchNo: "", expirationDate: "" },
   });
 
-  // ✅ Mutation لحفظ المخزن
+  //  Mutation لحفظ المخزن
   const saveMutation = useMutation({
     mutationFn: async (data: WarehouseFormData) => {
       await new Promise((r) => setTimeout(r, 600)); // محاكاة للسيرفر

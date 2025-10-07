@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
 
-//التحقق باستخدام Zod
-
 // حل مؤقت لحد ما ال api تجهز
 async function loginUser(data: LoginFormData) {
   const res = await fetch("/api/proxy/login", {
@@ -22,7 +20,6 @@ async function loginUser(data: LoginFormData) {
   if (!res.ok) {
     throw new Error(result.message || "بيانات الدخول غير صحيحة");
   }
-
   return result;
 }
 

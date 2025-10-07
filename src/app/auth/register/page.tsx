@@ -3,22 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { RegisterForm } from "@/types";
 
-//  تعريف نموذج البيانات والتحقق منها
-const registerSchema = z.object({
-  name: z.string().min(3, "الاسم يجب أن يحتوي على 3 أحرف على الأقل"),
-  email: z.string().email("البريد الإلكتروني غير صالح"),
-  password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل"),
-  confirmPassword: z.string().min(6, "تأكيد كلمة المرور مطلوب"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "كلمتا المرور غير متطابقتين",
-  path: ["confirmPassword"],
-});
 
-type RegisterForm = z.infer<typeof registerSchema>;
+
 
 //  الدالة التي تتصل بالـ API
 async function registerUser(data: RegisterForm) {

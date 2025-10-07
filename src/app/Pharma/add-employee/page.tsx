@@ -7,6 +7,7 @@ interface Employee {
   id: number;
   name: string;
   pharmacy: string;
+  warehouse: string;
   role: "صيدلي" | "محاسب" | "إداري";
   password: string;
 }
@@ -14,11 +15,12 @@ interface Employee {
 export default function EmployeesPage() {
   // الصيدليات المتاحة
   const pharmacies = ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"];
+  const warehouses = [" مخزن القاهرة", "مخزن الغردقة ", "مخزن دمنهور "];
 
   // قائمة الموظفين
   const [employees, setEmployees] = useState<Employee[]>([
-    { id: 1, name: "أحمد محمد", pharmacy: "صيدلية النور", role: "صيدلي", password: "123456" },
-    { id: 2, name: "سارة علي", pharmacy: "صيدلية الشفاء", role: "محاسب", password: "123456" },
+    { id: 1, name: "أحمد محمد", pharmacy: "صيدلية النور", warehouse: "مخزن الغردقة", role: "صيدلي", password: "123456" },
+    { id: 2, name: "سارة علي", pharmacy: "صيدلية الشفاء", warehouse: "مخزن دمنهور", role: "محاسب", password: "123456" },
   ]);
 
   // مودال الإضافة / التعديل
@@ -28,6 +30,7 @@ export default function EmployeesPage() {
   // بيانات النموذج
   const [name, setName] = useState("");
   const [pharmacy, setPharmacy] = useState(pharmacies[0]);
+  const [warehouse, setWarehouse] = useState(warehouses[0]);
   const [role, setRole] = useState<Employee["role"]>("صيدلي");
   const [password, setPassword] = useState("");
 
@@ -46,6 +49,7 @@ export default function EmployeesPage() {
     setEditEmployeeId(employee.id);
     setName(employee.name);
     setPharmacy(employee.pharmacy);
+    setWarehouse(employee.warehouse);
     setRole(employee.role);
     setPassword(employee.password);
     setShowModal(true);
@@ -62,6 +66,7 @@ export default function EmployeesPage() {
         id: employees.length + 1,
         name,
         pharmacy,
+        warehouse,
         role,
         password,
       };
@@ -91,6 +96,7 @@ export default function EmployeesPage() {
           >
             <h2 className="text-xl font-semibold text-white mb-3">{employee.name}</h2>
             <p className="text-gray-300">الصيدلية: <span className="font-bold text-white">{employee.pharmacy}</span></p>
+            <p className="text-gray-300">المخزن: <span className="font-bold text-white">{employee.warehouse}</span></p>
             <p className="text-gray-300 mt-1">الدور: <span className="font-bold text-white">{employee.role}</span></p>
 
             <div className="mt-4 flex justify-end">
@@ -128,6 +134,15 @@ export default function EmployeesPage() {
                 className="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-emerald-400"
               >
                 {pharmacies.map((ph, idx) => (
+                  <option key={idx} value={ph}>{ph}</option>
+                ))}
+              </select>
+              <select
+                value={warehouse}
+                onChange={(e) => setWarehouse(e.target.value)}
+                className="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-emerald-400"
+              >
+                {warehouses.map((ph, idx) => (
                   <option key={idx} value={ph}>{ph}</option>
                 ))}
               </select>

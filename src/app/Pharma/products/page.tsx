@@ -1,4 +1,6 @@
 'use client'
+import { productFormSchema } from '@/schemas/AddProduts'
+import { ProductFormData } from '@/types'
 import { useState } from 'react'
 import { FiSearch, FiPlus, FiEdit, FiTrash2, FiImage, FiFilter } from 'react-icons/fi'
 
@@ -71,10 +73,13 @@ export default function ProductsPage() {
     images: [] as string[],
     warehouse: ''
   })
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({})
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    setFormErrors(prev => ({ ...prev, [name]: undefined }))
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,15 +98,25 @@ export default function ProductsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const result = productFormSchema.safeParse(formData)
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof ProductFormData, string>> = {}
+      for (const issue of result.error.issues) {
+        const path = issue.path[0] as keyof ProductFormData
+        if (path) fieldErrors[path] = issue.message
+      }
+      setFormErrors(fieldErrors)
+      return
+    }
     if (editingProduct) {
       // Update existing product
       setProducts(products.map(p => 
-        p.id === editingProduct.id ? { ...formData, id: editingProduct.id } : p
+        p.id === editingProduct.id ? { ...result.data, id: editingProduct.id } : p
       ))
     } else {
       // Add new product
       const newProduct = {
-        ...formData,
+        ...result.data,
         id: Math.max(...products.map(p => p.id), 0) + 1
       }
       setProducts([...products, newProduct])
@@ -286,31 +301,54 @@ export default function ProductsPage() {
               </h2>
               
               <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" name="name" placeholder="اسم المنتج" value={formData.name} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
-                <input type="text" name="customerName" placeholder="اسم العميل" value={formData.customerName} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
-                <select name="category" value={formData.category} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
-                  <option value="">اختر الفئة</option>
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <select name="brand" value={formData.brand} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
-                  <option value="">اختر البراند</option>
-                  {brands.map(b => <option key={b} value={b}>{b}</option>)}
-                </select>
-                <select name="dosage" value={formData.dosage} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
-                  <option value="">اختر الجرعة</option>
-                  {dosages.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-                <input type="text" name="concentration" placeholder="التركيز" value={formData.concentration} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
-                <input type="number" name="quantity" placeholder="الكمية" value={formData.quantity} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
-                <input type="number" name="price" placeholder="السعر" value={formData.price} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
-                <select name="warehouse" value={formData.warehouse} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
-                  <option value="">اختر المخزن</option>
-                  {warehouses.map(w => <option key={w} value={w}>{w}</option>)}
-                </select>
-   <select name="warehouse" value={formData.warehouse} onChange={handleInputChange} required className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
-                  <option value="">كيمه العميل </option>
-                  {warehouses.map(w => <option key={w} value={w}>{w}</option>)}
-                </select>
+                <div className="flex flex-col gap-1">
+                  <input type="text" name="name" placeholder="اسم المنتج" value={formData.name} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
+                  {formErrors.name && <span className="text-red-400 text-sm">{formErrors.name}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="text" name="customerName" placeholder="اسم العميل" value={formData.customerName} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
+                  {formErrors.customerName && <span className="text-red-400 text-sm">{formErrors.customerName}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="category" value={formData.category} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
+                    <option value="">اختر الفئة</option>
+                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  {formErrors.category && <span className="text-red-400 text-sm">{formErrors.category}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="brand" value={formData.brand} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
+                    <option value="">اختر البراند</option>
+                    {brands.map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                  {formErrors.brand && <span className="text-red-400 text-sm">{formErrors.brand}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="dosage" value={formData.dosage} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
+                    <option value="">اختر الجرعة</option>
+                    {dosages.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  {formErrors.dosage && <span className="text-red-400 text-sm">{formErrors.dosage}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="text" name="concentration" placeholder="التركيز" value={formData.concentration} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
+                  {formErrors.concentration && <span className="text-red-400 text-sm">{formErrors.concentration}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="number" name="quantity" placeholder="الكمية" value={formData.quantity} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
+                  {formErrors.quantity && <span className="text-red-400 text-sm">{formErrors.quantity}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="number" name="price" placeholder="السعر" value={formData.price} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white"/>
+                  {formErrors.price && <span className="text-red-400 text-sm">{formErrors.price}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="warehouse" value={formData.warehouse} onChange={handleInputChange} className="p-2 rounded bg-gray-700 border border-gray-600 text-white">
+                    <option value="">اختر المخزن</option>
+                    {warehouses.map(w => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                  {formErrors.warehouse && <span className="text-red-400 text-sm">{formErrors.warehouse}</span>}
+                </div>
                 <div className="col-span-2">
                   <label className="block mb-1">رفع صور</label>
                   <input type="file" multiple onChange={handleImageUpload} className="p-2 bg-gray-700 border border-gray-600 rounded text-white w-full"/>

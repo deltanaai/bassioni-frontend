@@ -1,8 +1,31 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
-import { MapPin, Package, DollarSign, ArrowLeft } from "lucide-react";
+import { MapPin, Package, DollarSign, ArrowLeft, Edit, Trash2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const productSchema = z.object({
+  name: z.string().min(1, { message: "اسم المنتج مطلوب" }),
+  // لما العميل يسيب الخانه فاضيه يرجع custom error
+  quantity: z.coerce
+    .number({ message: "الكمية مطلوبة" })
+    .min(1, { message: "الكمية يجب أن تكون أكبر من 0" }),
+
+  price: z.coerce
+    .number({ message: "السعر مطلوب" })
+    .min(1, { message: "السعر يجب أن يكون أكبر من 0" }),
+
+  batchNo: z.string().min(1, { message: "رقم الدفعة مطلوب" }),
+  expirationDate: z.string().min(1, { message: "تاريخ الانتهاء مطلوب" }),
+});
+
+
+//  2. نوع الفورم
+type ProductFormData = z.infer<typeof productSchema>;
 
 interface Product {
   id: number;
@@ -20,12 +43,45 @@ interface Warehouse {
   products: Product[];
 }
 
+// removed unused type
+
 export default function WarehouseDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const id = Number(params?.id);
 
   const [warehouse, setWarehouse] = useState<Warehouse | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<number | null>(null);
+
+  //  useForm 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema) as Resolver<ProductFormData>,
+  });
+
+
+  const handleDelete = (productId: number) => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+  };
+
+  const handleEdit = (product: Product) => {
+    setEditingProductId(product.id);
+    setShowModal(true);
+    reset({
+      name: product.name,
+      quantity: product.quantity,
+      price: product.price,
+      batchNo: product.batchNo,
+      expirationDate: product.expirationDate,
+    });
+  };
+
 
   useEffect(() => {
     const stored = localStorage.getItem("warehouses");
@@ -33,24 +89,33 @@ export default function WarehouseDetailsPage() {
       const all = JSON.parse(stored);
       const found = all.find((w: Warehouse) => w.id === id);
       setWarehouse(found || null);
+      if (found) setProducts(found.products || []);
     }
   }, [id]);
 
-  if (!warehouse)
-    return (
-      <p className="text-center text-red-400 mt-10">
-        لم يتم العثور على هذا المخزن 😢
-      </p>
-    );
+  //  اضافه/تعديل المنتج
+  const onSubmitProduct = (data: ProductFormData) => {
+    if (editingProductId !== null) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === editingProductId ? { ...p, ...data } : p))
+      );
+    } else {
+      const nextId = products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+      const newProduct: Product = { id: nextId, ...data } as Product;
+      setProducts((prev) => [...prev, newProduct]);
+    }
+    setShowModal(false);
+    setEditingProductId(null);
+    reset({ name: "", quantity: 0, price: 0, batchNo: "", expirationDate: "" });
+  };
 
-  const totalValue = warehouse.products.reduce(
-    (sum, p) => sum + p.quantity * p.price,
-    0
-  );
+  if (!warehouse)
+    return <p className="text-center text-red-400 mt-10">لم يتم العثور على هذا المخزن 😢</p>;
+
+  const totalValue = products.reduce((sum, p) => sum + p.quantity * p.price, 0);
 
   return (
     <div className="min-h-screen p-6 bg-gray-950 text-white">
-      {/* زر الرجوع */}
       <button
         onClick={() => router.back()}
         className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-gray-800 hover:bg-gray-700 rounded-xl transition duration-200"
@@ -58,80 +123,136 @@ export default function WarehouseDetailsPage() {
         <ArrowLeft className="w-5 h-5" /> العودة
       </button>
 
-      {/* معلومات المخزن */}
       <div className="bg-gray-900 p-6 rounded-2xl shadow-lg mb-6">
-        <h1 className="text-2xl font-bold text-emerald-400 mb-4">
-          {warehouse.name}
-        </h1>
+        <h1 className="text-2xl font-bold text-emerald-400 mb-4">{warehouse.name}</h1>
         <p className="flex items-center gap-2 text-gray-300 mb-2">
-          <MapPin className="w-5 h-5 text-emerald-400" />
-          الموقع:{" "}
-          <span className="font-semibold text-white">
-            {warehouse.location}
-          </span>
+          <MapPin className="w-5 h-5 text-emerald-400" /> الموقع:
+          <span className="font-semibold text-white">{warehouse.location}</span>
         </p>
         <p className="flex items-center gap-2 text-gray-300 mb-2">
-          <Package className="w-5 h-5 text-emerald-400" />
-          عدد المنتجات:{" "}
-          <span className="font-semibold text-white">
-            {warehouse.products.length}
-          </span>
+          <Package className="w-5 h-5 text-emerald-400" /> عدد المنتجات:
+          <span className="font-semibold text-white">{products.length}</span>
         </p>
         <p className="flex items-center gap-2 text-gray-300">
-          <DollarSign className="w-5 h-5 text-emerald-400" />
-          القيمة الإجمالية:{" "}
-          <span className="font-semibold text-white">
-            {totalValue.toLocaleString()} ج.م
-          </span>
+          <DollarSign className="w-5 h-5 text-emerald-400" /> القيمة الإجمالية:
+          <span className="font-semibold text-white">{totalValue.toLocaleString()} ج.م</span>
         </p>
       </div>
 
-      {/* جدول المنتجات */}
       <div className="bg-gray-900 p-6 rounded-2xl shadow-lg overflow-x-auto">
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-bold text-emerald-400 mb-4">🛒 المنتجات</h2>
-          <div className="">
-            <button
-              type="button"
-              // onClick={handleSubmitProduct(onAddProduct)}
-              className="w-40 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
-            >
-              إضافة منتج
-            </button>
-
-          </div>
+          <button
+            onClick={() => {
+              setEditingProductId(null);
+              setShowModal(true);
+              reset({ name: "", quantity: 0, price: 0, batchNo: "", expirationDate: "" });
+            }}
+            className="w-40 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
+          >
+            إضافة منتج +
+          </button>
         </div>
 
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="bg-gray-800">
-              <th className="p-3 text-center">المنتج</th>
-              <th className="p-3 text-center">رقم الدفعه</th>
-              <th className="p-3 text-center">الكمية</th>
-              <th className="p-3 text-center">السعر</th>
-              <th className="p-3 text-center">القيمة</th>
-              <th className="p-3 text-center">تاريخ الانتهاء</th>
-            </tr>
-          </thead>
-          <tbody>
-            {warehouse.products.map((p) => (
-              <tr
-                key={p.id}
-                className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
-              >
-                <td className="p-3 text-center">{p.name}</td>
-                <td className="p-3 text-center ">{p.batchNo}</td>
-                <td className="p-3 text-center">{p.quantity}</td>
-                <td className="p-3 text-center">{p.price.toLocaleString()} ج.م</td>
-                <td className="p-3 text-center">
-                  {(p.quantity * p.price).toLocaleString()} ج.م
-                </td>
-                <td className="p-3 text-center">{p.expirationDate}</td>
+        {/*  مودال اضافه الادويه */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+            <div className="bg-gray-900 p-6 rounded-2xl w-full max-w-xl shadow-lg text-white">
+              <h2 className="text-2xl font-bold text-emerald-400 mb-4">{editingProductId !== null ? "تعديل المنتج" : "إضافة منتج جديد"}</h2>
 
+              <form onSubmit={handleSubmit(onSubmitProduct)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="flex flex-col">
+                    <label className="mb-1">اسم المنتج</label>
+                    <input {...register("name")} placeholder="اسم المنتج" className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md" />
+                    {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="mb-1">الكمية</label>
+                    <input type="number" {...register("quantity")} placeholder="الكمية" className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md" />
+                    {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity.message}</p>}
+
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="flex flex-col">
+                    <label className="mb-1">السعر</label>
+                    <input type="number" {...register("price")} placeholder="السعر" className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md" />
+                    {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
+
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="mb-1">رقم الدفعة</label>
+                    <input {...register("batchNo")} placeholder="Batch.No" className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md" />
+                    {errors.batchNo && <p className="text-red-500 text-sm">{errors.batchNo.message}</p>}
+
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="mb-1">تاريخ الانتهاء</label>
+                  <input type="date" {...register("expirationDate")} className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md" />
+                  {errors.expirationDate && <p className="text-red-500 text-sm">{errors.expirationDate.message}</p>}
+
+                </div>
+
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => { setShowModal(false); setEditingProductId(null); }}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-xl"
+                  >
+                    إلغاء
+                  </button>
+                  <button type="submit" className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl">
+                    {editingProductId !== null ? "حفظ" : "إضافة"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 🧾 جدول المنتجات */}
+        {products.length > 0 ? (
+          <table className="w-full text-sm border-collapse">
+            <thead className="bg-gray-800">
+              <tr>
+                <th className="p-3 text-center">ID</th>
+                <th className="p-3 text-center">المنتج</th>
+                <th className="p-3 text-center">رقم الدفعه</th>
+                <th className="p-3 text-center">الكمية</th>
+                <th className="p-3 text-center">السعر</th>
+                <th className="p-3 text-center">القيمة</th>
+                <th className="p-3 text-center">تاريخ الانتهاء</th>
+                <th className="p-3 text-center">الإجراءات</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.map((p) => (
+                <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-800 transition duration-200">
+                  <td className="p-3 text-center">{p.id}</td>
+                  <td className="p-3 text-center">{p.name}</td>
+                  <td className="p-3 text-center">{p.batchNo}</td>
+                  <td className="p-3 text-center">{p.quantity}</td>
+                  <td className="p-3 text-center">{p.price.toLocaleString()} ج.م</td>
+                  <td className="p-3 text-center">{(p.quantity * p.price).toLocaleString()} ج.م</td>
+                  <td className="p-3 text-center">{p.expirationDate}</td>
+                  <td className="p-3 text-center">
+                      <div className="inline-flex justify-center gap-2">
+                        <button onClick={() => handleEdit(p)} className="text-blue-400 hover:text-blue-300 p-1" title="تعديل"><Edit /></button>
+                        <button onClick={() => handleDelete(p.id)} className="text-red-400 hover:text-red-300 p-1" title="حذف"><Trash2 /></button>
+                      </div>
+                    </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="mt-4 text-gray-400 text-center text-xl">لا توجد منتجات بعد.</p>
+        )}
       </div>
     </div>
   );

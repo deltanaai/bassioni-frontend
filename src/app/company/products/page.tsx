@@ -1,4 +1,6 @@
 'use client'
+import { productFormSchema } from '@/schemas/AddProduts'
+import { ProductFormData } from '@/types'
 import { useState } from 'react'
 import { FiSearch, FiPlus, FiEdit, FiTrash2, FiImage, FiFilter } from 'react-icons/fi'
 
@@ -47,16 +49,19 @@ const sampleProducts: Product[] = [
 
 const categories = ['مسكنات', 'فيتامينات', 'مضادات حيوية', 'أدوية سكري', 'مستحضرات جلدية']
 const brands = ['جلاكسو سميث كلاين', 'نوفارتس', 'فايزر', 'سانوفي', 'ناتورال']
+const dosages = ['أقراص', 'شراب', 'حقن', 'كريم', 'مرهم', 'أقراص فوارة']
+const warehouses = ['مخزن القاهرة', 'مخزن الإسكندرية', 'مخزن أسيوط']
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>(sampleProducts)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('all')
   const [filterBrand, setFilterBrand] = useState('all')
-  const [, setShowAddModal] = useState(false)
-  const [, setEditingProduct] = useState<Product | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   
-  const [, setFormData] = useState({
+  // Form state
+  const [formData, setFormData] = useState({
     name: '',
     customerName: '',
     category: '',
@@ -69,8 +74,70 @@ export default function ProductsPage() {
     warehouse: ''
   })
 
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({})
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormErrors(prev => ({ ...prev, [name]: undefined }))
+  }
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files).map(file => URL.createObjectURL(file))
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...files] }))
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const result = productFormSchema.safeParse(formData)
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof ProductFormData, string>> = {}
+      for (const issue of result.error.issues) {
+        const path = issue.path[0] as keyof ProductFormData
+        if (path) fieldErrors[path] = issue.message
+      }
+      setFormErrors(fieldErrors)
+      return
+    }
+    if (editingProduct) {
+      setProducts(products.map(p => 
+        p.id === editingProduct.id ? { ...result.data, id: editingProduct.id } as Product : p
+      ))
+    } else {
+      const newProduct: Product = {
+        ...result.data,
+        id: Math.max(...products.map(p => p.id), 0) + 1
+      } as Product
+      setProducts([...products, newProduct])
+    }
+    setShowAddModal(false)
+    setEditingProduct(null)
+    resetForm()
+  }
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      customerName: '',
+      category: '',
+      brand: '',
+      dosage: '',
+      concentration: '',
+      quantity: 0,
+      price: 0,
+      images: [],
+      warehouse: ''
+    })
+  }
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product)
@@ -206,6 +273,87 @@ export default function ProductsPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Add/Edit Product Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200">
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">
+                {editingProduct ? 'تعديل المنتج' : 'إضافة منتج جديد'}
+              </h2>
+              
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <input type="text" name="name" placeholder="اسم المنتج" value={formData.name} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900"/>
+                  {formErrors.name && <span className="text-red-600 text-sm">{formErrors.name}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="text" name="customerName" placeholder="اسم العميل" value={formData.customerName} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900"/>
+                  {formErrors.customerName && <span className="text-red-600 text-sm">{formErrors.customerName}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="category" value={formData.category} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900">
+                    <option value="">اختر الفئة</option>
+                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  {formErrors.category && <span className="text-red-600 text-sm">{formErrors.category}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="brand" value={formData.brand} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900">
+                    <option value="">اختر البراند</option>
+                    {brands.map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                  {formErrors.brand && <span className="text-red-600 text-sm">{formErrors.brand}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="dosage" value={formData.dosage} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900">
+                    <option value="">اختر الجرعة</option>
+                    {dosages.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  {formErrors.dosage && <span className="text-red-600 text-sm">{formErrors.dosage}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="text" name="concentration" placeholder="التركيز" value={formData.concentration} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900"/>
+                  {formErrors.concentration && <span className="text-red-600 text-sm">{formErrors.concentration}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="number" name="quantity" placeholder="الكمية" value={formData.quantity} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900"/>
+                  {formErrors.quantity && <span className="text-red-600 text-sm">{formErrors.quantity}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input type="number" name="price" placeholder="السعر" value={formData.price} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900"/>
+                  {formErrors.price && <span className="text-red-600 text-sm">{formErrors.price}</span>}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <select name="warehouse" value={formData.warehouse} onChange={handleInputChange} className="p-2 rounded bg-white border border-gray-300 text-gray-900">
+                    <option value="">اختر المخزن</option>
+                    {warehouses.map(w => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                  {formErrors.warehouse && <span className="text-red-600 text-sm">{formErrors.warehouse}</span>}
+                </div>
+                <div className="col-span-2">
+                  <label className="block mb-1 text-gray-700">رفع صور</label>
+                  <input type="file" multiple onChange={handleImageUpload} className="p-2 bg-white border border-gray-300 rounded text-gray-900 w-full"/>
+                  <div className="flex mt-2 gap-2 flex-wrap">
+                    {formData.images.map((img, i) => (
+                      <div key={i} className="relative w-16 h-16 bg-gray-200 rounded overflow-hidden">
+                        <img src={img} alt="" className="w-full h-full object-cover"/>
+                        <button type="button" onClick={() => removeImage(i)} className="absolute top-0 right-0 bg-red-500 rounded-full w-5 h-5 text-xs text-white">x</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="col-span-2 flex justify-end gap-2 mt-4">
+                  <button type="button" onClick={() => { setShowAddModal(false); setEditingProduct(null); resetForm(); }} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">إلغاء</button>
+                  <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">{editingProduct ? 'حفظ التعديلات' : 'إضافة المنتج'}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
