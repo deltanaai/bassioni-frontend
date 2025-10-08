@@ -1,8 +1,15 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo , useTransition} from "react";
 import { MapPin, Package, ShoppingCart, DollarSign, ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
+import { createWarehouseAction } from './actions'
+import { companyWarehouseCreateSchema } from '@/schemas/Warehouse'
+import { productSchema } from '@/schemas/AddproductWarehouse'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import type { Resolver } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
 interface ProductInput {
   name: string;
@@ -29,45 +36,76 @@ export default function WarehousesPage() {
   ]);
 
   const [showModal, setShowModal] = useState(false);
-  const pharmacies = ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"];
+  const pharmacies = useMemo(() => ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"], []);
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [pharmacy, setPharmacy] = useState<string>("");
+  // New API payload fields
+  const [code, setCode] = useState("");
+  const [locationId, setLocationId] = useState<number>(1);
+  const [active, setActive] = useState<boolean>(true);
   const [products, setProducts] = useState<ProductInput[]>([]);
-  const [productName, setProductName] = useState("");
-  const [productQuantity, setProductQuantity] = useState<number>(0);
-  const [productPrice, setProductPrice] = useState<number>(0);
+  type ProductForm = z.infer<typeof productSchema>
+
+  const { register: registerProduct, handleSubmit: handleSubmitProduct, reset: resetProduct, formState: { errors: productErrors } } = useForm<ProductForm>({
+    resolver: zodResolver(productSchema) as Resolver<ProductForm>,
+    defaultValues: { name: '', quantity: 0, price: 0, batchNo: '', expirationDate: '' }
+  });
+  const [isPending, startTransition] = useTransition();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [k: string]: string | undefined }>({});
 
   useEffect(() => {
     if (pharmacies.length > 0) setPharmacy(pharmacies[0]);
-  }, [showModal]);
+  }, [showModal, pharmacies]);
 
-  const addProduct = () => {
-    if (!productName) return;
-    setProducts([...products, { name: productName, quantity: productQuantity, price: productPrice }]);
-    setProductName("");
-    setProductQuantity(0);
-    setProductPrice(0);
+  const onAddProduct: SubmitHandler<ProductForm> = (data) => {
+    setProducts([...products, { name: data.name, quantity: data.quantity, price: data.price }]);
+    resetProduct();
   };
 
   const saveWarehouse = () => {
-    const newWarehouse: Warehouse = {
-      id: warehouses.length + 1,
-      name,
-      location,
-      pharmacy,
-      totalProducts: products.length,
-      totalQuantity: products.reduce((sum, p) => sum + p.quantity, 0),
-      totalValue: products.reduce((sum, p) => sum + p.quantity * p.price, 0),
-      products,
-    };
-    setWarehouses([...warehouses, newWarehouse]);
-    setShowModal(false);
-    setName("");
-    setLocation("");
-    setPharmacy(pharmacies[0]);
-    setProducts([]);
+    setErrorMsg(null)
+    // client-side zod validation for better UX
+    const parsed = companyWarehouseCreateSchema.safeParse({ name, code, location_id: locationId, active })
+    if (!parsed.success) {
+      const errs: { [k: string]: string } = {}
+      for (const i of parsed.error.issues) {
+        const key = String(i.path[0])
+        errs[key] = i.message
+      }
+      setFieldErrors(errs)
+      return
+    }
+    setFieldErrors({})
+    startTransition(async () => {
+      try {
+        const created = await createWarehouseAction({ name, code, location_id: locationId, active })
+        const newWarehouse: Warehouse = {
+          id: created.id ?? warehouses.length + 1,
+          name: created.name,
+          location: location, // keep displaying human location field
+          pharmacy: pharmacy,
+          totalProducts: products.length,
+          totalQuantity: products.reduce((sum, p) => sum + p.quantity, 0),
+          totalValue: products.reduce((sum, p) => sum + p.quantity * p.price, 0),
+          products,
+        };
+        setWarehouses([...warehouses, newWarehouse]);
+        setShowModal(false);
+        setName("");
+        setCode("");
+        setLocation("");
+        setLocationId(1);
+        setActive(true);
+        setPharmacy(pharmacies[0]);
+        setProducts([]);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'حدث خطأ أثناء الحفظ'
+        setErrorMsg(message)
+      }
+    })
   };
 
   return (
@@ -117,74 +155,138 @@ export default function WarehousesPage() {
 
       {/* مودال الإضافة */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-3xl w-full max-w-2xl shadow-2xl space-y-6 border border-gray-200">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-8 rounded-3xl w-full max-w-2xl shadow-2xl space-y-6 border border-gray-200 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-emerald-600 text-center border-b border-gray-200 pb-3">
               إضافة مخزن جديد
             </h2>
 
             <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="اسم المخزن"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              />
-              <input
-                type="text"
-                placeholder="الموقع"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              />
-              <select
-                value={pharmacy}
-                onChange={(e) => setPharmacy(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              >
-                {pharmacies.map((ph, idx) => (
-                  <option key={idx} value={ph}>{ph}</option>
-                ))}
-              </select>
+              {errorMsg && (
+                <div className="text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2 text-sm">
+                  {errorMsg}
+                </div>
+              )}
+              <div className="flex flex-col gap-1">
+                <label className="block text-sm font-medium text-gray-700">كود المخزن</label>
+                <input
+                  type="text"
+                  placeholder="كود المخزن"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                />
+                {fieldErrors.code && <span className="text-red-600 text-sm">{fieldErrors.code}</span>}
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="block text-sm font-medium text-gray-700">اسم المخزن</label>
+                <input
+                  type="text"
+                  placeholder="اسم المخزن"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                />
+                {fieldErrors.name && <span className="text-red-600 text-sm">{fieldErrors.name}</span>}
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="block text-sm font-medium text-gray-700">الموقع</label>
+                <input
+                  type="text"
+                  placeholder="الموقع"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div className="flex gap-3">
+                <div className="w-1/2 flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700">Location ID</label>
+                  <input
+                    type="number"
+                    placeholder="Location ID"
+                    value={locationId}
+                    onChange={(e) => setLocationId(Number(e.target.value))}
+                    className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                  />
+                  {fieldErrors.location_id && <span className="text-red-600 text-sm">{fieldErrors.location_id}</span>}
+                </div>
+                <div className="w-1/2 flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700">حالة التفعيل</label>
+                  <label className="flex items-center gap-2 w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-300">
+                    <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
+                    نشط
+                  </label>
+                  {fieldErrors.active && <span className="text-red-600 text-sm">{fieldErrors.active}</span>}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="block text-sm font-medium text-gray-700">الصيدلية</label>
+                <select
+                  value={pharmacy}
+                  onChange={(e) => setPharmacy(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                >
+                  {pharmacies.map((ph, idx) => (
+                    <option key={idx} value={ph}>{ph}</option>
+                  ))}
+                </select>
+              </div>
 
+              {/* ✅ إضافة منتجات */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="font-semibold text-gray-900 mb-3 text-lg">إضافة منتجات</h3>
 
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <input
-                    type="text"
-                    placeholder="اسم المنتج"
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    className="flex-1 px-3 py-2 rounded-md bg-gray-50 border border-gray-300"
-                  />
-                  <input
-                    type="number"
-                    placeholder="الكمية"
-                    value={productQuantity}
-                    onChange={(e) => setProductQuantity(Number(e.target.value))}
-                    className="w-28 px-3 py-2 rounded-md bg-gray-50 border border-gray-300"
-                  />
-                  <input
-                    type="number"
-                    placeholder="السعر"
-                    value={productPrice}
-                    onChange={(e) => setProductPrice(Number(e.target.value))}
-                    className="w-28 px-3 py-2 rounded-md bg-gray-50 border border-gray-300"
-                  />
-                  <button
-                    onClick={addProduct}
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl font-semibold text-white"
-                  >
-                    إضافة
-                  </button>
+                <div className="grid gap-5 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="flex flex-col">
+                      <label className="mb-1 text-sm text-gray-700">اسم المنتج</label>
+                      <input {...registerProduct("name")} placeholder="اسم المنتج" className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-900" />
+                      {productErrors.name && <span className="text-red-600 text-sm mt-1">{productErrors.name.message as string}</span>}
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="mb-1 text-sm text-gray-700">الكمية</label>
+                      <input type="number" {...registerProduct("quantity")} placeholder="الكمية" className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-900" />
+                      {productErrors.quantity && <span className="text-red-600 text-sm mt-1">{productErrors.quantity.message as string}</span>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="flex flex-col">
+                      <label className="mb-1 text-sm text-gray-700">السعر</label>
+                      <input type="number" {...registerProduct("price")} placeholder="السعر" className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-900" />
+                      {productErrors.price && <span className="text-red-600 text-sm mt-1">{productErrors.price.message as string}</span>}
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="mb-1 text-sm text-gray-700">رقم الدفعة</label>
+                      <input {...registerProduct("batchNo")} placeholder="Batch.No" className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-900" />
+                      {productErrors.batchNo && <span className="text-red-600 text-sm mt-1">{productErrors.batchNo.message as string}</span>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="flex flex-col">
+                      <label className="mb-1 text-sm text-gray-700">تاريخ الانتهاء</label>
+                      <input type="date" {...registerProduct("expirationDate")} className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-900" />
+                      {productErrors.expirationDate && <span className="text-red-600 text-sm mt-1">{productErrors.expirationDate.message as string}</span>}
+                    </div>
+
+                    <div className="flex items-end justify-end">
+                      <button
+                        type="button"
+                        onClick={handleSubmitProduct(onAddProduct)}
+                        className="w-40 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
+                      >
+                        إضافة المنتج
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {products.length > 0 && (
                   <ul className="text-gray-700 text-sm space-y-1 max-h-32 overflow-y-auto bg-gray-50 p-3 rounded-xl border border-gray-200">
-                    {products.map((p, idx) => (
-                      <li key={idx}>
+                    {products.map((p, i) => (
+                      <li key={i}>
                         <span className="font-medium">{p.name}</span> — {p.quantity} قطعة — {p.price.toLocaleString()} ر.س
                       </li>
                     ))}
@@ -201,9 +303,10 @@ export default function WarehousesPage() {
                 </button>
                 <button
                   onClick={saveWarehouse}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl font-semibold text-white"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl font-semibold text-white disabled:opacity-60"
+                  disabled={isPending}
                 >
-                  حفظ المخزن
+                  {isPending ? '...جارٍ الحفظ' : 'حفظ المخزن'}
                 </button>
               </div>
             </div>
