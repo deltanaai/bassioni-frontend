@@ -6,26 +6,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
-
-// حل مؤقت لحد ما ال api تجهز
-async function loginUser(data: LoginFormData) {
-  const res = await fetch("/api/proxy/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  const result = await res.json();
-
-  if (!res.ok) {
-    throw new Error(result.message || "بيانات الدخول غير صحيحة");
-  }
-  return result;
-}
+import { login } from "@/app/lib/actions/action.login"; 
 
 export default function LoginPage() {
   const router = useRouter();
-  //إعداد الفورم
+
+  // إعداد الفورم
   const {
     register,
     handleSubmit,
@@ -35,14 +21,13 @@ export default function LoginPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: loginUser,
+    mutationFn: login, 
     onSuccess: () => {
       alert("تم تسجيل الدخول بنجاح ✅");
-      router.push("/Pharma");
+      router.push("/company");
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
-      alert(error.message);
+      alert(error.message || "حدث خطأ أثناء تسجيل الدخول");
     },
   });
 
@@ -179,7 +164,7 @@ export default function LoginPage() {
 
         <div className="bg-gray-700 p-3 text-center">
           <p className="text-xs text-gray-400">
-            © 2023 BassionyCare - جميع الحقوق محفوظة
+            © 2025 BassionyCare - جميع الحقوق محفوظة
           </p>
         </div>
       </div>
