@@ -20,7 +20,7 @@ function warehouseUpdateValidation(input: unknown): WarehouseUpdateInput {
 
 export async function getWarehouses(): Promise<Warehouses> {
   const res = await apiFetch("/company/dashboard/warehouses/index", { 
-    method: "POST" 
+    method: "GET" 
   });
   return warehousesSchema.parse(res);
 }
