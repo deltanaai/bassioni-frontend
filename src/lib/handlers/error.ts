@@ -1,7 +1,6 @@
-import { error } from "console";
 import { NextResponse } from "next/server";
 import { RequestError, ValidationError } from "../http-errors";
-import z, { ZodError } from "zod";
+import { ZodError } from "zod";
 import logger from "../logger";
 
 export type ResponseType = "api" | "server";
@@ -13,7 +12,7 @@ const formatResponse = (
   errors?: Record<string, string[]> | undefined
 ) => {
   const responseContent = {
-    succes: false,
+    success: false,
     error: {
       message,
       details: errors,
