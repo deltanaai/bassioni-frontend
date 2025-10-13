@@ -1,7 +1,7 @@
 import { API_URL } from "@/constants";
 import { fetchHandler } from "./handlers/fetch";
 
-// API_URL is in development is http://127.0.0.1:8000/api/
+// API_URL in development is http://127.0.0.1:8000/api/
 export const api = {
   company: {
     auth: {

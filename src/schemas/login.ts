@@ -13,12 +13,7 @@ export const loginSchema = z.object({
     .nonempty(messages.requiredEmail)
     .email(messages.invalidEmail),
 
-  password: z
-    .string()
-    .trim()
-    .nonempty(messages.requiredPassword),
-
-  rememberMe: z.boolean().optional(),
+  password: z.string().trim().nonempty(messages.requiredPassword),
 });
 
 export type LoginSchema = z.infer<typeof loginSchema>;
