@@ -1,4 +1,4 @@
-import { apiFetch } from "@/app/lib/api";
+import { apiFetch } from "@/lib/api";
 import { LoginSchema } from "@/schemas/login";
 import Cookies from "js-cookie";
 
