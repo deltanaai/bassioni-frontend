@@ -1,6 +1,9 @@
 "use server";
 
-import { GetWarehouseProductsSchema } from "@/schemas/warehouseProducts";
+import {
+  AddProductSchema,
+  GetWarehouseProductsSchema,
+} from "@/schemas/warehouseProducts";
 
 import { api } from "../api";
 import action from "../handlers/action";
@@ -39,6 +42,31 @@ export async function getProductsByWarehouse(
     return {
       success: true,
       data: JSON.parse(JSON.stringify(response.data)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function addProductToWarehouse(
+  params: AddWarehouseProductParams
+): Promise<ActionResponse<WarehouseProduct>> {
+  const validationResult = await action({
+    params,
+    schema: AddProductSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  // const {warehouseId}= validationResult.params!;
+  try {
+    await api.company.products.addToWarehouse(params);
+
+    return {
+      success: true,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
