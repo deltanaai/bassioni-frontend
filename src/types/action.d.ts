@@ -4,4 +4,7 @@ interface AuthCredentialsCo {
   rememberMe?: boolean;
 }
 
-type AuthActionResponse = ActionResponse<Session>
+interface GetProductsParams {
+  warehouseId: number;
+  productId?: number;
+}

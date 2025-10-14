@@ -31,7 +31,7 @@ export async function signIn(
 
     return {
       success: true,
-      data: response.data as SessionUser,
+      data: JSON.parse(JSON.stringify(response.data)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
