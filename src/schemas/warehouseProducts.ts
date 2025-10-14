@@ -38,3 +38,11 @@ export const GetWarehouseProductsSchema = z.object({
   warehouseId: z.number().min(1, "معرف المستودع مطلوب"),
   prodcutId: z.number().optional(),
 });
+
+export const DeleteWarehouseProductSchema = z.object({
+  warehouseId: z.number().min(1, "معرف المستودع مطلوب"),
+  itemsId: z
+    .array(z.number().min(1, "معرف المنتج مطلوب"))
+    .min(1, "يجب حذف منتج واحد على الأقل"),
+  batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
+});

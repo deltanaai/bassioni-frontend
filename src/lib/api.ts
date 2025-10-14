@@ -47,6 +47,18 @@ export const api = {
           }
         );
       },
+
+      deleteFromWarehouse: (params: DeleteWarehouseProductParams) => {
+        const { warehouseId, ...bodyParams } = params;
+        return fetchHandler(
+          `${API_URL}company/dashboard/warehouses/${warehouseId}/products/delete`,
+          {
+            method: "DELETE",
+            auth: true,
+            body: JSON.stringify(bodyParams),
+          }
+        );
+      },
     },
   },
 };

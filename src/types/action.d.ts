@@ -18,3 +18,9 @@ interface AddWarehouseProductParams {
   expiryDate: Date;
   batchNumber: string;
 }
+
+interface DeleteWarehouseProductParams {
+  warehouseId: number;
+  itemsId: number[];
+  batchNumber: string;
+}

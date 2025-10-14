@@ -2,13 +2,13 @@
 
 import {
   AddProductSchema,
+  DeleteWarehouseProductSchema,
   GetWarehouseProductsSchema,
 } from "@/schemas/warehouseProducts";
 
 import { api } from "../api";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { UnauthorizedError } from "../http-errors";
 
 export async function getProductsByWarehouse(
   params: GetProductsParams
@@ -30,10 +30,6 @@ export async function getProductsByWarehouse(
       warehouseId,
       productId
     );
-
-    if (response.status === 401) {
-      throw new UnauthorizedError("Unauthorized access. Please log in.");
-    }
 
     if (!response || !response.data) {
       throw new Error("No response data");
@@ -62,7 +58,7 @@ export async function addProductToWarehouse(
   }
 
   try {
-    await api.company.products.addToWarehouse(params);
+    await api.company.products.addToWarehouse(validationResult.params!);
 
     return {
       success: true,
@@ -86,8 +82,31 @@ export async function updateProductInWarehouse(
   }
 
   try {
-    await api.company.products.updateInWarehouse(params);
+    await api.company.products.updateInWarehouse(validationResult.params!);
 
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteProductFromWarehouse(
+  params: DeleteWarehouseProductParams
+): Promise<ActionResponse<null>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteWarehouseProductSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await api.company.products.deleteFromWarehouse(validationResult.params!);
     return {
       success: true,
     };
