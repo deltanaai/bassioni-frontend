@@ -23,6 +23,7 @@ export async function signIn(
 
   try {
     const response = await api.company.auth.login({ email, password });
+    
     if (!response || !response.data || !response.token) {
       throw new Error("Invalid login response from the server.");
     }

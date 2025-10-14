@@ -1,4 +1,4 @@
-import { productSchema } from "@/schemas/warehouseProducts";
+import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { productFormSchema } from "@/schemas/AddProduts";
 import { loginSchema } from "@/schemas/login";
 import { registerSchema } from "@/schemas/Register";
@@ -15,6 +15,9 @@ import {
   locationsSchema,
 } from "@/schemas/Locations";
 
+import { resetPasswordSchema } from "@/schemas/Resetpassword"
+
+
 import { z } from "zod";
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -22,7 +25,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterForm = z.infer<typeof registerSchema>;
 
 //  new warehouse & products
-export type ProductInput = z.infer<typeof productSchema>;
+export type ProductInput = z.infer<typeof AddProductSchema>;
 export type WarehouseFormData = z.infer<typeof warehouseSchema>;
 
 export type ProductFormData = z.infer<typeof productFormSchema>;
@@ -36,3 +39,5 @@ export type Location = z.infer<typeof locationSchema>;
 export type Locations = z.infer<typeof locationsSchema>;
 export type LocationCreateInput = z.infer<typeof locationCreateSchema>;
 export type LocationUpdateInput = z.infer<typeof locationUpdateSchema>;
+
+export type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;

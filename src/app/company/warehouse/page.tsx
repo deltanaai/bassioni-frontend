@@ -84,6 +84,10 @@ export default function WarehousesPage() {
         location: data.location,
         pharmacy: data.pharmacy,
         products: data.products,
+        // دول مترفعوش
+        totalProducts: products.length,
+        totalQuantity: products.reduce((sum, p) => sum + p.quantity, 0),
+        totalValue: products.reduce((sum, p) => sum + p.quantity * p.price, 0),
       };
 
       return await createWarehouse(warehouseData);

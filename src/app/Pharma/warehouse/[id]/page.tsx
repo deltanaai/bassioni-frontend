@@ -108,12 +108,35 @@ export default function WarehouseDetailsPage() {
 
   return (
     <div className="min-h-screen p-6 bg-gray-950 text-white">
-      <button
-        onClick={() => router.back()}
-        className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-gray-800 hover:bg-gray-700 rounded-xl transition duration-200"
-      >
-        <ArrowLeft className="w-5 h-5" /> العودة
-      </button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-gray-800 hover:bg-gray-700 rounded-xl transition duration-200"
+        >
+          <ArrowLeft className="w-5 h-5" /> العودة
+        </button>
+        <div className="flex gap-2 order-1 sm:order-2">
+          <button
+            // onClick={handleEditWarehouse}
+            // disabled={updateMutation.isPending}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition duration-200 disabled:opacity-50"
+          >
+            <Edit className="w-4 h-4" />
+            تعديل المخزن
+            {/* {updateMutation.isPending ? "جاري التحديث..." : "تعديل المخزن"} */}
+          </button>
+
+          <button
+            // onClick={handleDeleteWarehouse}
+            // disabled={deleteWarehouseMutation.isPending}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition duration-200 disabled:opacity-50"
+          >
+            <Trash2 className="w-4 h-4" />
+            حذف المخزن
+            {/* {deleteWarehouseMutation.isPending ? "جاري الحذف..." : "مسح المخزن"} */}
+          </button>
+        </div>
+      </div>
 
       <div className="bg-gray-900 p-6 rounded-2xl shadow-lg mb-6">
         <h1 className="text-2xl font-bold text-emerald-400 mb-4">

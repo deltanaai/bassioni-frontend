@@ -6,33 +6,81 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
-import { login } from "@/lib/actions/action.login"; 
+import { signIn } from "@/lib/actions/login.action";
+import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isRememberMeChecked, setIsRememberMeChecked] = useState(false);
 
-  // إعداد الفورم
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedEmail = localStorage.getItem("rememberedEmail");
+      const savedPassword = localStorage.getItem("rememberedPassword");
+
+      if (savedEmail) {
+        setValue("email", savedEmail);
+      }
+      if (savedPassword) {
+        setValue("password", savedPassword);
+      }
+      // ولا لاااا تحديد إذا كان "تذكرني" مفعل
+      setIsRememberMeChecked(!!savedEmail || !!savedPassword);
+    }
+  }, [setValue]);
+
   const mutation = useMutation({
-    mutationFn: login, 
-    onSuccess: () => {
-      alert("تم تسجيل الدخول بنجاح ✅");
-      router.push("/company");
+    mutationFn: signIn,
+    onSuccess: (result) => {
+      if (result.success && result.data) {
+        const form = document.getElementById("login-form") as HTMLFormElement;
+        if (form) {
+          const formData = new FormData(form);
+          const email = formData.get("email");
+          const password = formData.get("password");
+          const rememberMeChecked = formData.get("rememberMe") === "on";
+
+          if (rememberMeChecked && email) {
+            localStorage.setItem("rememberedEmail", email.toString());
+
+            if (password) {
+              localStorage.setItem("rememberedPassword", password.toString());
+            }
+          } else {
+            localStorage.removeItem("rememberedEmail");
+            localStorage.removeItem("rememberedPassword");
+          }
+        }
+
+        alert("تم تسجيل الدخول بنجاح ✅");
+        router.push("/company");
+        router.refresh();
+      } else {
+        alert(result.message || "بيانات الدخول غير صحيحة");
+      }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       alert(error.message || "حدث خطأ أثناء تسجيل الدخول");
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    mutation.mutate(data);
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      await mutation.mutateAsync(data);
+    } catch (error) {
+      console.log("login error", error);
+    }
   };
 
   return (
@@ -49,7 +97,11 @@ export default function LoginPage() {
 
         {/* الفورم */}
         <div className="p-8">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            id="login-form"
+            className="space-y-6"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             {/* البريد الإلكتروني */}
             <div>
               <label
@@ -73,7 +125,7 @@ export default function LoginPage() {
             </div>
 
             {/* كلمة المرور */}
-            <div>
+            <div className="relative">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-300 mb-1"
@@ -81,12 +133,19 @@ export default function LoginPage() {
                 كلمة المرور
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 {...register("password")}
                 className="form-input"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute left-3 top-[70%] transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
               {errors.password && (
                 <p className="text-red-400 text-sm mt-1">
                   {errors.password.message}
@@ -102,6 +161,8 @@ export default function LoginPage() {
                   type="checkbox"
                   {...register("rememberMe")}
                   className="h-4 w-4 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                  checked={isRememberMeChecked}
+                  onChange={(e) => setIsRememberMeChecked(e.target.checked)}
                 />
                 <label
                   htmlFor="remember-me"
@@ -111,7 +172,7 @@ export default function LoginPage() {
                 </label>
               </div>
               <Link
-                href="/forgot-password"
+                href="/auth/Verify-email"
                 className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
               >
                 نسيت كلمة المرور؟
@@ -149,17 +210,17 @@ export default function LoginPage() {
           </form>
 
           {/* إنشاء حساب جديد */}
-          <div className="mt-6 text-center">
+          {/* <div className="mt-6 text-center">
             <p className="text-gray-400 text-sm">
               ليس لديك حساب؟{" "}
               <Link
                 href="/auth/register"
                 className="font-medium text-blue-400 hover:text-blue-300 transition-colors"
               >
-                إنشاء حساب جديد
+                إنشاء حساب جديد/
               </Link>
             </p>
-          </div>
+          </div> */}
         </div>
 
         <div className="bg-gray-700 p-3 text-center">
