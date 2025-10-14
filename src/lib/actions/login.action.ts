@@ -1,9 +1,10 @@
 "use server";
 
 import { loginSchema } from "@/schemas/login";
+
+import { api } from "../api";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { api } from "../api";
 import { setSession } from "../session";
 
 export async function signIn(

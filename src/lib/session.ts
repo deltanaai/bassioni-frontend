@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+
 import logger from "./logger";
 
 const SESSION_KEY = "session";
@@ -25,7 +26,7 @@ export async function getSession(): Promise<Session | null> {
 
   try {
     return JSON.parse(cookie) as Session;
-  } catch (error) {
+  } catch {
     logger.error("No Auth token Found");
     return null;
   }

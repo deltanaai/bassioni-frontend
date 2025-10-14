@@ -1,4 +1,5 @@
 import { API_URL } from "@/constants";
+
 import { fetchHandler } from "./handlers/fetch";
 
 // API_URL in development is http://127.0.0.1:8000/api/
@@ -10,6 +11,18 @@ export const api = {
           method: "POST",
           body: JSON.stringify(credentials),
         }),
+    },
+    products: {
+      getByWarehouse: (warehouseId: number, productId?: number) =>
+        fetchHandler(
+          `${API_URL}company/dashboard/warehouses/${warehouseId}/prodcuts${
+            productId ? `/${productId}` : ""
+          }`,
+          {
+            method: "GET",
+            auth: true,
+          }
+        ),
     },
   },
 };

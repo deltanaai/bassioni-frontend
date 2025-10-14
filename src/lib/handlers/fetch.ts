@@ -1,9 +1,11 @@
 import { RequestError } from "../http-errors";
 import logger from "../logger";
+import { getAuthToken } from "../token";
 import handleError from "./error";
 
 interface FetchOptions extends RequestInit {
-  timeout?: number; //in milliseconds
+  timeout?: number; // in milliseconds
+  auth?: boolean; // whether to include auth token or not
 }
 
 function isError(error: unknown): error is Error {
@@ -17,6 +19,7 @@ export async function fetchHandler<T>(
   const {
     timeout = 10000,
     headers: customHeaders = {},
+    auth = false,
     ...restOptions
   } = options;
 
@@ -27,6 +30,11 @@ export async function fetchHandler<T>(
     "Content-Type": "application/json",
     Accept: "application/json",
   };
+
+  const token = auth ? await getAuthToken() : null;
+  if (token) {
+    defaultHeaders.Authorization = `Bearer ${token}`;
+  }
 
   const headers: HeadersInit = { ...defaultHeaders, ...customHeaders };
 
