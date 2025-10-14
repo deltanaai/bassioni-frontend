@@ -61,9 +61,32 @@ export async function addProductToWarehouse(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  // const {warehouseId}= validationResult.params!;
   try {
     await api.company.products.addToWarehouse(params);
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateProductInWarehouse(
+  params: AddWarehouseProductParams
+): Promise<ActionResponse<WarehouseProduct>> {
+  const validationResult = await action({
+    params,
+    schema: AddProductSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await api.company.products.updateInWarehouse(params);
 
     return {
       success: true,

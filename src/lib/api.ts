@@ -26,10 +26,22 @@ export const api = {
 
       addToWarehouse: (params: AddWarehouseProductParams) => {
         const { warehouseId, ...bodyParams } = params;
-        fetchHandler(
+        return fetchHandler(
           `${API_URL}company/dashboard/warehouses/${warehouseId}/products`,
           {
             method: "POST",
+            auth: true,
+            body: JSON.stringify(bodyParams),
+          }
+        );
+      },
+
+      updateInWarehouse: (params: AddWarehouseProductParams) => {
+        const { warehouseId, productId, ...bodyParams } = params;
+        return fetchHandler(
+          `${API_URL}company/dashboard/warehouses/${warehouseId}/products/${productId}`,
+          {
+            method: "PATCH",
             auth: true,
             body: JSON.stringify(bodyParams),
           }
