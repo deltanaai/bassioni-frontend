@@ -13,31 +13,18 @@ import {
   Trash2,
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema } from "@/schemas/warehouseProducts";
+import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { ProductInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getWarehouseById, updateWarehouse } from "@/lib/actions/action.warehouse";
 import {
-  deleteWarehouse,
-  getWarehouseById,
-  updateWarehouse,
-} from "@/app/lib/actions/action.warehouse";
-import { warehouseUpdateSchema } from "@/schemas/Warehouse";
+  getProductsByWarehouse,
+  addProductToWarehouse,
+  updateProductInWarehouse,
+} from "@/lib/actions/warehouseProducts.action";
+import { warehouseUpdateSchema, type WarehouseUpdateInput } from "@/schemas/Warehouse";
 
-interface Product {
-  id: number;
-  name: string;
-  batchNo: string;
-  quantity: number;
-  price: number;
-  expirationDate: string;
-}
-
-interface Warehouse {
-  id: number;
-  name: string;
-  location: string;
-  products: Product[];
-}
+type Product = WarehouseProduct;
 
 export default function WarehouseDetailsPage() {
   const params = useParams();
@@ -45,16 +32,15 @@ export default function WarehouseDetailsPage() {
   const queryClient = useQueryClient();
   const id = Number(params?.id);
 
-  const [products, setProducts] = useState<Product[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
 
   // جلب بيانات المخزن
-  const { data: warehouse, isLoading } = useQuery({
+  const { data: warehouse } = useQuery({
     queryKey: ["warehouse", id],
     queryFn: () => getWarehouseById(id),
-    enabled: !!id, // يتشغل فقط إذا id موجود
+    enabled: !!id,
   });
 
   // نموذج تعديل المخزن
@@ -63,9 +49,9 @@ export default function WarehouseDetailsPage() {
     handleSubmit: handleSubmitWarehouse,
     reset: resetWarehouse,
     formState: { errors: warehouseErrors },
-  } = useForm({
+  } = useForm<WarehouseUpdateInput>({
     resolver: zodResolver(warehouseUpdateSchema),
-    values: warehouse || {},
+    values: (warehouse as unknown as WarehouseUpdateInput) || ({} as WarehouseUpdateInput),
   });
 
   // نموذج المنتجات
@@ -75,42 +61,68 @@ export default function WarehouseDetailsPage() {
     reset: resetProduct,
     formState: { errors: productErrors },
   } = useForm<ProductInput>({
-    resolver: zodResolver(productSchema) as Resolver<ProductInput>,
+    resolver: zodResolver(AddProductSchema) as Resolver<ProductInput>,
   });
 
-  // Mutation لتعديل المخزن
+  // جلب منتجات المخزن
+  const { data: productsResponse } = useQuery({
+    queryKey: ["warehouseProducts", id],
+    queryFn: () => getProductsByWarehouse({ warehouseId: id }),
+    enabled: !!id,
+  });
+
+  const products = productsResponse?.success && Array.isArray(productsResponse.data) 
+    ? (productsResponse.data as Product[]) 
+    : [];
+
   const updateMutation = useMutation({
-    mutationFn: (data: any) => updateWarehouse(id, data),
+    mutationFn: (data: WarehouseUpdateInput) => updateWarehouse(id, data),
     onSuccess: () => {
-      // تحديث البيانات
       queryClient.invalidateQueries({ queryKey: ["warehouse", id] });
       queryClient.invalidateQueries({ queryKey: ["warehouses"] });
       setShowEditModal(false);
       alert("تم تحديث المخزن بنجاح");
     },
-    onError: (error: any) => {
-      alert(error.message || "حدث خطأ أثناء التحديث");
+    onError: (error: unknown) => {
+      const e = error as Error;
+      alert(e?.message || "حدث خطأ أثناء التحديث");
     },
   });
 
-  // Mutation لحذف المخزن
-  const deleteWarehouseMutation = useMutation({
-    mutationFn: () => deleteWarehouse(id),
-    onSuccess: (data) => {
-      if (data.success) {
-        alert("تم حذف المخزن بنجاح");
-        queryClient.invalidateQueries({ queryKey: ["warehouses"] });
-        router.push("/company/warehouses");
-      } else {
-        alert(data.message || "حدث خطأ أثناء الحذف");
-      }
+  // ميوتاشن لإضافة منتجات المخزن
+  const addProductMutation = useMutation({
+    mutationFn: (params: ProductInput) => addProductToWarehouse(params),
+    onSuccess: (result) => {
+      console.log("✅ تمت إضافة المنتج بنجاح:", result);
+      queryClient.invalidateQueries({ queryKey: ["warehouseProducts", id] });
+      setShowProductModal(false);
+      setEditingProductId(null);
+      resetProduct();
+      alert("تمت إضافة المنتج بنجاح");
     },
-    onError: (error: any) => {
-      alert(error.message || "حدث خطأ غير متوقع");
+    onError: (error: unknown) => {
+      const e = error as Error;
+      console.error(" خطأ في إضافة المنتج:", e);
+      alert(e?.message || "حدث خطأ أثناء إضافة المنتج");
     },
   });
 
-  //  Modal تعديل المخزن
+  const updateProductMutation = useMutation({
+    mutationFn: (params: ProductInput) => updateProductInWarehouse(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["warehouseProducts", id] });
+      setShowProductModal(false);
+      setEditingProductId(null);
+      resetProduct();
+      alert("تم تحديث المنتج بنجاح");
+    },
+    onError: (error: unknown) => {
+      const e = error as Error;
+      alert(e?.message || "حدث خطأ أثناء تحديث المنتج");
+    },
+  });
+
+  // Modal تعديل المخزن
   const handleEditWarehouse = () => {
     if (warehouse) {
       resetWarehouse(warehouse);
@@ -119,61 +131,67 @@ export default function WarehouseDetailsPage() {
   };
 
   // حفظ تعديلات المخزن
-  const onUpdateWarehouse = (data: any) => {
+  const onUpdateWarehouse = (data: WarehouseUpdateInput) => {
     updateMutation.mutate(data);
   };
 
   // حذف المخزن
   const handleDeleteWarehouse = () => {
-    if (
-      confirm(
-        "هل أنت متأكد من حذف هذا المخزن؟ هذا الإجراء لا يمكن التراجع عنه."
-      )
-    ) {
-      deleteWarehouseMutation.mutate();
-    }
+    alert("حذف المخزن غير مفعل حالياً.");
   };
-  // لساا محتاجين يتظبطو مع api
+
+  // حذف منتج لساااا 
   const handleDeleteProduct = (productId: number) => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    alert("حذف المنتج غير مفعل حالياً.");
   };
 
   const handleEditProduct = (product: Product) => {
     setEditingProductId(product.id);
     setShowProductModal(true);
     resetProduct({
-      name: product.name,
-      quantity: product.quantity,
-      price: product.price,
-      batchNo: product.batchNo,
-      expirationDate: product.expirationDate,
-    });
+      warehouseId: id,
+      productId: product.id,
+      warehousePrice: Number(product.price),
+      stock: product.stock,
+      reservedStock: product.reserved_stock,
+      expiryDate: new Date(product.expiry_date),
+      batchNumber: product.batch_number,
+    } as unknown as ProductInput);
   };
 
   // إضافة/تعديل المنتج
-  const onSubmitProduct = (data: ProductInput) => {
-    if (editingProductId !== null) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProductId ? { ...p, ...data } : p))
-      );
-    } else {
-      const nextId =
-        products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
-      const newProduct: Product = { id: nextId, ...data } as Product;
-      setProducts((prev) => [...prev, newProduct]);
+  const onSubmitProduct = async (data: ProductInput) => {
+    try {
+      console.log("🔄 بدء إضافة/تعديل المنتج:", data);
+
+      const payload: ProductInput = {
+        warehouseId: id,
+        productId: data.productId,
+        warehousePrice: data.warehousePrice,
+        stock: data.stock,
+        reservedStock: data.reservedStock ?? 0,
+        expiryDate: data.expiryDate,
+        batchNumber: data.batchNumber,
+      };
+
+      if (editingProductId !== null) {
+        await updateProductMutation.mutateAsync(payload);
+      } else {
+        await addProductMutation.mutateAsync(payload);
+      }
+
+      console.log("✅ تمت العملية بنجاح - جاري تحديث البيانات...");
+
+    } catch (error) {
+      console.error("❌ خطأ في إضافة/تعديل المنتج:", error);
+      alert("حدث خطأ أثناء حفظ المنتج");
     }
-    setShowProductModal(false);
-    setEditingProductId(null);
-    resetProduct({
-      name: "",
-      quantity: 0,
-      price: 0,
-      batchNo: "",
-      expirationDate: "",
-    });
   };
 
-  const totalValue = products.reduce((sum, p) => sum + p.quantity * p.price, 0);
+  const totalValue = products.reduce((sum, p) => {
+    const unitPrice = Number(p.price);
+    return sum + (p.stock ?? 0) * (isNaN(unitPrice) ? 0 : unitPrice);
+  }, 0);
 
   return (
     <div className="min-h-screen p-6 bg-gray-100 text-gray-900">
@@ -198,11 +216,10 @@ export default function WarehouseDetailsPage() {
 
           <button
             onClick={handleDeleteWarehouse}
-            disabled={deleteWarehouseMutation.isPending}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition duration-200 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition duration-200"
           >
             <Trash2 className="w-4 h-4" />
-            {deleteWarehouseMutation.isPending ? "جاري الحذف..." : "مسح المخزن"}
+            مسح المخزن
           </button>
         </div>
       </div>
@@ -210,12 +227,12 @@ export default function WarehouseDetailsPage() {
       {/* معلومات المخزن */}
       <div className="bg-white p-6 rounded-2xl shadow-md mb-6">
         <h1 className="text-2xl font-bold text-emerald-600 mb-4">
-          {warehouse.name}
+          {warehouse?.name}
         </h1>
         <p className="flex items-center gap-2 text-gray-700 mb-2">
           <MapPin className="w-5 h-5 text-emerald-500" /> الموقع:
           <span className="font-semibold text-gray-900">
-            {warehouse.location}
+            {warehouse?.location_id}
           </span>
         </p>
         <p className="flex items-center gap-2 text-gray-700 mb-2">
@@ -239,11 +256,13 @@ export default function WarehouseDetailsPage() {
               setEditingProductId(null);
               setShowProductModal(true);
               resetProduct({
-                name: "",
-                quantity: 0,
-                price: 0,
-                batchNo: "",
-                expirationDate: "",
+                warehouseId: id,
+                productId: 0,
+                warehousePrice: 0,
+                stock: 0,
+                reservedStock: 0,
+                expiryDate: new Date(),
+                batchNumber: "",
               });
             }}
             className="w-40 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
@@ -260,8 +279,8 @@ export default function WarehouseDetailsPage() {
                 <th className="p-3 text-center">ID</th>
                 <th className="p-3 text-center">المنتج</th>
                 <th className="p-3 text-center">رقم الدفعة</th>
-                <th className="p-3 text-center">الكمية</th>
-                <th className="p-3 text-center">السعر</th>
+                <th className="p-3 text-center">المتوفر</th>
+                <th className="p-3 text-center">سعر المخزن</th>
                 <th className="p-3 text-center">القيمة</th>
                 <th className="p-3 text-center">تاريخ الانتهاء</th>
                 <th className="p-3 text-center">الإجراءات</th>
@@ -275,15 +294,13 @@ export default function WarehouseDetailsPage() {
                 >
                   <td className="p-3 text-center">{p.id}</td>
                   <td className="p-3 text-center">{p.name}</td>
-                  <td className="p-3 text-center">{p.batchNo}</td>
-                  <td className="p-3 text-center">{p.quantity}</td>
+                  <td className="p-3 text-center">{p.batch_number}</td>
+                  <td className="p-3 text-center">{p.stock}</td>
+                  <td className="p-3 text-center">{Number(p.price).toLocaleString()} ج.م</td>
                   <td className="p-3 text-center">
-                    {p.price.toLocaleString()} ج.م
+                    {((p.stock ?? 0) * Number(p.price)).toLocaleString()} ج.م
                   </td>
-                  <td className="p-3 text-center">
-                    {(p.quantity * p.price).toLocaleString()} ج.م
-                  </td>
-                  <td className="p-3 text-center">{p.expirationDate}</td>
+                  <td className="p-3 text-center">{p.expiry_date}</td>
                   <td className="p-3 text-center">
                     <div className="inline-flex justify-center gap-2">
                       <button
@@ -413,81 +430,99 @@ export default function WarehouseDetailsPage() {
               onSubmit={handleSubmitProduct(onSubmitProduct)}
               className="space-y-4"
             >
-              {/* ... نفس كود مودال المنتج السابق ... */}
               <div className="grid grid-cols-2 gap-5">
                 <div className="flex flex-col">
-                  <label className="mb-1">اسم المنتج</label>
+                  <label className="mb-1">معرف المنتج</label>
                   <input
-                    {...registerProduct("name")}
-                    placeholder="اسم المنتج"
+                    type="number"
+                    {...registerProduct("productId", { valueAsNumber: true })}
+                    placeholder="ID"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.name && (
+                  {productErrors.productId && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.name.message}
+                      {productErrors.productId.message as string}
                     </p>
                   )}
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="mb-1">الكمية</label>
+                  <label className="mb-1">سعر المخزن</label>
                   <input
                     type="number"
-                    {...registerProduct("quantity")}
-                    placeholder="الكمية"
-                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                  />
-                  {productErrors.quantity && (
-                    <p className="text-red-500 text-sm">
-                      {productErrors.quantity.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-5">
-                <div className="flex flex-col">
-                  <label className="mb-1">السعر</label>
-                  <input
-                    type="number"
-                    {...registerProduct("price")}
+                    step="0.01"
+                    {...registerProduct("warehousePrice", { valueAsNumber: true })}
                     placeholder="السعر"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.price && (
+                  {productErrors.warehousePrice && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.price.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="mb-1">رقم الدفعة</label>
-                  <input
-                    {...registerProduct("batchNo")}
-                    placeholder="Batch.No"
-                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                  />
-                  {productErrors.batchNo && (
-                    <p className="text-red-500 text-sm">
-                      {productErrors.batchNo.message}
+                      {productErrors.warehousePrice.message as string}
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="flex flex-col">
-                <label className="mb-1">تاريخ الانتهاء</label>
-                <input
-                  type="date"
-                  {...registerProduct("expirationDate")}
-                  className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                />
-                {productErrors.expirationDate && (
-                  <p className="text-red-500 text-sm">
-                    {productErrors.expirationDate.message}
-                  </p>
-                )}
+              <div className="grid grid-cols-2 gap-5">
+                <div className="flex flex-col">
+                  <label className="mb-1">المخزون المتاح</label>
+                  <input
+                    type="number"
+                    {...registerProduct("stock", { valueAsNumber: true })}
+                    placeholder="الكمية"
+                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
+                  />
+                  {productErrors.stock && (
+                    <p className="text-red-500 text-sm">
+                      {productErrors.stock.message as string}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="mb-1">المخزون المحجوز</label>
+                  <input
+                    type="number"
+                    {...registerProduct("reservedStock", { valueAsNumber: true })}
+                    placeholder="0"
+                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
+                  />
+                  {productErrors.reservedStock && (
+                    <p className="text-red-500 text-sm">
+                      {productErrors.reservedStock.message as string}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-5">
+                <div className="flex flex-col">
+                  <label className="mb-1">رقم الدفعة</label>
+                  <input
+                    {...registerProduct("batchNumber")}
+                    placeholder="Batch.No"
+                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
+                  />
+                  {productErrors.batchNumber && (
+                    <p className="text-red-500 text-sm">
+                      {productErrors.batchNumber.message as string}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="mb-1">تاريخ الانتهاء</label>
+                  <input
+                    type="date"
+                    {...registerProduct("expiryDate")}
+                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
+                  />
+                  {productErrors.expiryDate && (
+                    <p className="text-red-500 text-sm">
+                      {productErrors.expiryDate.message as string}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end gap-2 mt-4">

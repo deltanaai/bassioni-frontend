@@ -24,7 +24,11 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
@@ -61,7 +65,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* الروابط */}
         <nav className="flex-1 p-4 space-y-2 text-sm overflow-y-auto">
-          <NavLink href="/company/" icon={<Home className="w-5 h-5" />} sidebarOpen={sidebarOpen}>
+          <NavLink
+            href="/company/"
+            icon={<Home className="w-5 h-5" />}
+            sidebarOpen={sidebarOpen}
+          >
             الصفحة الرئيسية
           </NavLink>
           <NavLink
@@ -124,7 +132,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           >
             الإعدادات
           </NavLink>
-          <NavLink href="/login" icon={<LogIn className="w-5 h-5" />} sidebarOpen={sidebarOpen}>
+          <NavLink
+            href="/auth/login"
+            icon={<LogIn className="w-5 h-5" />}
+            sidebarOpen={sidebarOpen}
+          >
             تسجيل الدخول
           </NavLink>
         </nav>
