@@ -34,3 +34,15 @@ interface CreateEmployeePayload {
   active: boolean;
   address: string | null;
 }
+
+interface UpdateEmployeePayload {
+  name?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
+  password_confirmation?: string;
+  role_id?: number;
+  warehouse_id?: number | null;
+  active?: boolean;
+  address?: string | null;
+}

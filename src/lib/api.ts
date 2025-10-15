@@ -95,6 +95,21 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      updateEmployee: ({
+        employeeId,
+        payload,
+      }: {
+        employeeId: number;
+        payload: UpdateEmployeePayload;
+      }) =>
+        fetchHandler(`${API_URL}company/dashboard/employees/${employeeId}`, {
+          method: "PATCH",
+          auth: true,
+          body: Object.keys(payload).length
+            ? JSON.stringify(payload)
+            : undefined,
+        }),
     },
   },
 };

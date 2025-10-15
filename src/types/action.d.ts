@@ -79,4 +79,15 @@ interface CreateEmployeeParams {
   address?: string | null;
 }
 
-
+interface UpdateEmployeeParams {
+  employeeId: number;
+  name?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
+  passwordConfirmation?: string;
+  roleId?: number;
+  warehouseId?: number | null;
+  active?: boolean;
+  address?: string | null;
+}

@@ -1,6 +1,10 @@
 "use server";
 
-import { CreateEmployeeSchema, GetEmployeeSchema } from "@/schemas/employee";
+import {
+  CreateEmployeeSchema,
+  GetEmployeeSchema,
+  UpdateEmployeeSchema,
+} from "@/schemas/employee";
 
 import { api } from "../api";
 import action from "../handlers/action";
@@ -89,6 +93,64 @@ export async function addEmployee(
         message: "تم إضافة الموظف بنجاح",
         employee: response.data as Employee,
       },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateEmployee(
+  params: UpdateEmployeeParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateEmployeeSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const {
+    employeeId,
+    name,
+    email,
+    phone,
+    password,
+    passwordConfirmation,
+    roleId,
+    warehouseId,
+    active,
+    address,
+  } = validationResult.params!;
+
+  const payload: UpdateEmployeePayload = {
+    ...(name && { name }),
+    ...(email && { email }),
+    ...(phone && { phone }),
+    ...(password && { password }),
+    ...(passwordConfirmation && {
+      password_confirmation: passwordConfirmation,
+    }),
+    ...(roleId && { role_id: roleId }),
+    ...(warehouseId !== undefined && { warehouse_id: warehouseId }),
+    ...(active !== undefined && { active }),
+    ...(address !== undefined && { address }),
+  };
+
+  try {
+    const response = await api.company.employee.updateEmployee({
+      employeeId,
+      payload,
+    });
+
+    if (!response) {
+      throw new Error("فشل في تحديث بيانات الموظف, لم يتم تلقي رد من الخادم");
+    }
+
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تحديث بيانات الموظف بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
