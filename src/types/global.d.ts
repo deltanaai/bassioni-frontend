@@ -1,4 +1,15 @@
 // global declarations
+interface Employee {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  active: boolean;
+  role: string;
+  address?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface WarehouseProduct {
   id: number;

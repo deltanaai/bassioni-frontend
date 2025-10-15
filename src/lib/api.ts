@@ -82,5 +82,12 @@ export const api = {
         );
       },
     },
+    employee: {
+      getById: ({ employeeId }: GetEmployeeParams) =>
+        fetchHandler(`${API_URL}company/dashboard/employees/${employeeId}`, {
+          method: "GET",
+          auth: true,
+        }),
+    },
   },
 };

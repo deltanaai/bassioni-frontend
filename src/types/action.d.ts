@@ -62,3 +62,7 @@ interface DeleteWarehouseProductParams {
   itemsId: number[];
   batchNumber: string;
 }
+
+interface GetEmployeeParams {
+  employeeId: number;
+}
