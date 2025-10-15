@@ -2,7 +2,7 @@
 
 type ActionResponse<T = null> = {
   success: boolean;
-  data?: T;
+  data?: T | null;
   token?: string;
   error?: {
     message: string;
@@ -40,11 +40,13 @@ interface AddWarehouseProductParams {
   batchNumber: string;
 }
 
-interface AddProductApiResponse {
+interface BaseApiResponse {
   result: "Success" | "Error";
-  data: null;
   message: string;
   status: number;
+}
+interface AddProductApiResponse extends BaseApiResponse {
+  data: null;
 }
 
 interface DeleteWarehouseProductParams {
