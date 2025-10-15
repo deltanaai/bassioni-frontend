@@ -22,3 +22,15 @@ interface DeleteWarehouseProductPayload {
   items: number[];
   batch_number: string;
 }
+
+interface CreateEmployeePayload {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  password_confirmation: string;
+  role_id: number;
+  warehouse_id: number | null;
+  active: boolean;
+  address: string | null;
+}

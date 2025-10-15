@@ -66,3 +66,17 @@ interface DeleteWarehouseProductParams {
 interface GetEmployeeParams {
   employeeId: number;
 }
+
+interface CreateEmployeeParams {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  passwordConfirmation: string;
+  roleId: number;
+  warehouseId?: number | null;
+  active: boolean;
+  address?: string | null;
+}
+
+

@@ -88,6 +88,13 @@ export const api = {
           method: "GET",
           auth: true,
         }),
+
+      addEmployee: ({ payload }: { payload: CreateEmployeePayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/employees`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };
