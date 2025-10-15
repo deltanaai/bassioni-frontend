@@ -1,3 +1,5 @@
+import { ZodError } from "zod";
+
 export class RequestError extends Error {
   status: number;
   errors?: Record<string, string[]>;
@@ -15,26 +17,39 @@ export class RequestError extends Error {
 }
 
 export class ValidationError extends RequestError {
-  constructor(fieldErrors: Record<string, string[]>) {
+  constructor(errorInput: ZodError | Record<string, string[]>) {
+    const fieldErrors =
+      errorInput instanceof ZodError
+        ? ValidationError.mapZodIssues(errorInput)
+        : errorInput;
     const message = ValidationError.formatFieldErrors(fieldErrors);
-
     super(400, message, fieldErrors);
     this.name = "ValidationError";
     this.errors = fieldErrors;
   }
 
-  static formatFieldErrors(errors: Record<string, string[]>): string {
-    const formattedMessages = Object.entries(errors).map(([field, msgs]) => {
-      const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+  private static mapZodIssues(error: ZodError): Record<string, string[]> {
+    const fieldErrors: Record<string, string[]> = {};
 
-      if (msgs[0] === "Required") {
-        return `${fieldName} is required`;
-      } else {
-        return msgs.join(` and`);
-      }
+    for (const issue of error.issues) {
+      const key = issue.path.join(".") || "_error";
+      if (!fieldErrors[key]) fieldErrors[key] = [];
+      fieldErrors[key].push(issue.message);
+    }
+
+    return fieldErrors;
+  }
+
+  static formatFieldErrors(errors: Record<string, string[]>): string {
+    const formatted = Object.entries(errors).map(([field, msgs]) => {
+      const fieldLabel =
+        field === "_error"
+          ? "General error"
+          : field.charAt(0).toUpperCase() + field.slice(1);
+      return `${fieldLabel}: ${msgs.join("، ")}`; // comma in Arabic style
     });
 
-    return formattedMessages.join(", ");
+    return formatted.join("، ");
   }
 }
 

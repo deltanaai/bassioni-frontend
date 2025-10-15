@@ -2,6 +2,7 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable no-unused-vars */
 
+import { ZodError } from "zod";
 
 // Normalize expiry date to backend expected format (e.g. "20-5-2028")
 export function normalizeExpiryDateMaybe(date: string): string {
