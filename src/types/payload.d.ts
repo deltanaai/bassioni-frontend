@@ -1,3 +1,5 @@
+// request/response payloads.
+
 interface AddWarehouseProductPayload {
   product_id: number;
   warehouse_price: number;

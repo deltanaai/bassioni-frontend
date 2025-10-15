@@ -1,3 +1,5 @@
+// authentication/session types.
+
 interface SessionUser {
   id: number;
   name: string;
@@ -14,4 +16,3 @@ interface Session {
   user: SessionUser;
   token: string;
 }
-

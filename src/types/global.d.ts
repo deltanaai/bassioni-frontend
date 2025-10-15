@@ -1,13 +1,5 @@
-type ActionResponse<T = null> = {
-  success: boolean;
-  data?: T;
-  token?: string;
-  error?: {
-    message: string;
-    details?: Record<string, string[]>;
-  };
-  status?: number;
-};
+// global declarations
+
 interface WarehouseProduct {
   id: number;
   name: string;
@@ -25,11 +17,3 @@ interface Warehouse {
   name: string;
   code: string;
 }
-
-type SuccessResponse<T = null> = ActionResponse<T> & { success: true };
-
-type ErrorResponse = ActionResponse<undefined> & { success: false };
-
-type APIErrorResponse = NextResponse<ErrorResponse>;
-
-type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
