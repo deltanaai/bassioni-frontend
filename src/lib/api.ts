@@ -65,14 +65,19 @@ export const api = {
         );
       },
 
-      deleteFromWarehouse: (params: DeleteWarehouseProductParams) => {
-        const { warehouseId, ...bodyParams } = params;
+      deleteFromWarehouse: ({
+        warehouseId,
+        payload,
+      }: {
+        warehouseId: number;
+        payload: DeleteWarehouseProductPayload;
+      }) => {
         return fetchHandler(
           `${API_URL}company/dashboard/warehouses/${warehouseId}/products/delete`,
           {
             method: "DELETE",
             auth: true,
-            body: JSON.stringify(bodyParams),
+            body: JSON.stringify(payload),
           }
         );
       },

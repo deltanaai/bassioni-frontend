@@ -163,7 +163,7 @@ export async function updateProductInWarehouse(
 
 export async function deleteProductFromWarehouse(
   params: DeleteWarehouseProductParams
-): Promise<ActionResponse<null>> {
+): Promise<ActionResponse<{ message: string }>> {
   const validationResult = await action({
     params,
     schema: DeleteWarehouseProductSchema,
@@ -174,10 +174,22 @@ export async function deleteProductFromWarehouse(
     return handleError(validationResult) as ErrorResponse;
   }
 
+  const { warehouseId, itemsId, batchNumber } = validationResult.params!;
+
+  const payload: DeleteWarehouseProductPayload = {
+    items: itemsId,
+    batch_number: batchNumber,
+  };
+
   try {
-    await api.company.products.deleteFromWarehouse(validationResult.params!);
+    const response = await api.company.products.deleteFromWarehouse({
+      warehouseId,
+      payload,
+    });
+
     return {
       success: true,
+      data: { message: response?.message ?? "تم حذف المنتج بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

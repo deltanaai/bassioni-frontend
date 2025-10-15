@@ -20,6 +20,11 @@ type ErrorResponse = ActionResponse<undefined> & { success: false };
 type APIErrorResponse = NextResponse<ErrorResponse>;
 
 type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
+interface BaseApiResponse {
+  result: "Success" | "Error";
+  message: string;
+  status: number;
+}
 
 interface AuthCredentialsCo {
   email: string;
@@ -43,11 +48,6 @@ interface AddWarehouseProductParams {
   batchNumber: string;
 }
 
-interface BaseApiResponse {
-  result: "Success" | "Error";
-  message: string;
-  status: number;
-}
 interface AddProductApiResponse extends BaseApiResponse {
   data: null;
 }

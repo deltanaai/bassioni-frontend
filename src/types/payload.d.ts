@@ -17,3 +17,8 @@ interface UpdateWarehouseProductPayload {
   expiry_date?: string;
   batch_number: string;
 }
+
+interface DeleteWarehouseProductPayload {
+  items: number[];
+  batch_number: string;
+}
