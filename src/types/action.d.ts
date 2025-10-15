@@ -120,3 +120,7 @@ interface UpdateEmployeeParams {
   active?: boolean;
   address?: string | null;
 }
+
+interface DeleteEmployeesParams {
+  employeeIds: number[];
+}

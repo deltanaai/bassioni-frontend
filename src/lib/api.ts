@@ -120,6 +120,13 @@ export const api = {
             ? JSON.stringify(payload)
             : undefined,
         }),
+
+      deleteEmployees: ({ payload }: { payload: DeleteEmployeesPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/employees/delete`, {
+          method: "DELETE",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

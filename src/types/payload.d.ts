@@ -53,3 +53,7 @@ interface UpdateEmployeePayload {
   active?: boolean;
   address?: string | null;
 }
+
+interface DeleteEmployeesPayload {
+  items: number[];
+}

@@ -13,6 +13,12 @@ export const GetEmployeeSchema = z.object({
   employeeId: z.number().int().positive("معرف الموظف مطلوب"),
 });
 
+export const DeleteEmployeesSchema = z.object({
+  employeeIds: z
+    .array(z.number().int().positive())
+    .min(1, "يجب تحديد موظف واحد على الأقل"),
+});
+
 export const CreateEmployeeSchema = z
   .object({
     name: z
