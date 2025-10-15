@@ -226,3 +226,36 @@ export async function deleteEmployees(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function forceDelete(
+  params: DeleteEmployeesParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteEmployeesSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { employeeIds } = validationResult.params!;
+  const payload: DeleteEmployeesPayload = {
+    items: employeeIds,
+  };
+  try {
+    const response = await api.company.employee.forceDeleteEmployees({
+      payload,
+    });
+    if (!response) {
+      throw new Error(
+        "فشل في الحذف النهائي للموظفين, لم يتم تلقي رد من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم الحذف النهائي للموظفين بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

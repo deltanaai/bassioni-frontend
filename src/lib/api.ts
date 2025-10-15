@@ -127,6 +127,17 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      forceDeleteEmployees: ({
+        payload,
+      }: {
+        payload: DeleteEmployeesPayload;
+      }) =>
+        fetchHandler(`${API_URL}company/dashboard/employees/force-delete`, {
+          method: "DELETE",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };
