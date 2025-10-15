@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { warehouseSchema } from "@/schemas/Warehouse";
-import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { ProductInput, WarehouseFormData } from "@/types";
 import {
   createWarehouse,
@@ -56,22 +55,6 @@ export default function WarehousesPage() {
     defaultValues: { name: "", location: "", pharmacy: pharmacies[0] },
   });
 
-  // نموذج المنتج
-  const {
-    register: registerProduct,
-    handleSubmit: handleSubmitProduct,
-    reset: resetProduct,
-    formState: { errors: productErrors },
-  } = useForm<ProductInput>({
-    resolver: zodResolver(AddProductSchema),
-    defaultValues: {
-      name: "",
-      quantity: 0,
-      price: 0,
-      batchNo: "",
-      expirationDate: "",
-    },
-  });
 
   // Mutation لإنشاء مخزن جديد
   const saveWarehouseMutation = useMutation({
@@ -301,111 +284,7 @@ export default function WarehousesPage() {
               </div>
             </form>
 
-            {/* فورم المنتجات */}
-            <div className="border-t border-gray-300 pt-4 mt-6">
-              <h3 className="font-semibold text-gray-800 mb-2">إضافة منتجات</h3>
-
-              <form
-                onSubmit={handleSubmitProduct(onAddProduct)}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-gray-700">اسم المنتج</label>
-                    <input
-                      {...registerProduct("name")}
-                      placeholder="اسم المنتج"
-                      className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                    />
-                    {productErrors.name && (
-                      <span className="text-red-600 text-sm mt-1">
-                        {productErrors.name.message as string}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-gray-700">الكمية</label>
-                    <input
-                      type="number"
-                      {...registerProduct("quantity")}
-                      placeholder="الكمية"
-                      className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                    />
-                    {productErrors.quantity && (
-                      <span className="text-red-600 text-sm mt-1">
-                        {productErrors.quantity.message as string}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-gray-700">السعر</label>
-                    <input
-                      type="number"
-                      {...registerProduct("price")}
-                      placeholder="السعر"
-                      className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                    />
-                    {productErrors.price && (
-                      <span className="text-red-600 text-sm mt-1">
-                        {productErrors.price.message as string}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-gray-700">رقم الدفعة</label>
-                    <input
-                      {...registerProduct("batchNo")}
-                      placeholder="Batch.No"
-                      className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                    />
-                    {productErrors.batchNo && (
-                      <span className="text-red-600 text-sm mt-1">
-                        {productErrors.batchNo.message as string}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-gray-700">تاريخ الانتهاء</label>
-                    <input
-                      type="date"
-                      {...registerProduct("expirationDate")}
-                      className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                    />
-                    {productErrors.expirationDate && (
-                      <span className="text-red-600 text-sm mt-1">
-                        {productErrors.expirationDate.message as string}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-end">
-                    <button
-                      type="submit"
-                      className="w-40 mr-25 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
-                    >
-                      إضافة المنتج
-                    </button>
-                  </div>
-                </div>
-              </form>
-
-              {/* قائمة المنتجات */}
-              {products.length > 0 && (
-                <ul className="text-gray-700 text-sm space-y-1 max-h-32 overflow-y-auto mt-3">
-                  {products.map((p, i) => (
-                    <li key={i}>
-                      {p.name} - {p.quantity} قطعة - {p.price} ر.س
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            
           </div>
         </div>
       )}
