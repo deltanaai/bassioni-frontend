@@ -14,9 +14,15 @@ export const GetEmployeeSchema = z.object({
 });
 
 export const DeleteEmployeesSchema = z.object({
-  employeeIds: z
+  employeesId: z
     .array(z.number().int().positive())
     .min(1, "يجب تحديد موظف واحد على الأقل"),
+});
+
+export const RestoreEmployeesSchema = z.object({
+  employeesId: z
+    .array(z.number().int().positive())
+    .nonempty("يجب تحديد موظف واحد على الأقل للاستعادة"),
 });
 
 export const CreateEmployeeSchema = z

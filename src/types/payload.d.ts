@@ -57,3 +57,7 @@ interface UpdateEmployeePayload {
 interface DeleteEmployeesPayload {
   items: number[];
 }
+
+interface RestoreEmployeesPayload {
+  items: number[];
+}

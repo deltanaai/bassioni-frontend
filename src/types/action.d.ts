@@ -122,5 +122,9 @@ interface UpdateEmployeeParams {
 }
 
 interface DeleteEmployeesParams {
-  employeeIds: number[];
+  employeesId: number[];
+}
+
+interface RestoreEmployeesParams {
+  employeesId: number[];
 }

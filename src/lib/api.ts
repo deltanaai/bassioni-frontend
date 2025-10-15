@@ -138,6 +138,13 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      restoreEmployees: ({ payload }: { payload: RestoreEmployeesPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/employees/restore`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

@@ -5,6 +5,7 @@ import {
   DeleteEmployeesSchema,
   GetEmployeeSchema,
   GetEmployeesSchema,
+  RestoreEmployeesSchema,
   UpdateEmployeeSchema,
 } from "@/schemas/employee";
 
@@ -209,9 +210,9 @@ export async function deleteEmployees(
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  const { employeeIds } = validationResult.params!;
+  const { employeesId } = validationResult.params!;
   const payload: DeleteEmployeesPayload = {
-    items: employeeIds,
+    items: employeesId,
   };
   try {
     const response = await api.company.employee.deleteEmployees({ payload });
@@ -238,9 +239,9 @@ export async function forceDelete(
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  const { employeeIds } = validationResult.params!;
+  const { employeesId } = validationResult.params!;
   const payload: DeleteEmployeesPayload = {
-    items: employeeIds,
+    items: employeesId,
   };
   try {
     const response = await api.company.employee.forceDeleteEmployees({
@@ -254,6 +255,35 @@ export async function forceDelete(
     return {
       success: true,
       data: { message: response.message ?? "تم الحذف النهائي للموظفين بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function restoreEmployees(
+  params: RestoreEmployeesParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: RestoreEmployeesSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { employeesId } = validationResult.params!;
+  const payload: RestoreEmployeesPayload = {
+    items: employeesId,
+  };
+  try {
+    const response = await api.company.employee.restoreEmployees({ payload });
+    if (!response) {
+      throw new Error("فشل في استعادة الموظفين, لم يتم تلقي رد من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم استعادة الموظفين بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
