@@ -1,20 +1,37 @@
 'use client';
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { CreateEmployeeSchema } from "@/schemas/employee";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EmployeeCreateInput } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addEmployee } from "@/lib/actions/employee.action";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addEmployee, getEmployees } from "@/lib/actions/employee.action";
+import Link from "next/link";
 
 export default function EmployeesPage() {
+  type MockEmployee = {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    role_id: string;
+    active: boolean;
+    warehouse_id?: number | null;
+    address?: string | null;
+  };
+ 
 
   const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
 
-  const { register, handleSubmit ,formState: { errors },reset } = useForm<EmployeeCreateInput>({
+  const { data: employees } = useQuery({
+    queryKey: ['employees'],
+    queryFn: getEmployees,
+  });
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<EmployeeCreateInput>({
     resolver: zodResolver(CreateEmployeeSchema),
     defaultValues: {
       active: true,
@@ -56,8 +73,8 @@ export default function EmployeesPage() {
         </button>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {employees.map((employee) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {employees?.map((employee: MockEmployee) => (
           <div
             key={employee.id}
             className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
@@ -65,22 +82,28 @@ export default function EmployeesPage() {
             <h2 className="text-xl font-semibold text-gray-800 mb-3">{employee.name}</h2>
             
             <p className="text-gray-600 mt-1">
-              الدور: <span className="font-bold text-gray-800">{employee.role}</span>
+              الدور: <span className="font-bold text-gray-800">{employee.role_id}</span>
             </p>
-
-            <div className="mt-4 flex justify-end">
-              <button
-                // onClick={() => openEditModal(employee)}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-800 text-sm border border-gray-300"
-              >
-                <Edit className="w-4 h-4 text-emerald-600" /> تعديل
-              </button>
-            </div>
+            <p className="text-gray-600 mt-1">
+              نشط: <span className="font-bold text-gray-800">{employee.active ? "نشط" : "غير نشط"}</span>
+            </p>
+            <p className="text-gray-600 mt-1">
+              المستودع: <span className="font-bold text-gray-800">{employee.warehouse_id}</span>
+            </p>
+            <div className="mt-6 text-left">
+                <Link
+                  href={`/company/add-employee/${employee.id}`}
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-semibold text-white transition duration-300"
+                >
+                  المزيد
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
           </div>
         ))}
-      </div> */}
+      </div>
 
-      {/* مودال الإضافة / التعديل */}
+      {/* مودال الإضافة  */}
       {showModal && (
   <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
     <div className="bg-white p-6 rounded-2xl w-full max-w-xl shadow-lg">

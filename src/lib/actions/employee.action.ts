@@ -11,6 +11,41 @@ import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { NotFoundError } from "../http-errors";
 
+
+
+export async function getEmployees() {
+  try {
+    const mockEmployees = [
+      {
+        id: 1,
+        name: "محمد أحمد",
+        email: "mohamed@company.com",
+        phone: "01012345678",
+        role_id: "محاسب",
+        active: true,
+        warehouse_id: null,
+        address: "القاهرة - مصر"
+      },
+      {
+        id: 2,
+        name: "أحمد محمود",
+        email: "ahmed@company.com", 
+        phone: "01087654321",
+        role_id: "صيدلي",
+        active: false,
+        warehouse_id: 1,
+        address: "الإسكندرية - مصر"
+      },
+    ];
+    
+    return mockEmployees;
+  } catch (error) {
+    console.error('Error in getEmployees:', error);
+    return [];
+  }
+}
+
+
 export async function getEmployeeById(
   params: GetEmployeeParams
 ): Promise<ActionResponse<Employee>> {
