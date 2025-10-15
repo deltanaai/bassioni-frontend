@@ -1,74 +1,54 @@
 'use client';
 
 import { useState } from "react";
-import { Plus, Edit } from "lucide-react";
-
-interface Employee {
-  id: number;
-  name: string;
-  pharmacy: string;
-  role: "صيدلي" | "محاسب" | "إداري";
-  password: string;
-}
+import { Plus } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { CreateEmployeeSchema } from "@/schemas/employee";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { EmployeeCreateInput } from "@/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addEmployee } from "@/lib/actions/employee.action";
 
 export default function EmployeesPage() {
-  const pharmacies = ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"];
-
-  const [employees, setEmployees] = useState<Employee[]>([
-    { id: 1, name: "أحمد محمد", pharmacy: "صيدلية النور", role: "صيدلي", password: "123456" },
-    { id: 2, name: "سارة علي", pharmacy: "صيدلية الشفاء", role: "محاسب", password: "123456" },
-  ]);
 
   const [showModal, setShowModal] = useState(false);
-  const [editEmployeeId, setEditEmployeeId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
-  const [name, setName] = useState("");
-  const [pharmacy, setPharmacy] = useState(pharmacies[0]);
-  const [role, setRole] = useState<Employee["role"]>("صيدلي");
-  const [password, setPassword] = useState("");
-
-  const openAddModal = () => {
-    setEditEmployeeId(null);
-    setName("");
-    setPharmacy(pharmacies[0]);
-    setRole("صيدلي");
-    setPassword("");
-    setShowModal(true);
-  };
-
-  const openEditModal = (employee: Employee) => {
-    setEditEmployeeId(employee.id);
-    setName(employee.name);
-    setPharmacy(employee.pharmacy);
-    setRole(employee.role);
-    setPassword(employee.password);
-    setShowModal(true);
-  };
-
-  const saveEmployee = () => {
-    if (editEmployeeId !== null) {
-      setEmployees(employees.map(e =>
-        e.id === editEmployeeId ? { ...e, name, pharmacy, role, password } : e
-      ));
-    } else {
-      const newEmployee: Employee = {
-        id: employees.length + 1,
-        name,
-        pharmacy,
-        role,
-        password,
-      };
-      setEmployees([...employees, newEmployee]);
-    }
+  const { register, handleSubmit ,formState: { errors },reset } = useForm<EmployeeCreateInput>({
+    resolver: zodResolver(CreateEmployeeSchema),
+    defaultValues: {
+      active: true,
+      warehouseId: null,
+      address: null
+    },
+  });
+ const mutation = useMutation({
+  mutationFn: addEmployee,
+  onSuccess: () => {
+    console.log("تم إضافة الموظف بنجاح");
+    queryClient.invalidateQueries({ queryKey: ["employees"] });
     setShowModal(false);
+    reset();
+  },
+  onError: (error) => {
+    console.error("خطأ في إضافة الموظف:", error);
+    alert("حدث خطأ أثناء إضافة الموظف");
+  },
+});
+
+
+  const onSubmit = (data: EmployeeCreateInput) => {
+    mutation.mutate(data);
+    console.log(data);
   };
+
 
   return (
     <div className="p-6 min-h-screen bg-white">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-emerald-600">الموظفين</h1>
         <button
-          onClick={openAddModal}
+          onClick={()=>setShowModal(true)}
           className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-white font-semibold transition"
         >
           <Plus className="w-5 h-5" />
@@ -76,23 +56,21 @@ export default function EmployeesPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {employees.map((employee) => (
           <div
             key={employee.id}
             className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-3">{employee.name}</h2>
-            <p className="text-gray-600">
-              الصيدلية: <span className="font-bold text-gray-800">{employee.pharmacy}</span>
-            </p>
+            
             <p className="text-gray-600 mt-1">
               الدور: <span className="font-bold text-gray-800">{employee.role}</span>
             </p>
 
             <div className="mt-4 flex justify-end">
               <button
-                onClick={() => openEditModal(employee)}
+                // onClick={() => openEditModal(employee)}
                 className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-800 text-sm border border-gray-300"
               >
                 <Edit className="w-4 h-4 text-emerald-600" /> تعديل
@@ -100,71 +78,154 @@ export default function EmployeesPage() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* مودال الإضافة / التعديل */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-lg">
-            <h2 className="text-2xl font-bold text-emerald-600 mb-4">
-              {editEmployeeId !== null ? "تعديل الموظف" : "إضافة موظف جديد"}
-            </h2>
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-2xl w-full max-w-xl shadow-lg">
+      <h2 className="text-2xl font-bold text-emerald-600 mb-4">
+        إضافة موظف جديد
+      </h2>
 
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="اسم الموظف"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-              <select
-                value={pharmacy}
-                onChange={(e) => setPharmacy(e.target.value)}
-                className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              >
-                {pharmacies.map((ph, idx) => (
-                  <option key={idx} value={ph}>{ph}</option>
-                ))}
-              </select>
-
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as Employee["role"])}
-                className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="صيدلي">صيدلي</option>
-                <option value="محاسب">محاسب</option>
-                <option value="إداري">إداري</option>
-              </select>
-
-              <input
-                type="password"
-                placeholder="كلمة المرور"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-              />
-
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl border border-gray-300"
-                >
-                  إلغاء
-                </button>
-                <button
-                  onClick={saveEmployee}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white"
-                >
-                  حفظ
-                </button>
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          {/* اسم الموظف */}
+        <div>
+          <input
+            type="text"
+            placeholder="اسم الموظف"
+            {...register("name")}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          />
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
         </div>
-      )}
+
+        {/* البريد الإلكتروني */}
+        <div>
+          <input
+            type="email"
+            placeholder="البريد الإلكتروني"
+            {...register("email")}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          />
+          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+        </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">  
+          {/* رقم الهاتف */}
+        <div>
+          <input
+            type="tel"
+            dir="rtl"
+            placeholder="رقم الهاتف"
+            {...register("phone")}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          />
+          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
+        </div>
+
+        {/* العنوان */}
+        <div>
+          <input
+            type="text"
+            placeholder="العنوان (اختياري)"
+            {...register("address")}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          />
+          {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
+        </div>
+
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+           {/* الدور */}
+        <div>
+          <select
+            {...register("roleId", { valueAsNumber: true })}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="">اختر الدور</option>
+            <option value="1">صيدلي</option>
+            <option value="2">محاسب</option>
+            <option value="3">إداري</option>
+          </select>
+          {errors.roleId && <p className="text-red-500 text-sm mt-1">{errors.roleId.message}</p>}
+        </div>
+
+        {/* المستودع */}
+        <div>
+          <select
+            {...register("warehouseId", { valueAsNumber: true })}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="">اختر المستودع (اختياري)</option>
+            <option value="1">المستودع الرئيسي</option>
+            <option value="2">المستودع الفرعي</option>
+          </select>
+          {errors.warehouseId && <p className="text-red-500 text-sm mt-1">{errors.warehouseId.message}</p>}
+        </div>  
+        </div>
+        {/* كلمة المرور */}
+        <div>
+          <input
+            type="password"
+            placeholder="كلمة المرور"
+            {...register("password")}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          />
+          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+        </div>
+
+        {/* تأكيد كلمة المرور */}
+        <div>
+          <input
+            type="password"
+            placeholder="تأكيد كلمة المرور"
+            {...register("passwordConfirmation")}
+            className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+          />
+          {errors.passwordConfirmation && <p className="text-red-500 text-sm mt-1">{errors.passwordConfirmation.message}</p>}
+        </div>
+
+        {/* الحالة */}
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="active"
+            {...register("active")}
+            className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+          />
+          <label htmlFor="active" className="text-gray-700">
+            موظف نشط
+          </label>
+        </div>
+        {errors.active && <p className="text-red-500 text-sm mt-1">{errors.active.message}</p>}
+
+        {/* أزرار الحفظ والإلغاء */}
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            type="button"
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl border border-gray-300"
+          >
+            إلغاء
+          </button>
+          <button
+            disabled={mutation.isPending}
+            type="submit"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white"
+          >
+            {mutation.isPending? "جار الاضافه": "اضافه الموظف"}
+            
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
     </div>
   );
 }

@@ -20,16 +20,16 @@ import {
   getWarehouses,
 } from "@/lib/actions/action.warehouse";
 
-interface Warehouse {
-  id: number;
-  name: string;
-  location: string;
-  totalProducts: number;
-  totalQuantity: number;
-  totalValue: number;
-  pharmacy: string;
-  products: ProductInput[];
-}
+// interface Warehouse {
+//   id: number;
+//   name: string;
+//   location: string;
+//   totalProducts: number;
+//   totalQuantity: number;
+//   totalValue: number;
+//   pharmacy: string;
+//   products: ProductInput[];
+// }
 
 export default function WarehousesPage() {
   const queryClient = useQueryClient();
@@ -82,25 +82,15 @@ export default function WarehousesPage() {
       reset();
       setProducts([]);
     },
-    onError: (error: any) => {
+    onError: (error) => {
       alert(error.message || "حدث خطأ أثناء إنشاء المخزن");
     },
   });
 
-  // إضافة منتج
-  const onAddProduct = (productData: ProductInput) => {
-    const newProduct = {
-      id: products.length + 1,
-      ...productData,
-    };
-
-    setProducts((prev) => [...prev, newProduct]);
-    resetProduct();
-  };
 
   // حفظ المخزن
   const onSaveWarehouse = (data: WarehouseFormData) => {
-    saveMutation.mutate({ ...data, products });
+    saveWarehouseMutation.mutate({ ...data, products });
   };
 
   return (
