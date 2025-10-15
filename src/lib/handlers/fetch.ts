@@ -1,7 +1,6 @@
 import { RequestError } from "../http-errors";
 import logger from "../logger";
 import { getAuthToken } from "../token";
-import handleError from "./error";
 
 interface FetchOptions extends RequestInit {
   timeout?: number; // in milliseconds
@@ -65,6 +64,16 @@ export async function fetchHandler<T>(
       logger.error(`Error fetching ${url}: ${error.message}`);
     }
 
-    return handleError(error) as ActionResponse<T>;
+    clearTimeout(id);
+
+    if (err instanceof RequestError) throw err;
+    if ((err as Error).name === "AbortError") {
+      throw new RequestError(408, "Request timed out");
+    }
+
+    throw new RequestError(
+      500,
+      (err as Error).message || "Unknown network error"
+    );
   }
 }

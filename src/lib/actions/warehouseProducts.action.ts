@@ -79,7 +79,7 @@ export async function addProductToWarehouse(
     ) as ErrorResponse;
   }
 
-  const payload = {
+  const payload: AddWarehouseProductPayload = {
     product_id: productId,
     warehouse_price: Number(warehousePrice),
     stock,
