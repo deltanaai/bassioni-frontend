@@ -83,6 +83,16 @@ export const api = {
       },
     },
     employee: {
+      getAll: ({ payload }: { payload: PaginatedSearchPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/employees/index`, {
+          method: "POST",
+          auth: true,
+          body:
+            payload && Object.keys(payload).length
+              ? JSON.stringify(payload)
+              : undefined,
+        }),
+
       getById: ({ employeeId }: GetEmployeeParams) =>
         fetchHandler(`${API_URL}company/dashboard/employees/${employeeId}`, {
           method: "GET",

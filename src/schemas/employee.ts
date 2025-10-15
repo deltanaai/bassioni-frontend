@@ -2,6 +2,13 @@
 
 import { z } from "zod";
 
+export const GetEmployeesSchema = z.object({
+  page: z.number().int().positive().optional(),
+  perPage: z.number().int().positive().optional(),
+  search: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
 export const GetEmployeeSchema = z.object({
   employeeId: z.number().int().positive("معرف الموظف مطلوب"),
 });

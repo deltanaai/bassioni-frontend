@@ -1,5 +1,12 @@
 // request/response payloads.
 
+interface PaginatedSearchPayload {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  active?: boolean;
+}
+
 interface AddWarehouseProductPayload {
   product_id: number;
   warehouse_price: number;

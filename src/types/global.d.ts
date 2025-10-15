@@ -6,7 +6,7 @@ interface Employee {
   phone?: string;
   active: boolean;
   role: string;
-  address?: string;
+  address?: string | null;
   createdAt: string;
   updatedAt: string;
 }

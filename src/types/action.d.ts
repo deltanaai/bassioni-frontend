@@ -26,6 +26,35 @@ interface BaseApiResponse {
   status: number;
 }
 
+interface PaginatedSearchParams {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  active?: boolean;
+}
+
+interface PaginationLinks {
+  first: string;
+  last: string;
+  prev: string | null;
+  next: string | null;
+}
+
+interface PaginationMeta {
+  current_Page: number;
+  from: number | null;
+  last_Page: number;
+  per_Page: number;
+  to: number | null;
+  total: number;
+}
+
+interface PaginatedResponse<T> {
+  data: T[];
+  links: PaginationLinks;
+  meta: PaginationMeta;
+}
+
 interface AuthCredentialsCo {
   email: string;
   password: string;

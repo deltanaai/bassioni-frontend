@@ -3,6 +3,7 @@
 import {
   CreateEmployeeSchema,
   GetEmployeeSchema,
+  GetEmployeesSchema,
   UpdateEmployeeSchema,
 } from "@/schemas/employee";
 
@@ -11,40 +12,44 @@ import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { NotFoundError } from "../http-errors";
 
+export async function getAllEmployees(
+  params: PaginatedSearchParams = {}
+): Promise<ActionResponse<PaginatedResponse<Employee>>> {
+  const validationResult = await action({
+    params,
+    schema: GetEmployeesSchema,
+    authorize: true,
+  });
 
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
 
-export async function getEmployees() {
+  const { page, perPage, search, active } = validationResult.params!;
+
+  const payload: PaginatedSearchPayload = {
+    ...(page && { page }),
+    ...(perPage && { per_page: perPage }),
+    ...(search && { search }),
+    ...(active !== undefined && { active }),
+  };
+
   try {
-    const mockEmployees = [
-      {
-        id: 1,
-        name: "محمد أحمد",
-        email: "mohamed@company.com",
-        phone: "01012345678",
-        role_id: "محاسب",
-        active: true,
-        warehouse_id: null,
-        address: "القاهرة - مصر"
-      },
-      {
-        id: 2,
-        name: "أحمد محمود",
-        email: "ahmed@company.com", 
-        phone: "01087654321",
-        role_id: "صيدلي",
-        active: false,
-        warehouse_id: 1,
-        address: "الإسكندرية - مصر"
-      },
-    ];
-    
-    return mockEmployees;
+    const response = await api.company.employee.getAll({ payload });
+
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في جلب الموظفين, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: response.data as PaginatedResponse<Employee>,
+    };
   } catch (error) {
-    console.error('Error in getEmployees:', error);
-    return [];
+    return handleError(error) as ErrorResponse;
   }
 }
-
 
 export async function getEmployeeById(
   params: GetEmployeeParams
