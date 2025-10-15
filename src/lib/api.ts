@@ -13,7 +13,11 @@ export const api = {
         }),
     },
     products: {
-      getByWarehouse: (warehouseId: number, productId?: number) =>
+      getByWarehouse: ({
+        warehouseId,
+        productId,
+        filters,
+      }: GetProductsParams) =>
         fetchHandler(
           `${API_URL}company/dashboard/warehouses/${warehouseId}/prodcuts${
             productId ? `/${productId}` : ""
@@ -21,6 +25,7 @@ export const api = {
           {
             method: "GET",
             auth: true,
+            body: filters ? JSON.stringify(filters) : undefined,
           }
         ),
 

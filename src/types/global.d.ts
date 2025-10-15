@@ -5,6 +5,7 @@ interface WarehouseProduct {
   name: string;
   description: string;
   price: string;
+  active: boolean;
   imageUrl: string;
   stock: number;
   reserved_stock: number;

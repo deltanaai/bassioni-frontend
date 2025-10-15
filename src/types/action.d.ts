@@ -28,6 +28,7 @@ interface AuthCredentialsCo {
 interface GetProductsParams {
   warehouseId: number;
   productId?: number;
+  filters?: Record<string, string | number>;
 }
 
 interface AddWarehouseProductParams {
@@ -47,6 +48,11 @@ interface BaseApiResponse {
 }
 interface AddProductApiResponse extends BaseApiResponse {
   data: null;
+}
+
+interface GetProductApiResponse extends BaseApiResponse {
+  data: WarehouseProduct[];
+  warehouse: Warehouse;
 }
 
 interface DeleteWarehouseProductParams {

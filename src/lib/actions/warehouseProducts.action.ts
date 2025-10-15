@@ -25,21 +25,22 @@ export async function getProductsByWarehouse(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { warehouseId, productId } = validationResult.params!;
+  const { warehouseId, productId, filters } = validationResult.params!;
 
   try {
-    const response = await api.company.products.getByWarehouse(
+    const response = await api.company.products.getByWarehouse({
       warehouseId,
-      productId
-    );
+      productId,
+      filters,
+    });
 
     if (!response || !response.data) {
-      throw new Error("No response data");
+      throw new Error("لم يتم العثور على بيانات المنتجات");
     }
 
     return {
       success: true,
-      data: JSON.parse(JSON.stringify(response.data)),
+      data: response.data as WarehouseProduct[],
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

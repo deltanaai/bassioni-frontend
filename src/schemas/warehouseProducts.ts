@@ -39,8 +39,12 @@ export const AddProductSchema = z.object({
 });
 
 export const GetWarehouseProductsSchema = z.object({
-  warehouseId: z.number().min(1, "معرف المستودع مطلوب"),
-  prodcutId: z.number().optional(),
+  warehouseId: z.number().int().positive().min(1, "معرف المستودع مطلوب"),
+  prodcutId: z.number().int().positive().optional(),
+  filters: z
+    .record(z.string(), z.union([z.string(), z.number()]))
+    .optional()
+    .default({}),
 });
 
 export const DeleteWarehouseProductSchema = z.object({
