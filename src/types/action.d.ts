@@ -12,11 +12,18 @@ interface GetProductsParams {
 interface AddWarehouseProductParams {
   warehouseId: number;
   productId: number;
-  warehousePrice: number;
+  warehousePrice: number | string;
   stock: number;
   reservedStock: number;
-  expiryDate: Date;
+  expiryDate: string;
   batchNumber: string;
+}
+
+interface AddProductApiResponse {
+  result: "Success" | "Error";
+  data: null;
+  message: string;
+  status: number;
 }
 
 interface DeleteWarehouseProductParams {

@@ -20,17 +20,21 @@ import { z } from "zod";
 //    "batch_number":"DF4555158"
 
 export const AddProductSchema = z.object({
-  warehouseId: z.number().min(1, "معرف المستودع مطلوب"),
-  productId: z.number().int().min(1, "معرف لانتج مطلوب"),
-  warehousePrice: z.coerce.number().min(0.01, "سعر المستودع مطلوب"),
-  stock: z.coerce.number().int().min(1, "الكمية مطلوبة"),
-  reservedStock: z.coerce.number().int().min(0, "الكمية المحجوزة مطلوبة"),
-  expiryDate: z.coerce
-    .date()
+  warehouseId: z.number().int().positive().min(1, "معرف المستودع مطلوب"),
+  productId: z.number().int().positive().min(1, "معرف لانتج مطلوب"),
+  warehousePrice: z
+    .union([z.string(), z.number()])
     .refine(
-      (d) => d > new Date(),
-      "تاريخ انتهاء الصلاحية يجب أن يكون في المستقبل"
+      (val) => !Number.isNaN(Number(val)) && Number(val) >= 0,
+      "سعر المستودع مطلوب. يجب أن يكون سعر المستودع رقمًا غير سالب"
     ),
+  stock: z.number().int().nonnegative().min(0, "الكمية مطلوبة"),
+  reservedStock: z
+    .number()
+    .int()
+    .nonnegative()
+    .min(0, "الكمية المحجوزة مطلوبة"),
+  expiryDate: z.string(),
   batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
 });
 

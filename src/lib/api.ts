@@ -24,14 +24,16 @@ export const api = {
           }
         ),
 
-      addToWarehouse: (params: AddWarehouseProductParams) => {
-        const { warehouseId, ...bodyParams } = params;
+      addToWarehouse: (
+        warehouseId: number,
+        payload: AddWarehouseProductPayload
+      ) => {
         return fetchHandler(
           `${API_URL}company/dashboard/warehouses/${warehouseId}/products`,
           {
             method: "POST",
             auth: true,
-            body: JSON.stringify(bodyParams),
+            body: JSON.stringify(payload),
           }
         );
       },

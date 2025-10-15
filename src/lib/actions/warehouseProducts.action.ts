@@ -9,6 +9,8 @@ import {
 import { api } from "../api";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
+import { ValidationError } from "../http-errors";
+import { normalizeExpiryDateMaybe } from "../utils";
 
 export async function getProductsByWarehouse(
   params: GetProductsParams
@@ -46,7 +48,7 @@ export async function getProductsByWarehouse(
 
 export async function addProductToWarehouse(
   params: AddWarehouseProductParams
-): Promise<ActionResponse<WarehouseProduct>> {
+): Promise<ActionResponse<{ message: string }>> {
   const validationResult = await action({
     params,
     schema: AddProductSchema,
@@ -57,11 +59,41 @@ export async function addProductToWarehouse(
     return handleError(validationResult) as ErrorResponse;
   }
 
+  const {
+    warehouseId,
+    productId,
+    warehousePrice,
+    stock,
+    expiryDate,
+    reservedStock,
+    batchNumber,
+  } = validationResult.params!;
+
+  if (reservedStock && reservedStock > stock) {
+    return handleError(
+      new ValidationError({
+        reservedStock: [
+          "الكمية المحجوزة لا يمكن أن تكون أكبر من الكمية المتوفرة",
+        ],
+      })
+    ) as ErrorResponse;
+  }
+
+  const payload = {
+    product_id: productId,
+    warehouse_price: Number(warehousePrice),
+    stock,
+    reserved_stock: reservedStock,
+    expiry_date: normalizeExpiryDateMaybe(expiryDate),
+    batch_number: batchNumber,
+  };
+
   try {
-    await api.company.products.addToWarehouse(validationResult.params!);
+    await api.company.products.addToWarehouse(warehouseId, payload);
 
     return {
       success: true,
+      data: { message: "تمت إضافة المنتج إلى المستودع بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
