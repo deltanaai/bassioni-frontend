@@ -29,10 +29,13 @@ export const api = {
           }
         ),
 
-      addToWarehouse: (
-        warehouseId: number,
-        payload: AddWarehouseProductPayload
-      ) => {
+      addToWarehouse: ({
+        warehouseId,
+        payload,
+      }: {
+        warehouseId: number;
+        payload: AddWarehouseProductPayload;
+      }) => {
         return fetchHandler(
           `${API_URL}company/dashboard/warehouses/${warehouseId}/products`,
           {
@@ -43,14 +46,21 @@ export const api = {
         );
       },
 
-      updateInWarehouse: (params: AddWarehouseProductParams) => {
-        const { warehouseId, productId, ...bodyParams } = params;
+      updateInWarehouse: ({
+        warehouseId,
+        productId,
+        payload,
+      }: {
+        warehouseId: number;
+        productId: number;
+        payload: UpdateWarehouseProductPayload;
+      }) => {
         return fetchHandler(
           `${API_URL}company/dashboard/warehouses/${warehouseId}/products/${productId}`,
           {
             method: "PATCH",
             auth: true,
-            body: JSON.stringify(bodyParams),
+            body: JSON.stringify(payload),
           }
         );
       },

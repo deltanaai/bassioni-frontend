@@ -47,6 +47,21 @@ export const GetWarehouseProductsSchema = z.object({
     .default({}),
 });
 
+export const UpdateWarehouseProductSchema = z.object({
+  warehouseId: z.number().int().positive("معرف المستودع مطلوب"),
+  productId: z.number().int().positive("معرف المنتج مطلوب"),
+  warehousePrice: z
+    .union([z.string(), z.number()])
+    .refine(
+      (val) => !Number.isNaN(Number(val)) && Number(val) >= 0,
+      "سعر المستودع يجب أن يكون رقمًا غير سالب"
+    ),
+  stock: z.number().int().nonnegative("الكمية مطلوبة"),
+  reservedStock: z.number().int().nonnegative("الكمية المحجوزة مطلوبة"),
+  expiryDate: z.string().optional(),
+  batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
+});
+
 export const DeleteWarehouseProductSchema = z.object({
   warehouseId: z.number().min(1, "معرف المستودع مطلوب"),
   itemsId: z

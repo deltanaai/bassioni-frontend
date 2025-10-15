@@ -4,6 +4,8 @@ type ActionResponse<T = null> = {
   success: boolean;
   data?: T | null;
   token?: string;
+  result?: "Success" | "Error";
+  message?: string;
   error?: {
     message: string;
     details?: Record<string, string[]>;

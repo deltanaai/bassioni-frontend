@@ -90,7 +90,7 @@ export async function addProductToWarehouse(
   };
 
   try {
-    await api.company.products.addToWarehouse(warehouseId, payload);
+    await api.company.products.addToWarehouse({ warehouseId, payload });
 
     return {
       success: true,
@@ -103,7 +103,7 @@ export async function addProductToWarehouse(
 
 export async function updateProductInWarehouse(
   params: AddWarehouseProductParams
-): Promise<ActionResponse<WarehouseProduct>> {
+): Promise<ActionResponse<{ message: string }>> {
   const validationResult = await action({
     params,
     schema: AddProductSchema,
@@ -114,11 +114,47 @@ export async function updateProductInWarehouse(
     return handleError(validationResult) as ErrorResponse;
   }
 
+  const {
+    warehouseId,
+    productId,
+    warehousePrice,
+    stock,
+    reservedStock,
+    expiryDate,
+    batchNumber,
+  } = validationResult.params!;
+
+  if (reservedStock > stock) {
+    throw new ValidationError({
+      reservedStock: [
+        "الكمية المحجوزة لا يمكن أن تكون أكبر من الكمية المتوفرة",
+      ],
+    });
+  }
+
+  const payload: UpdateWarehouseProductPayload = {
+    product_id: productId,
+    warehouse_price: Number(warehousePrice),
+    stock,
+    reserved_stock: reservedStock,
+    expiry_date: normalizeExpiryDateMaybe(expiryDate),
+    batch_number: batchNumber,
+  };
+
   try {
-    await api.company.products.updateInWarehouse(validationResult.params!);
+    const response = await api.company.products.updateInWarehouse({
+      warehouseId,
+      productId,
+      payload,
+    });
+
+    if (response.result !== "Success") {
+      throw new Error(response.message || "فشل تحديث المنتج");
+    }
 
     return {
       success: true,
+      data: { message: response.message || "تم تحديث المنتج بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
