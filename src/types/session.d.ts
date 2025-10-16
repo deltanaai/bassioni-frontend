@@ -6,6 +6,7 @@ interface SessionUser {
   email: string;
   phone?: string;
   active: boolean;
+  userType?: string;
   role: string;
   address?: string;
   createdAt: string;

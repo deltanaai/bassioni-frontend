@@ -49,10 +49,14 @@ export async function fetchHandler<T>(
     clearTimeout(id);
 
     if (!response.ok) {
-      throw new RequestError(
-        response.status,
-        `HTTP error! status: ${response.status}`
-      );
+      // throw new RequestError(
+      //   response.status,
+      //   `HTTP error! status: ${(await response.json()).message}`
+      // );
+      return {
+        success: false,
+        error: (await response.json()).message || "An error occurred",
+      };
     }
 
     return await response.json();

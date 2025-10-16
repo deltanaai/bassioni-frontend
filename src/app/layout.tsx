@@ -2,6 +2,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 
 const geistSans = Geist({
@@ -24,7 +25,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // بننشئ instance واحدة من QueryClient طول فترة عمل الموقع
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000, // البيانات تبقى fresh لمدة دقيقة
+            gcTime: 5 * 60 * 1000, // الكاش يتمسح بعد 5 دقائق من عدم الاستخدام
+            refetchOnWindowFocus: false, // عدم إعادة الجلب عند التركيز على النافذة
+            refetchOnReconnect: true, // إعادة الجلب عند الاتصال مرة أخرى
+            retry: 3, // ثلاث محاولات في حالة الفشل
+          },
+        },
+      })
+  );
 
   return (
     <html lang="ar" dir="rtl">
@@ -34,9 +48,9 @@ export default function RootLayout({
         {/* بنغلف كل الصفحات بـ React Query Provider */}
         <QueryClientProvider client={queryClient}>
           {children}
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>
     </html>
   );
 }
-

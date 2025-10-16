@@ -24,6 +24,19 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
+const sideLinks = [
+  { name: "الصفحة الرئيسية", href: "/company/", Icon: Home },
+  { name: "طلبات اليوم", href: "/company/today", Icon: ClipboardList },
+  { name: "عروض الشركات", href: "/company/sentorder", Icon: Send },
+  { name: "طلباتي", href: "/company/massgeorder", Icon: Send },
+  { name: "الفواتير", href: "/company/invoice", Icon: Archive },
+  { name: "الأصناف والبراندات", href: "/company/attributes", Icon: PlusCircle },
+  { name: "المنتجات", href: "/company/products", Icon: Mail },
+  { name: "الملف الشخصي", href: "/company/profile", Icon: User },
+  { name: "الإعدادات", href: "/company/settings", Icon: Settings },
+  { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
+];
+
 export default function DashboardLayout({
   children,
 }: {
@@ -62,10 +75,20 @@ export default function DashboardLayout({
             )}
           </button>
         </div>
-
+        myfunc()
         {/* الروابط */}
         <nav className="flex-1 p-4 space-y-2 text-sm overflow-y-auto">
-          <NavLink
+          {sideLinks.map((link) => (
+            <NavLink
+              href={link.href}
+              key={link.name}
+              icon={<link.Icon className="w-5 h-5" />}
+              sidebarOpen={sidebarOpen}
+            >
+              {link.name}
+            </NavLink>
+          ))}
+          {/* <NavLink
             href="/company/"
             icon={<Home className="w-5 h-5" />}
             sidebarOpen={sidebarOpen}
@@ -113,7 +136,7 @@ export default function DashboardLayout({
             sidebarOpen={sidebarOpen}
           >
             المنتجات
-          </NavLink>
+          </NavLink> */}
 
           {/* قائمة الخصومات */}
           <SidebarDropdown sidebarOpen={sidebarOpen} />
@@ -140,7 +163,6 @@ export default function DashboardLayout({
             تسجيل الدخول
           </NavLink>
         </nav>
-
         {/* الفوتر */}
         <div className="p-4 text-xs text-center text-gray-400 border-t border-gray-200">
           © 2026 PharmaCare

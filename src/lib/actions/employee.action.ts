@@ -13,7 +13,6 @@ import { api } from "../api";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { NotFoundError } from "../http-errors";
-
 export async function getAllEmployees(
   params: PaginatedSearchParams = {}
 ): Promise<ActionResponse<PaginatedResponse<Employee>>> {
@@ -119,11 +118,13 @@ export async function addEmployee(
     active,
     address: address ?? null,
   };
+  // logger.info(`Payload for new employee: ${JSON.stringify(payload)}`);
 
   try {
     const response = await api.company.employee.addEmployee({ payload });
 
-    if (!response || !response.data) {
+    if (!response.success || !response.data) {
+      console.log(response);
       throw new Error(
         "فشل في إضافة الموظف, لم يتم تلقي بيانات صالحة من الخادم"
       );
@@ -181,8 +182,11 @@ export async function updateEmployee(
   };
 
   try {
+    if (!employeeId || isNaN(employeeId) || employeeId <= 0) {
+      throw new Error("معرف الموظف غير صالح");
+    }
     const response = await api.company.employee.updateEmployee({
-      employeeId,
+      employeeId: employeeId as number,
       payload,
     });
 

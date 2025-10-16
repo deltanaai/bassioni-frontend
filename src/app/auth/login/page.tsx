@@ -19,6 +19,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<AuthCredentialsCo>({
     resolver: zodResolver(loginSchema),
@@ -44,25 +45,20 @@ export default function LoginPage() {
     mutationFn: signIn,
     onSuccess: (result) => {
       if (result.success && result.data) {
-        const form = document.getElementById("login-form") as HTMLFormElement;
-        if (form) {
-          const formData = new FormData(form);
-          const email = formData.get("email");
-          const password = formData.get("password");
-          const rememberMeChecked = formData.get("rememberMe") === "on";
+        const email = getValues().email;
+        const password = getValues().password;
+        const rememberMeChecked = getValues().rememberMe;
 
-          if (rememberMeChecked && email) {
-            localStorage.setItem("rememberedEmail", email.toString());
+        if (rememberMeChecked && email) {
+          localStorage.setItem("rememberedEmail", email.toString());
 
-            if (password) {
-              localStorage.setItem("rememberedPassword", password.toString());
-            }
-          } else {
-            localStorage.removeItem("rememberedEmail");
-            localStorage.removeItem("rememberedPassword");
+          if (password) {
+            localStorage.setItem("rememberedPassword", password.toString());
           }
+        } else {
+          localStorage.removeItem("rememberedEmail");
+          localStorage.removeItem("rememberedPassword");
         }
-
         alert("تم تسجيل الدخول بنجاح ✅");
         router.push("/company");
         router.refresh();

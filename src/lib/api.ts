@@ -99,12 +99,13 @@ export const api = {
           auth: true,
         }),
 
-      addEmployee: ({ payload }: { payload: CreateEmployeePayload }) =>
-        fetchHandler(`${API_URL}company/dashboard/employees`, {
+      addEmployee: ({ payload }: { payload: CreateEmployeePayload }) => {
+        return fetchHandler(`${API_URL}company/dashboard/employees`, {
           method: "POST",
           auth: true,
           body: JSON.stringify(payload),
-        }),
+        });
+      },
 
       updateEmployee: ({
         employeeId,
