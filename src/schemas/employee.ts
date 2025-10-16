@@ -79,18 +79,17 @@ export const CreateEmployeeSchema = z
     path: ["passwordConfirmation"],
   });
 
-export const UpdateEmployeeSchema = z
+  export const UpdateEmployeeSchema = z
   .object({
-    employeeId: z.number().int().positive("معرف الموظف مطلوب"),
+    employeeId: z.number().optional(),
+
     name: z
       .string()
       .min(3, "اسم الموظف مطلوب ويجب أن يحتوي على 3 أحرف على الأقل")
-      .or(z.literal(undefined))
       .optional(),
-    email: z
-      .email("بريد إلكتروني غير صالح")
-      .or(z.literal(undefined))
-      .optional(),
+
+    email: z.string().email("بريد إلكتروني غير صالح").optional(),
+
     phone: z
       .string()
       .refine(
@@ -99,13 +98,17 @@ export const UpdateEmployeeSchema = z
       )
       .refine(
         (val) => !val || /^\+?[1-9]\d{6,14}$/.test(val),
-        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا (مثال: +14155552671)"
+        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا (مثال: +201000000000)"
       )
-      .or(z.literal(undefined))
       .optional(),
+
     password: z
       .string()
-      .min(8, "كلمة المرور يجب أن تحتوي على ٨ أحرف على الأقل")
+      .optional()
+      .refine(
+        (val) => !val || val.length >= 8,
+        "كلمة المرور يجب أن تحتوي على ٨ أحرف على الأقل"
+      )
       .refine(
         (val) => !val || /[A-Z]/.test(val),
         "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل (A-Z)"
@@ -119,31 +122,32 @@ export const UpdateEmployeeSchema = z
         "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل (0-9)"
       )
       .refine(
-        (val) => !val || /[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/]/.test(val),
+        (val) => !val || /[!@#$%^&*(),.?\":{}|<>_\-\[\]\\\/]/.test(val),
         "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل مثل ! أو @ أو #"
       )
       .refine(
         (val) => !val || !/\s/.test(val),
         "كلمة المرور لا يجب أن تحتوي على مسافات"
-      )
-      .or(z.literal(undefined))
-      .optional(),
-    passwordConfirmation: z
-      .string()
-      .min(8, "تأكيد كلمة المرور مطلوب")
-      .or(z.literal(undefined))
-      .optional(),
-    roleId: z
-      .number()
-      .int()
-      .positive("معرف الدور مطلوب")
-      .or(z.literal(undefined))
-      .optional(),
+      ),
+
+    passwordConfirmation: z.string().optional(),
+
+    roleId: z.number().int().positive().optional(),
+
     warehouseId: z.number().int().positive().nullable().optional(),
-    active: z.boolean().or(z.literal(undefined)).optional(),
-    address: z.string().nullable().or(z.literal(undefined)).optional(),
+
+    active: z.boolean().optional(),
+
+    address: z.string().nullable().optional(),
   })
-  .refine((data) => data.password === data.passwordConfirmation, {
-    message: "كلمتا المرور غير متطابقتين",
-    path: ["passwordConfirmation"],
-  });
+  .refine(
+    (data) =>
+      // ✅ الشرط دا بيخلي تأكيد الباسورد مطلوب فقط لو كتب باسورد فعلاً
+      !data.password ||
+      (data.password && data.password === data.passwordConfirmation),
+    {
+      message: "كلمتا المرور غير متطابقتين",
+      path: ["passwordConfirmation"],
+    }
+  );
+

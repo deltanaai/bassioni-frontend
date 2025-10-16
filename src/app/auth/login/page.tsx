@@ -20,7 +20,7 @@ export default function LoginPage() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<LoginFormData>({
+  } = useForm<AuthCredentialsCo>({
     resolver: zodResolver(loginSchema),
   });
 

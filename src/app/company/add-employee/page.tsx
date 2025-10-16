@@ -7,29 +7,22 @@ import { CreateEmployeeSchema } from "@/schemas/employee";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EmployeeCreateInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addEmployee, getEmployees } from "@/lib/actions/employee.action";
+import { addEmployee, getAllEmployees } from "@/lib/actions/employee.action";
 import Link from "next/link";
 
 export default function EmployeesPage() {
-  type MockEmployee = {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    role_id: string;
-    active: boolean;
-    warehouse_id?: number | null;
-    address?: string | null;
-  };
- 
+  
 
   const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: employees } = useQuery({
+  const { data } = useQuery({
     queryKey: ['employees'],
-    queryFn: getEmployees,
+    queryFn:()=> getAllEmployees({page:1 , perPage:10}),
+    
   });
+  console.log('Full data:', data);
+
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<EmployeeCreateInput>({
     resolver: zodResolver(CreateEmployeeSchema),
@@ -39,17 +32,17 @@ export default function EmployeesPage() {
       address: null
     },
   });
+  
  const mutation = useMutation({
   mutationFn: addEmployee,
-  onSuccess: () => {
-    console.log("تم إضافة الموظف بنجاح");
-    queryClient.invalidateQueries({ queryKey: ["employees"] });
+  onSuccess: async () => {
+    console.log(" Employee added successfully");
+    
+    await queryClient.invalidateQueries({ queryKey: ["employees"] });
+    
     setShowModal(false);
     reset();
-  },
-  onError: (error) => {
-    console.error("خطأ في إضافة الموظف:", error);
-    alert("حدث خطأ أثناء إضافة الموظف");
+    
   },
 });
 
@@ -74,42 +67,48 @@ export default function EmployeesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {employees?.map((employee: MockEmployee) => (
-          <div
-            key={employee.id}
-            className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
+  {Array.isArray(data?.data) && data.data.length > 0 ? (
+    data.data.map((employee) => (
+      <div
+        key={employee.id}
+        className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
+      >
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">{employee.name}</h2>
+        
+        <p className="text-gray-600 mt-1">
+          الدور: <span className="font-bold text-gray-800">{employee.role}</span>
+        </p>
+        <p className="text-gray-600 mt-1">
+          نشط: <span className="font-bold text-gray-800">{employee.active ? "نشط" : "غير نشط"}</span>
+        </p>
+        <p className="text-gray-600 mt-1">
+          المستودع: <span className="font-bold text-gray-800">{employee.warehouse ? employee.warehouse : "لا يوجد"}</span>
+        </p>
+        <div className="mt-6 text-left">
+          <Link
+            href={`/company/add-employee/${employee.id}`}
+            className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-semibold text-white transition duration-300"
           >
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">{employee.name}</h2>
-            
-            <p className="text-gray-600 mt-1">
-              الدور: <span className="font-bold text-gray-800">{employee.role_id}</span>
-            </p>
-            <p className="text-gray-600 mt-1">
-              نشط: <span className="font-bold text-gray-800">{employee.active ? "نشط" : "غير نشط"}</span>
-            </p>
-            <p className="text-gray-600 mt-1">
-              المستودع: <span className="font-bold text-gray-800">{employee.warehouse_id}</span>
-            </p>
-            <div className="mt-6 text-left">
-                <Link
-                  href={`/company/add-employee/${employee.id}`}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-semibold text-white transition duration-300"
-                >
-                  المزيد
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </div>
-          </div>
-        ))}
+            المزيد
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
       </div>
+    ))
+  ) : (
+    <div className="col-span-full text-center py-8">
+      <p className="text-gray-500 text-lg">لا يوجد موظفين</p>
+    </div>
+  )}
+</div>
 
       {/* مودال الإضافة  */}
       {showModal && (
-  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-2xl w-full max-w-xl shadow-lg">
-      <h2 className="text-2xl font-bold text-emerald-600 mb-4">
-        إضافة موظف جديد
-      </h2>
+      <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+       <div className="bg-white p-6 rounded-2xl w-full max-w-xl shadow-lg">
+          <h2 className="text-2xl font-bold text-emerald-600 mb-4">
+           إضافة موظف جديد
+          </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 

@@ -5,7 +5,8 @@ interface Employee {
   email: string;
   phone?: string;
   active: boolean;
-  role: string;
+  roleId: string;
+  warehouseId: string;
   address?: string | null;
   createdAt: string;
   updatedAt: string;
