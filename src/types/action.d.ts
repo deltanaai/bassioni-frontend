@@ -147,3 +147,7 @@ interface UpdateRoleParams {
   roleId: number;
   name: string;
 }
+
+interface DeleteRoleParams {
+  itemsIds: number[];
+}

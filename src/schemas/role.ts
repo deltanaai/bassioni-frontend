@@ -19,3 +19,9 @@ export const UpdateRoleSchema = z.object({
   roleId: z.number("معرف الدور مطلوب").int().positive(),
   name: z.string().min(1, "اسم الدور مطلوب"),
 });
+
+export const DeleteRoleSchema = z.object({
+  itemsIds: z
+    .array(z.number("معرف الدور غير صالح").int().positive())
+    .min(1, "يجب تحديد دور واحد على الأقل للحذف"),
+});

@@ -2,6 +2,7 @@
 
 import {
   AddNewRoleSchema,
+  DeleteRoleSchema,
   GetAllRolesSchema,
   GetRoleByIdSchema,
   UpdateRoleSchema,
@@ -126,6 +127,36 @@ export async function updateRole(
     return {
       success: true,
       data: { message: response.message ?? "تم تحديث بيانات الدور بنجاح" },
+      status: response.status ?? 200,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteRoles(
+  params: DeleteRoleParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteRoleSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+  const payload: DeleteRolePayload = {
+    items: itemsIds,
+  };
+  try {
+    const response = await api.company.roles.delete({ payload });
+    if (!response) {
+      throw new Error("فشل في حذف الأدوار, لم يتم تلقي رد من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم حذف الأدوار بنجاح" },
       status: response.status ?? 200,
     };
   } catch (error) {

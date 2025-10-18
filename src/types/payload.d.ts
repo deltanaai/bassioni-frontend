@@ -75,3 +75,7 @@ interface AddNewRolePayload {
 interface UpdateRolePayload {
   name: string;
 }
+
+interface DeleteRolePayload {
+  items: number[];
+}
