@@ -170,6 +170,19 @@ export const api = {
           method: "GET",
           auth: true,
         }),
+
+      update: ({
+        roleId,
+        payload,
+      }: {
+        roleId: number;
+        payload: UpdateRolePayload;
+      }) =>
+        fetchHandler(`${API_URL}company/dashboard/roles/${roleId}`, {
+          method: "PATCH",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

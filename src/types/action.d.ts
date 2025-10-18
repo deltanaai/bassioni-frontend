@@ -142,3 +142,8 @@ interface AddNewRole {
 interface GetRoleById {
   roleId: number;
 }
+
+interface UpdateRoleParams {
+  roleId: number;
+  name: string;
+}

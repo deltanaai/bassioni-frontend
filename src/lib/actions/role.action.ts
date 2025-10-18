@@ -4,6 +4,7 @@ import {
   AddNewRoleSchema,
   GetAllRolesSchema,
   GetRoleByIdSchema,
+  UpdateRoleSchema,
 } from "@/schemas/role";
 
 import { api } from "../api";
@@ -95,6 +96,37 @@ export async function getRoleById(
     return {
       success: true,
       data: response.data as Role,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateRole(
+  params: UpdateRoleParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateRoleSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { roleId, name } = validationResult.params!;
+  const payload: AddNewRolePayload = {
+    name,
+  };
+  try {
+    const response = await api.company.roles.update({ roleId, payload });
+    if (!response) {
+      throw new Error("فشل في تحديث بيانات الدور, لم يتم تلقي رد من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تحديث بيانات الدور بنجاح" },
+      status: response.status ?? 200,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

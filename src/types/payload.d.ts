@@ -71,3 +71,7 @@ interface RolePayload {
 interface AddNewRolePayload {
   name: string;
 }
+
+interface UpdateRolePayload {
+  name: string;
+}
