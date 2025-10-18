@@ -190,6 +190,13 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      forceDelete: ({ payload }: { payload: DeleteRolePayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/roles/force-delete`, {
+          method: "DELETE",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

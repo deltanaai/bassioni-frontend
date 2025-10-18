@@ -3,6 +3,7 @@
 import {
   AddNewRoleSchema,
   DeleteRoleSchema,
+  ForceDeleteRoleSchema,
   GetAllRolesSchema,
   GetRoleByIdSchema,
   UpdateRoleSchema,
@@ -163,3 +164,32 @@ export async function deleteRoles(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function forceDeleteRoles(
+  params: DeleteRoleParams
+): Promise<ActionResponse<{ message: string }>> { 
+  const validationResult = await action({
+    params,
+    schema: ForceDeleteRoleSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+  const payload: DeleteRolePayload = {
+    items: itemsIds,
+  };  
+  try {
+    const response = await api.company.roles.forceDelete({ payload });
+    if (!response) {
+      throw new Error("فشل في الحذف النهائي للأدوار, لم يتم تلقي رد من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم الحذف النهائي للأدوار بنجاح" },
+      status: response.status ?? 200,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }}
