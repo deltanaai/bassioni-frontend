@@ -157,6 +157,13 @@ export const api = {
               ? JSON.stringify(payload)
               : undefined,
         }),
+
+      addNew: ({ payload }: { payload: AddNewRolePayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/roles`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

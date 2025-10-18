@@ -67,3 +67,7 @@ interface RolePayload {
   name: string;
   guard_name: string;
 }
+
+interface AddNewRolePayload {
+  name: string;
+}

@@ -134,3 +134,7 @@ interface DeleteEmployeesParams {
 interface RestoreEmployeesParams {
   employeesId: number[];
 }
+
+interface AddNewRole {
+  name: string;
+}
