@@ -10,7 +10,7 @@ export const GetEmployeesSchema = z.object({
 });
 
 export const GetEmployeeSchema = z.object({
-  employeeId: z.number().int().positive("معرف الموظف مطلوب"),
+  employeeId: z.number("معرف الموظف مطلوب").int().positive(),
 });
 
 export const DeleteEmployeesSchema = z.object({

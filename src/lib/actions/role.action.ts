@@ -1,6 +1,10 @@
 "use server";
 
-import { AddNewRoleSchema, GetAllRolesSchema } from "@/schemas/role";
+import {
+  AddNewRoleSchema,
+  GetAllRolesSchema,
+  GetRoleByIdSchema,
+} from "@/schemas/role";
 
 import { api } from "../api";
 import action from "../handlers/action";
@@ -61,6 +65,32 @@ export async function addNewRole(
     const response = await api.company.roles.addNew({ payload });
     if (!response || !response.data) {
       throw new Error("فشل في إضافة الدور, لم يتم تلقي بيانات صالحة من الخادم");
+    }
+    return {
+      success: true,
+      data: response.data as Role,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getRoleById(
+  params: GetRoleById
+): Promise<ActionResponse<Role>> {
+  const validationResult = await action({
+    params,
+    schema: GetRoleByIdSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { roleId } = validationResult.params!;
+  try {
+    const response = await api.company.roles.getById({ roleId });
+    if (!response || !response.data) {
+      throw new Error("فشل في جلب الدور, لم يتم تلقي بيانات صالحة من الخادم");
     }
     return {
       success: true,

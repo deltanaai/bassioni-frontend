@@ -164,6 +164,12 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      getById: ({ roleId }: GetRoleById) =>
+        fetchHandler(`${API_URL}company/dashboard/roles/${roleId}`, {
+          method: "GET",
+          auth: true,
+        }),
     },
   },
 };

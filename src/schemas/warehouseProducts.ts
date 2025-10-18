@@ -21,7 +21,7 @@ import { z } from "zod";
 
 export const AddProductSchema = z.object({
   warehouseId: z.number().int().positive().min(1, "معرف المستودع مطلوب"),
-  productId: z.number().int().positive().min(1, "معرف لانتج مطلوب"),
+  productId: z.number().int().positive().min(1, "معرف المنتج مطلوب"),
   warehousePrice: z
     .union([z.string(), z.number()])
     .refine(
@@ -48,8 +48,8 @@ export const GetWarehouseProductsSchema = z.object({
 });
 
 export const UpdateWarehouseProductSchema = z.object({
-  warehouseId: z.number().int().positive("معرف المستودع مطلوب"),
-  productId: z.number().int().positive("معرف المنتج مطلوب"),
+  warehouseId: z.number("معرف المستودع مطلوب").int().positive(),
+  productId: z.number("معرف المنتج مطلوب").int().positive(),
   warehousePrice: z
     .union([z.string(), z.number()])
     .refine(

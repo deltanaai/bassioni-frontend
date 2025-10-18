@@ -10,3 +10,7 @@ export const GetAllRolesSchema = z.object({
 export const AddNewRoleSchema = z.object({
   name: z.string().min(3, "اسم الدور مطلوب ويجب أن يحتوي على 3 أحرف على الأقل"),
 });
+
+export const GetRoleByIdSchema = z.object({
+  roleId: z.number("معرف الدور مطلوب").int().positive(),
+});

@@ -138,3 +138,7 @@ interface RestoreEmployeesParams {
 interface AddNewRole {
   name: string;
 }
+
+interface GetRoleById {
+  roleId: number;
+}
