@@ -40,8 +40,15 @@ export const CreateEmployeeSchema = z
         "رقم الهاتف لا يجب أن يحتوي على مسافات أو رموز مثل - أو ( أو )"
       )
       .refine(
-        (val) => /^\+?[1-9]\d{6,14}$/.test(val),
-        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا (مثال: +14155552671)"
+        (val) =>
+          // Egyptian formats
+          /^01[0-9]{9}$/.test(val) || // محلي: 01xxxxxxxxx
+          /^\+?201[0-9]{9}$/.test(val) || // دولي: +201xxxxxxxxx أو 201xxxxxxxxx
+          /^00201[0-9]{9}$/.test(val) || // دولي: 00201xxxxxxxxx
+          // Generic international formats
+          /^\+?[1-9]\d{6,14}$/.test(val) || // +14155552671 أو 14155552671
+          /^00[1-9]\d{6,14}$/.test(val), // 00441555552671
+        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا محليًا أو دوليًا (مثال: 010xxxxxxxx أو +14155552671 أو 00441555552671)"
       ),
     password: z.string(),
     passwordConfirmation: z.string(),

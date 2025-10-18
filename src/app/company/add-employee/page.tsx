@@ -9,6 +9,7 @@ import { EmployeeCreateInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addEmployee, getAllEmployees } from "@/lib/actions/employee.action";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function EmployeesPage() {
   const [showModal, setShowModal] = useState(false);
@@ -34,23 +35,35 @@ export default function EmployeesPage() {
     },
   });
 
-  const mutation = useMutation({
+  // const mutation = useMutation({
+  //   mutationFn: addEmployee,
+  //   onSuccess: async (response: any) => {
+  //     if (!response.success) {
+  //       console.error("Error adding employee:", response.error);
+  //       return;
+  //     }
+  //     console.log(" Employee added successfully");
+
+  //     await queryClient.invalidateQueries({ queryKey: ["employees"] });
+
+  //     setShowModal(false);
+  //     reset();
+  //   },
+  //   onError: async (error) => {
+  //     console.error("Error adding employee:", error);
+  //   },
+  // });
+
+   const mutation = useMutation({
     mutationFn: addEmployee,
-    onSuccess: async (response: any) => {
-      if (!response.success) {
-        console.error("Error adding employee:", response.error);
-        return;
-      }
-      console.log(" Employee added successfully");
+   onSuccess: (res) => {
+    if (!res.success) {
+      toast.error(res.error?.message ?? "حدث خطأ أثناء إنشاء الموظف");
+      return;
+    }
 
-      await queryClient.invalidateQueries({ queryKey: ["employees"] });
-
-      setShowModal(false);
-      reset();
-    },
-    onError: async (error) => {
-      console.error("Error adding employee:", error);
-    },
+    toast.success(`تم إنشاء الموظف بنجاح`);
+  },
   });
 
   const onSubmit = (data: EmployeeCreateInput) => {

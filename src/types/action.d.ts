@@ -26,6 +26,12 @@ interface BaseApiResponse {
   status: number;
 }
 
+interface BackendErrorResponse {
+  message?: string;
+  error?: string;
+  errors?: Record<string, string[]>;
+}
+
 interface PaginatedSearchParams {
   page?: number;
   perPage?: number;
