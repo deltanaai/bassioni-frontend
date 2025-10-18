@@ -147,5 +147,16 @@ export const api = {
           body: JSON.stringify(payload),
         }),
     },
+    roles: {
+      getAll: ({ payload }: { payload: PaginatedSearchPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/roles/index`, {
+          method: "POST",
+          auth: true,
+          body:
+            payload && Object.keys(payload).length
+              ? JSON.stringify(payload)
+              : undefined,
+        }),
+    },
   },
 };

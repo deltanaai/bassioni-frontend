@@ -61,3 +61,9 @@ interface DeleteEmployeesPayload {
 interface RestoreEmployeesPayload {
   items: number[];
 }
+
+interface RolePayload {
+  id: number;
+  name: string;
+  guard_name: string;
+}

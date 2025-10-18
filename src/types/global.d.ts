@@ -5,11 +5,16 @@ interface Employee {
   email: string;
   phone?: string;
   active: boolean;
-  roleId: string;
-  warehouseId: string;
+  role: string;
   address?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+interface Role {
+  id: number;
+  name: string;
+  guardName: string;
 }
 
 interface WarehouseProduct {
