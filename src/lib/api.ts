@@ -197,6 +197,13 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      restore: ({ payload }: { payload: DeleteRolePayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/roles/restore`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

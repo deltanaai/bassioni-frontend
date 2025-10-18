@@ -31,3 +31,9 @@ export const ForceDeleteRoleSchema = z.object({
     .array(z.number("معرف الدور غير صالح").int().positive())
     .min(1, "يجب تحديد دور واحد على الأقل للحذف النهائي"),
 });
+
+export const RestoreRoleSchema = z.object({
+  itemsIds: z
+    .array(z.number().int().positive("معرف الدور غير صالح"))
+    .min(1, "يجب تحديد دور واحد على الأقل للاستعادة"),
+});

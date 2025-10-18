@@ -6,6 +6,7 @@ import {
   ForceDeleteRoleSchema,
   GetAllRolesSchema,
   GetRoleByIdSchema,
+  RestoreRoleSchema,
   UpdateRoleSchema,
 } from "@/schemas/role";
 
@@ -167,7 +168,7 @@ export async function deleteRoles(
 
 export async function forceDeleteRoles(
   params: DeleteRoleParams
-): Promise<ActionResponse<{ message: string }>> { 
+): Promise<ActionResponse<{ message: string }>> {
   const validationResult = await action({
     params,
     schema: ForceDeleteRoleSchema,
@@ -179,7 +180,7 @@ export async function forceDeleteRoles(
   const { itemsIds } = validationResult.params!;
   const payload: DeleteRolePayload = {
     items: itemsIds,
-  };  
+  };
   try {
     const response = await api.company.roles.forceDelete({ payload });
     if (!response) {
@@ -192,4 +193,35 @@ export async function forceDeleteRoles(
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
-  }}
+  }
+}
+
+export async function restoreRoles(
+  params: DeleteRoleParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: RestoreRoleSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+  const payload: DeleteRolePayload = {
+    items: itemsIds,
+  };
+  try {
+    const response = await api.company.roles.restore({ payload });
+    if (!response) {
+      throw new Error("فشل في استعادة الأدوار, لم يتم تلقي رد من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم استعادة الأدوار بنجاح" },
+      status: response.status ?? 200,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
