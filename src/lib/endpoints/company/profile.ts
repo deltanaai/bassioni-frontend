@@ -7,4 +7,11 @@ export const profileEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  updateProfile: ({ payload }: { payload: UpdateProfilePayload }) =>
+    fetchHandler(`${API_URL}company/dashboard/update-profile`, {
+      method: "PUT",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };

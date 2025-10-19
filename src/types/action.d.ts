@@ -195,3 +195,11 @@ interface UpdateLocationParams {
 interface DeleteLocationParams {
   itemsIds: number[];
 }
+
+interface UpdateProfileParams {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  password?: string;
+}

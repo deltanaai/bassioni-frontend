@@ -113,3 +113,10 @@ interface UpdateLocationPayload {
 interface DeleteLocationPayload {
   items: number[];
 }
+
+interface UpdateProfilePayload {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
