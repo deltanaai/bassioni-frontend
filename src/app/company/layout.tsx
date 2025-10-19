@@ -21,6 +21,7 @@ import {
   Store,
   Tag,
   TicketPercent,
+  Trash2,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -32,6 +33,7 @@ const sideLinks = [
   { name: "الفواتير", href: "/company/invoice", Icon: Archive },
   { name: "الأصناف والبراندات", href: "/company/attributes", Icon: PlusCircle },
   { name: "المنتجات", href: "/company/products", Icon: Mail },
+  { name: "سلة المحذوفات", href: "/company/trash", Icon: Trash2 },   
   { name: "الملف الشخصي", href: "/company/profile", Icon: User },
   { name: "الإعدادات", href: "/company/settings", Icon: Settings },
   { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
