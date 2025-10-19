@@ -299,6 +299,13 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      delete: ({ payload }: { payload: DeleteLocationPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/locations/delete`, {
+          method: "DELETE",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

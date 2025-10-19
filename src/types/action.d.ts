@@ -191,3 +191,7 @@ interface UpdateLocationParams {
   locationId: number;
   name?: string;
 }
+
+interface DeleteLocationParams {
+  itemsIds: number[];
+}

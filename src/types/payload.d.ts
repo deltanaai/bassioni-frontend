@@ -109,3 +109,7 @@ interface AddLocationPayload {
 interface UpdateLocationPayload {
   name?: string;
 }
+
+interface DeleteLocationPayload {
+  items: number[];
+}

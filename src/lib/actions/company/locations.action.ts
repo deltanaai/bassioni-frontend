@@ -3,6 +3,7 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
   AddLocationSchema,
+  DeleteLocationSchema,
   GetAllLocationsSchema,
   GetLocationSchema,
   UpdateLocationSchema,
@@ -132,6 +133,36 @@ export async function updateLocation(
     return {
       success: true,
       data: response.data as Location,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteLocations(
+  params: DeleteLocationParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteLocationSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+  const payload: DeleteLocationPayload = {
+    items: itemsIds,
+  };
+
+  try {
+    const response = await api.company.locations.delete({ payload });
+    if (!response || !response.data) {
+      throw new Error("فشل في حذف المواقع, لم يتم تلقي بيانات صالحة من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم حذف الموقع بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

@@ -22,3 +22,9 @@ export const UpdateLocationSchema = z.object({
   locationId: z.number("معرف الموقع مطلوب").int().positive(),
   name: z.string().min(1, "اسم الموقع مطلوب").max(100).optional(),
 });
+
+export const DeleteLocationSchema = z.object({
+  itemsIds: z
+    .array(z.number().int().positive())
+    .min(1, "يجب تحديد موقع واحد على الأقل للحذف"),
+});
