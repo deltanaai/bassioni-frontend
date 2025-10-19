@@ -213,3 +213,34 @@ export async function restoreWarehouse(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function forceDeleteWarehouse(
+  params: DeleteWarehouseParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteWarehouseSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+  const payload: DeleteWarehousesPayload = {
+    items: itemsIds,
+  };
+  try {
+    const response = await api.company.warehouses.forceDelete({ payload });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في الحذف النهائي للمستودع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم الحذف النهائي للمستودع بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

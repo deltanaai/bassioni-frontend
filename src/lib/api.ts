@@ -255,6 +255,13 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      forceDelete: ({ payload }: { payload: DeleteWarehousesPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/warehouses/force-delete`, {
+          method: "DELETE",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };
