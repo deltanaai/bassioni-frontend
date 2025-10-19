@@ -170,3 +170,7 @@ interface UpdateWarehouseParams {
   locationId?: number;
   active?: boolean;
 }
+
+interface DeleteWarehouseParams {
+  itemsIds: number[];
+}

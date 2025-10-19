@@ -37,3 +37,9 @@ export const UpdateWarehouseSchema = z.object({
   locationId: z.number("الموقع مطلوب").int().positive().optional(),
   active: z.boolean().optional(),
 });
+
+export const DeleteWarehouseSchema = z.object({
+  itemsIds: z
+    .array(z.number().int().positive())
+    .min(1, "يجب تحديد مستودع واحد على الأقل للحذف"),
+});

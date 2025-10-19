@@ -1,5 +1,6 @@
 import {
   AddWarehouseSchema,
+  DeleteWarehouseSchema,
   GetAllWarehousesSchema,
   GetWarehouseSchema,
   UpdateWarehouseSchema,
@@ -142,6 +143,38 @@ export async function updateWarehouse(
     return {
       success: true,
       data: response.data as Warehouse,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteWarehouse(
+  params: DeleteWarehouseParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteWarehouseSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+  const payload: DeleteWarehousesPayload = {
+    items: itemsIds,
+  };
+  try {
+    const response = await api.company.warehouses.delete({ payload });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في حذف المستودع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم حذف المستودع بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

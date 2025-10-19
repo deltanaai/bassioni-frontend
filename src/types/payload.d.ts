@@ -93,3 +93,7 @@ interface UpdateWarehousePayload {
   location_id?: number;
   active?: boolean;
 }
+
+interface DeleteWarehousesPayload {
+  items: number[];
+}
