@@ -7,4 +7,10 @@ export const authEndpoints = {
       method: "POST",
       body: JSON.stringify(credentials),
     }),
+
+  logout: () =>
+    fetchHandler(`${API_URL}company/logout`, {
+      method: "POST",
+      auth: true,
+    }),
 };

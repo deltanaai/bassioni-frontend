@@ -5,7 +5,7 @@ import { loginSchema } from "@/schemas/login";
 import { api } from "../../api";
 import action from "../../handlers/action";
 import handleError from "../../handlers/error";
-import { setSession } from "../../session";
+import { clearSession, setSession } from "../../session";
 
 export async function signIn(
   credentials: AuthCredentialsCo
@@ -33,6 +33,28 @@ export async function signIn(
     return {
       success: true,
       data: JSON.parse(JSON.stringify(response.data)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function signOut(): Promise<ActionResponse<{ message: string }>> {
+  const validatioResult = await action({
+    authorize: true,
+  });
+  if (validatioResult instanceof Error) {
+    return handleError(validatioResult) as ErrorResponse;
+  }
+
+  try {
+    const response = await api.company.auth.logout();
+
+    await clearSession();
+
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تسجيل الخروج بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
