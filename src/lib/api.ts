@@ -273,6 +273,13 @@ export const api = {
               ? JSON.stringify(payload)
               : undefined,
         }),
+
+        addLocation :({ payload }: { payload: AddLocationPayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/locations`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

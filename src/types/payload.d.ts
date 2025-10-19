@@ -101,3 +101,7 @@ interface DeleteWarehousesPayload {
 interface RestoreWarehousePayload {
   items: number[];
 }
+
+interface AddLocationPayload {
+  name: string;
+}

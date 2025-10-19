@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { GetAllLocationsSchema } from "@/schemas/location";
+import { AddLocationSchema, GetAllLocationsSchema } from "@/schemas/location";
 
 export async function getAllLocations(
   params?: PaginatedSearchParams
@@ -32,6 +32,37 @@ export async function getAllLocations(
     return {
       success: true,
       data: response.data as Location[],
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function addLocation(
+  params: AddLocationParams
+): Promise<ActionResponse<Location>> {
+  const validationResult = await action({
+    params,
+    schema: AddLocationSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { name } = validationResult.params!;
+  const payload: AddLocationPayload = {
+    name,
+  };
+  try {
+    const response = await api.company.locations.addLocation({ payload });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في إضافة الموقع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: response.data as Location,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
