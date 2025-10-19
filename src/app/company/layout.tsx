@@ -75,7 +75,6 @@ export default function DashboardLayout({
             )}
           </button>
         </div>
-        myfunc()
         {/* الروابط */}
         <nav className="flex-1 p-4 space-y-2 text-sm overflow-y-auto">
           {sideLinks.map((link) => (

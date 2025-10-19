@@ -124,7 +124,7 @@ export async function addEmployee(
   try {
     const response = await api.company.employee.addEmployee({ payload });
 
-    if (!response.success || !response.data) {
+    if (!response || !response.data) {
       console.log(response);
       throw new Error(
         "فشل في إضافة الموظف, لم يتم تلقي بيانات صالحة من الخادم"

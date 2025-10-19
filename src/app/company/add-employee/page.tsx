@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, Plus } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { CreateEmployeeSchema } from "@/schemas/employee";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,32 +39,17 @@ export default function EmployeesPage() {
     },
   });
 
-  // const mutation = useMutation({
-  //   mutationFn: addEmployee,
-  //   onSuccess: async (response: any) => {
-  //     if (!response.success) {
-  //       console.error("Error adding employee:", response.error);
-  //       return;
-  //     }
-  //     console.log(" Employee added successfully");
-
-  //     await queryClient.invalidateQueries({ queryKey: ["employees"] });
-
-  //     setShowModal(false);
-  //     reset();
-  //   },
-  //   onError: async (error) => {
-  //     console.error("Error adding employee:", error);
-  //   },
-  // });
-
   const mutation = useMutation({
     mutationFn: addEmployee,
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       if (!res.success) {
         toast.error(res.error?.message ?? "حدث خطأ أثناء إنشاء الموظف");
         return;
       }
+       await queryClient.invalidateQueries({ queryKey: ["employees"] });
+
+       setShowModal(false);
+       reset();
 
       toast.success(`تم إنشاء الموظف بنجاح`);
     },

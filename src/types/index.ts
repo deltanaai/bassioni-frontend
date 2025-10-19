@@ -1,13 +1,13 @@
 import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { productFormSchema } from "@/schemas/AddProduts";
 import { loginSchema } from "@/schemas/login";
-import { registerSchema } from "@/schemas/Register";
+// import { registerSchema } from "@/schemas/Register";
 import {
-  warehouseCreateSchema,
-  warehouseUpdateSchema,
-  warehouseSchema,
-  warehousesSchema,
-} from "@/schemas/Warehouse";
+  AddWarehouseSchema
+  // GetAllWarehousesSchema,
+  // GetWarehouseSchema,
+  // UpdateWarehouseSchema,
+} from "@/schemas/warehouse";
 import {
   locationSchema,
   locationUpdateSchema,
@@ -23,15 +23,14 @@ import { CreateEmployeeSchema } from "@/schemas/employee";
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
-export type RegisterForm = z.infer<typeof registerSchema>;
+// export type RegisterForm = z.infer<typeof registerSchema>;
 
 //  new warehouse & products
 export type ProductInput = z.infer<typeof AddProductSchema>;
-export type WarehouseFormData = z.infer<typeof warehouseSchema>;
+export type WarehouseFormData = z.infer<typeof AddWarehouseSchema>;
 
 export type ProductFormData = z.infer<typeof productFormSchema>;
 
-export type WarehouseCreateInput = z.infer<typeof warehouseCreateSchema>;
 export type WarehouseUpdateInput = z.infer<typeof warehouseUpdateSchema>;
 export type Warehouse = z.infer<typeof warehouseSchema>;
 export type Warehouses = z.infer<typeof warehousesSchema>;

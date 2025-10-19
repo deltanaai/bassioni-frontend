@@ -17,7 +17,7 @@ export const AddWarehouseSchema = z.object({
     .min(1, "الرجاء ادخال كود المخزن")
     .max(100, "كود المخزن طويل جدا"),
   locationId: z
-    .number()
+    .number("الرجاء اختيار الموقع")
     .int()
     .positive()
     .refine((val) => val > 0, {
