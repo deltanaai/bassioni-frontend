@@ -25,3 +25,7 @@ export const AddWarehouseSchema = z.object({
     }),
   active: z.boolean(),
 });
+
+export const GetWarehouseSchema = z.object({
+  warehouseId: z.number("معرف المستودع مطلوب").int().positive(),
+});

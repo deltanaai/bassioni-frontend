@@ -1,6 +1,7 @@
 import {
   AddWarehouseSchema,
   GetAllWarehousesSchema,
+  GetWarehouseSchema,
 } from "@/schemas/warehouse";
 
 import { api } from "../../api";
@@ -71,6 +72,36 @@ export async function addNewWarehouse(
     return {
       success: true,
       data: response.data as Warehouse,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getWarehouse(
+  params: GetWarehouseParams
+): Promise<ActionResponse<{ warehouse: Warehouse }>> {
+  const validationResult = await action({
+    params,
+    schema: GetWarehouseSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { warehouseId } = validationResult.params!;
+
+  try {
+    const response = await api.company.warehouses.getById({ warehouseId });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في جلب بيانات المستودع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: { warehouse: response.data as Warehouse },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

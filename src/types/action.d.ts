@@ -158,3 +158,7 @@ interface AddWarehouseParams {
   locationId: number;
   active: boolean;
 }
+
+interface GetWarehouseParams{
+  warehouseId: number;
+}

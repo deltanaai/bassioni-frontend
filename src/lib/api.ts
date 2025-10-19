@@ -222,6 +222,12 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      getById: ({ warehouseId }: GetWarehouseParams) =>
+        fetchHandler(`${API_URL}company/dashboard/warehouses/${warehouseId}`, {
+          method: "GET",
+          auth: true,
+        }),
     },
   },
 };
