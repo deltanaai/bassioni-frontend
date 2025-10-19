@@ -34,4 +34,10 @@ interface Warehouse {
   id: number;
   name: string;
   code: string;
+  company: string;
+  location: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  deleted: boolean;
 }
