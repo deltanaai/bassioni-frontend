@@ -86,3 +86,10 @@ interface AddWarehousePayload {
   location_id: number;
   active: boolean;
 }
+
+interface UpdateWarehousePayload {
+  name?: string;
+  code?: string;
+  location_id?: number;
+  active?: boolean;
+}

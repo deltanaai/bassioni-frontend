@@ -2,6 +2,7 @@ import {
   AddWarehouseSchema,
   GetAllWarehousesSchema,
   GetWarehouseSchema,
+  UpdateWarehouseSchema,
 } from "@/schemas/warehouse";
 
 import { api } from "../../api";
@@ -102,6 +103,45 @@ export async function getWarehouse(
     return {
       success: true,
       data: { warehouse: response.data as Warehouse },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateWarehouse(
+  params: UpdateWarehouseParams
+): Promise<ActionResponse<Warehouse>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateWarehouseSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { warehouseId, name, code, locationId, active } =
+    validationResult.params!;
+
+  const payload: UpdateWarehousePayload = {
+    ...(name !== undefined && { name }),
+    ...(code !== undefined && { code }),
+    ...(locationId !== undefined && { location_id: locationId }),
+    ...(active !== undefined && { active }),
+  };
+  try {
+    const response = await api.company.warehouses.update({
+      warehouseId,
+      payload,
+    });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في تحديث بيانات المستودع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: response.data as Warehouse,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

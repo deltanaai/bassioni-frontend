@@ -159,6 +159,14 @@ interface AddWarehouseParams {
   active: boolean;
 }
 
-interface GetWarehouseParams{
+interface GetWarehouseParams {
   warehouseId: number;
+}
+
+interface UpdateWarehouseParams {
+  warehouseId: number;
+  name?: string;
+  code?: string;
+  locationId?: number;
+  active?: boolean;
 }

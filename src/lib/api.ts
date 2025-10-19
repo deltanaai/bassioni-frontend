@@ -228,6 +228,19 @@ export const api = {
           method: "GET",
           auth: true,
         }),
+
+      update: ({
+        warehouseId,
+        payload,
+      }: {
+        warehouseId: number;
+        payload: UpdateWarehousePayload;
+      }) =>
+        fetchHandler(`${API_URL}company/dashboard/warehouses/${warehouseId}`, {
+          method: "PATCH",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };
