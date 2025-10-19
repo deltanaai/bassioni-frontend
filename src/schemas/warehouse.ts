@@ -43,3 +43,9 @@ export const DeleteWarehouseSchema = z.object({
     .array(z.number().int().positive())
     .min(1, "يجب تحديد مستودع واحد على الأقل للحذف"),
 });
+
+export const RestoreWarehouseSchema = z.object({
+  itemsIds: z
+    .array(z.number().int().positive())
+    .min(1, "يجب تحديد مستودع واحد على الأقل للاستعادة"),
+});

@@ -174,3 +174,7 @@ interface UpdateWarehouseParams {
 interface DeleteWarehouseParams {
   itemsIds: number[];
 }
+
+interface RestoreWarehouseParams {
+  itemsIds: number[];
+}

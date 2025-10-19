@@ -97,3 +97,7 @@ interface UpdateWarehousePayload {
 interface DeleteWarehousesPayload {
   items: number[];
 }
+
+interface RestoreWarehousePayload {
+  items: number[];
+}

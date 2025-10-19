@@ -248,6 +248,13 @@ export const api = {
           auth: true,
           body: JSON.stringify(payload),
         }),
+
+      restore: ({ payload }: { payload: RestoreWarehousePayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/warehouses/restore`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };
