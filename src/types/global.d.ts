@@ -41,3 +41,10 @@ interface Warehouse {
   deletedAt?: string | null;
   deleted: boolean;
 }
+
+interface Location {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
