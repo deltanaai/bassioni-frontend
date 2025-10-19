@@ -182,3 +182,7 @@ interface RestoreWarehouseParams {
 interface AddLocationParams {
   name: string;
 }
+
+interface GetLocationParams {
+  locationId: number;
+}

@@ -13,3 +13,7 @@ export const AddLocationSchema = z.object({
     .min(1, "اسم الموقع مطلوب")
     .max(100, "اسم الموقع يجب ألا يتجاوز 100 حرف"),
 });
+
+export const GetLocationSchema = z.object({
+  locationId: z.number("معرف الموقع غير صالح").int().positive(),
+});

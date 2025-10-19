@@ -1,7 +1,11 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { AddLocationSchema, GetAllLocationsSchema } from "@/schemas/location";
+import {
+  AddLocationSchema,
+  GetAllLocationsSchema,
+  GetLocationSchema,
+} from "@/schemas/location";
 
 export async function getAllLocations(
   params?: PaginatedSearchParams
@@ -58,6 +62,35 @@ export async function addLocation(
     if (!response || !response.data) {
       throw new Error(
         "فشل في إضافة الموقع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: response.data as Location,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getLocationById(
+  params: GetLocationParams
+): Promise<ActionResponse<Location>> {
+  const validationResult = await action({
+    params,
+    schema: GetLocationSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { locationId } = validationResult.params!;
+  try {
+    const response = await api.company.locations.getById({ locationId });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في جلب بيانات الموقع, لم يتم تلقي بيانات صالحة من الخادم"
       );
     }
     return {
