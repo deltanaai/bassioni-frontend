@@ -14,4 +14,11 @@ export const profileEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  updatePassword: ({ payload }: { payload: UpdatePasswordPayload }) =>
+    fetchHandler(`${API_URL}company/dashboard/update-password`, {
+      method: "PUT",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };

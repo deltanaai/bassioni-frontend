@@ -203,3 +203,9 @@ interface UpdateProfileParams {
   address?: string;
   password?: string;
 }
+
+interface UpdatePasswordParams {
+  currentPassword: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}
