@@ -151,3 +151,10 @@ interface UpdateRoleParams {
 interface DeleteRoleParams {
   itemsIds: number[];
 }
+
+interface AddWarehouseParams {
+  name: string;
+  code: string;
+  locationId: number;
+  active: boolean;
+}

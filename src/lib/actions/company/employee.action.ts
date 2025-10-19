@@ -9,10 +9,10 @@ import {
   UpdateEmployeeSchema,
 } from "@/schemas/employee";
 
-import { api } from "../api";
-import action from "../handlers/action";
-import handleError from "../handlers/error";
-import { NotFoundError } from "../http-errors";
+import { api } from "../../api";
+import action from "../../handlers/action";
+import handleError from "../../handlers/error";
+import { NotFoundError } from "../../http-errors";
 
 export async function getAllEmployees(
   params: PaginatedSearchParams = {}

@@ -79,3 +79,10 @@ interface UpdateRolePayload {
 interface DeleteRolePayload {
   items: number[];
 }
+
+interface AddWarehousePayload {
+  name: string;
+  code: string;
+  location_id: number;
+  active: boolean;
+}

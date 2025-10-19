@@ -16,13 +16,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { ProductInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getWarehouseById, updateWarehouse } from "@/lib/actions/action.warehouse";
+import {
+  getWarehouseById,
+  updateWarehouse,
+} from "@/lib/actions/action.warehouse";
 import {
   getProductsByWarehouse,
   addProductToWarehouse,
   updateProductInWarehouse,
-} from "@/lib/actions/warehouseProducts.action";
-import { warehouseUpdateSchema, type WarehouseUpdateInput } from "@/schemas/Warehouse";
+} from "@/lib/actions/company/warehouseProducts.action";
+import {
+  warehouseUpdateSchema,
+  type WarehouseUpdateInput,
+} from "@/schemas/Warehouse";
 
 type Product = WarehouseProduct;
 
@@ -51,7 +57,9 @@ export default function WarehouseDetailsPage() {
     formState: { errors: warehouseErrors },
   } = useForm<WarehouseUpdateInput>({
     resolver: zodResolver(warehouseUpdateSchema),
-    values: (warehouse as unknown as WarehouseUpdateInput) || ({} as WarehouseUpdateInput),
+    values:
+      (warehouse as unknown as WarehouseUpdateInput) ||
+      ({} as WarehouseUpdateInput),
   });
 
   // نموذج المنتجات
@@ -71,9 +79,10 @@ export default function WarehouseDetailsPage() {
     enabled: !!id,
   });
 
-  const products = productsResponse?.success && Array.isArray(productsResponse.data) 
-    ? (productsResponse.data as Product[]) 
-    : [];
+  const products =
+    productsResponse?.success && Array.isArray(productsResponse.data)
+      ? (productsResponse.data as Product[])
+      : [];
 
   const updateMutation = useMutation({
     mutationFn: (data: WarehouseUpdateInput) => updateWarehouse(id, data),
@@ -140,7 +149,7 @@ export default function WarehouseDetailsPage() {
     alert("حذف المخزن غير مفعل حالياً.");
   };
 
-  // حذف منتج لساااا 
+  // حذف منتج لساااا
   const handleDeleteProduct = (productId: number) => {
     alert("حذف المنتج غير مفعل حالياً.");
   };
@@ -181,7 +190,6 @@ export default function WarehouseDetailsPage() {
       }
 
       console.log("✅ تمت العملية بنجاح - جاري تحديث البيانات...");
-
     } catch (error) {
       console.error("❌ خطأ في إضافة/تعديل المنتج:", error);
       alert("حدث خطأ أثناء حفظ المنتج");
@@ -296,7 +304,9 @@ export default function WarehouseDetailsPage() {
                   <td className="p-3 text-center">{p.name}</td>
                   <td className="p-3 text-center">{p.batch_number}</td>
                   <td className="p-3 text-center">{p.stock}</td>
-                  <td className="p-3 text-center">{Number(p.price).toLocaleString()} ج.م</td>
+                  <td className="p-3 text-center">
+                    {Number(p.price).toLocaleString()} ج.م
+                  </td>
                   <td className="p-3 text-center">
                     {((p.stock ?? 0) * Number(p.price)).toLocaleString()} ج.م
                   </td>
@@ -451,7 +461,9 @@ export default function WarehouseDetailsPage() {
                   <input
                     type="number"
                     step="0.01"
-                    {...registerProduct("warehousePrice", { valueAsNumber: true })}
+                    {...registerProduct("warehousePrice", {
+                      valueAsNumber: true,
+                    })}
                     placeholder="السعر"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
@@ -483,7 +495,9 @@ export default function WarehouseDetailsPage() {
                   <label className="mb-1">المخزون المحجوز</label>
                   <input
                     type="number"
-                    {...registerProduct("reservedStock", { valueAsNumber: true })}
+                    {...registerProduct("reservedStock", {
+                      valueAsNumber: true,
+                    })}
                     placeholder="0"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />

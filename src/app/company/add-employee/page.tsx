@@ -7,7 +7,10 @@ import { CreateEmployeeSchema } from "@/schemas/employee";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EmployeeCreateInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addEmployee, getAllEmployees } from "@/lib/actions/employee.action";
+import {
+  addEmployee,
+  getAllEmployees,
+} from "@/lib/actions/company/employee.action";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -54,16 +57,16 @@ export default function EmployeesPage() {
   //   },
   // });
 
-   const mutation = useMutation({
+  const mutation = useMutation({
     mutationFn: addEmployee,
-   onSuccess: (res) => {
-    if (!res.success) {
-      toast.error(res.error?.message ?? "حدث خطأ أثناء إنشاء الموظف");
-      return;
-    }
+    onSuccess: (res) => {
+      if (!res.success) {
+        toast.error(res.error?.message ?? "حدث خطأ أثناء إنشاء الموظف");
+        return;
+      }
 
-    toast.success(`تم إنشاء الموظف بنجاح`);
-  },
+      toast.success(`تم إنشاء الموظف بنجاح`);
+    },
   });
 
   const onSubmit = (data: EmployeeCreateInput) => {

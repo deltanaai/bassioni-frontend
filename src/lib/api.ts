@@ -215,6 +215,13 @@ export const api = {
               ? JSON.stringify(payload)
               : undefined,
         }),
+
+      addWarehouse: ({ payload }: { payload: AddWarehousePayload }) =>
+        fetchHandler(`${API_URL}company/dashboard/warehouses`, {
+          method: "POST",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

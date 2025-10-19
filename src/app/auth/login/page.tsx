@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
-import { signIn } from "@/lib/actions/login.action";
+import { signIn } from "@/lib/actions/company/login.action";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 

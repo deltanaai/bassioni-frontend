@@ -10,9 +10,9 @@ import {
   UpdateRoleSchema,
 } from "@/schemas/role";
 
-import { api } from "../api";
-import action from "../handlers/action";
-import handleError from "../handlers/error";
+import { api } from "../../api";
+import action from "../../handlers/action";
+import handleError from "../../handlers/error";
 
 export async function getAllRoles(
   params: PaginatedSearchParams

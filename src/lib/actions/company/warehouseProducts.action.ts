@@ -6,11 +6,11 @@ import {
   GetWarehouseProductsSchema,
 } from "@/schemas/warehouseProducts";
 
-import { api } from "../api";
-import action from "../handlers/action";
-import handleError from "../handlers/error";
-import { ValidationError } from "../http-errors";
-import { normalizeExpiryDateMaybe } from "../utils";
+import { api } from "../../api";
+import action from "../../handlers/action";
+import handleError from "../../handlers/error";
+import { ValidationError } from "../../http-errors";
+import { normalizeExpiryDateMaybe } from "../../utils";
 
 export async function getProductsByWarehouse(
   params: GetProductsParams

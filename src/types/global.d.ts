@@ -3,9 +3,9 @@ interface Employee {
   id: number;
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   active: boolean;
-  role: string;
+  role: string; // role name is what api returns, not role id
   address?: string | null;
   createdAt: string;
   updatedAt: string;
