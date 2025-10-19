@@ -4,10 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Package,
-  ShoppingCart,
-  DollarSign,
   ArrowRight,
   Plus,
+  MapPin,
+  Warehouse,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,15 +21,26 @@ import {
 } from "@/lib/actions/company/warehouse.action";
 import { AddWarehouseSchema } from "@/schemas/warehouse";
 import { WarehouseFormData } from "@/types";
+import { getAllLocations } from "@/lib/actions/company/locations.action";
 
 export default function WarehousesPage() {
   const queryClient = useQueryClient();
 
+  // المخازنن
   const { data } = useQuery({
     queryKey: ["warehouses"],
     queryFn: () => getAllWarehouses({ page: 1, perPage: 10 }),
   });
 
+    //   للمواقع
+  const { data: locationsData} = useQuery({
+    queryKey: ["locations"],
+    queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
+  });
+
+  
+  const locations = locationsData?.data || [];   
+    
   const [showModal, setShowModal] = useState(false);
 
   const {
@@ -61,6 +73,8 @@ export default function WarehousesPage() {
     console.log(data);
   };
 
+  
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -73,6 +87,7 @@ export default function WarehousesPage() {
           إضافة مخزن
         </button>
       </div>
+      
 
       {/* عرض المخازن */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -82,6 +97,7 @@ export default function WarehousesPage() {
               key={warehouse.id}
               className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg"
             >
+              
               {/* العنوان */}
               <h2 className="mb-4 text-xl font-bold text-gray-900">
                 {warehouse.name}
@@ -89,27 +105,34 @@ export default function WarehousesPage() {
 
               {/* بيانات المخزن */}
               <div className="space-y-3 text-sm text-gray-600">
-                <p className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-emerald-500" /> كود المخزن :
+                <div className="flex items-center gap-2">
+                  <Warehouse  className="h-5 w-5 text-emerald-500" /> كود المخزن :
                   <span className="font-semibold text-gray-900">
                     {warehouse.code}
                   </span>
-                </p>
+                </div>
 
-                <p className="flex items-center gap-2">
-                  <ShoppingCart className="h-5 w-5 text-emerald-500" /> كود
+                <div className="flex items-center gap-2">
+                  <MapPin  className="h-5 w-5 text-emerald-500" /> 
                   الموقع:
                   <span className="font-semibold text-gray-900">
-                    {warehouse.locationId}
+                  {warehouse.location}
                   </span>
-                </p>
+                </div>
 
-                <p className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-emerald-500" /> النشاط :
-                  <span className="font-semibold text-gray-900">
-                    {warehouse.active}
-                  </span>
-                </p>
+
+                {/* مش موجوده في الداتا اللي راجعه لسا */}
+                <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-emerald-500" /> حاله النشاط :
+                   <div className={`w-2 h-2 rounded-full ${
+                     warehouse.active ? 'bg-green-500' : 'bg-red-500'
+                   }`}></div>
+                   <span className={`font-semibold ${
+                     warehouse.active ? 'text-green-700' : 'text-red-700'
+                   }`}>
+                     {warehouse.active ? 'نشط' : 'غير نشط'}
+                   </span>
+                </div>
               </div>
 
               <div className="mt-6 text-left">
@@ -166,12 +189,19 @@ export default function WarehousesPage() {
               )}
 
               {/* الموقع */}
-              <input
-                type="number"
-                {...register("locationId", { valueAsNumber: true })}
-                placeholder=" كود الموقع"
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-              />
+              <select 
+      {...register("locationId" , { valueAsNumber: true })}
+      className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+      defaultValue=""
+
+    >
+      <option value="" disabled  >-- اختر الموقع --</option>
+      {locations.map((location) => (
+        <option key={location.id} value={location.id}>
+          {location.name}
+        </option>
+      ))}
+    </select>
               {errors.locationId && (
                 <p className="text-sm text-red-500">
                   {errors.locationId.message}
