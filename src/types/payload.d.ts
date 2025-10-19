@@ -105,3 +105,7 @@ interface RestoreWarehousePayload {
 interface AddLocationPayload {
   name: string;
 }
+
+interface UpdateLocationPayload {
+  name?: string;
+}

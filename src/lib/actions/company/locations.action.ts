@@ -5,6 +5,7 @@ import {
   AddLocationSchema,
   GetAllLocationsSchema,
   GetLocationSchema,
+  UpdateLocationSchema,
 } from "@/schemas/location";
 
 export async function getAllLocations(
@@ -91,6 +92,41 @@ export async function getLocationById(
     if (!response || !response.data) {
       throw new Error(
         "فشل في جلب بيانات الموقع, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: response.data as Location,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateLocation(
+  params: UpdateLocationParams
+): Promise<ActionResponse<Location>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateLocationSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { locationId, name } = validationResult.params!;
+  const payload: UpdateLocationPayload = {
+    ...(name && { name }),
+  };
+  try {
+    const response = await api.company.locations.update({
+      locationId,
+      payload,
+    });
+    if (!response || !response.data) {
+      throw new Error(
+        "فشل في تحديث بيانات الموقع, لم يتم تلقي بيانات صالحة من الخادم"
       );
     }
     return {

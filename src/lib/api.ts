@@ -286,6 +286,19 @@ export const api = {
           method: "GET",
           auth: true,
         }),
+
+      update: ({
+        locationId,
+        payload,
+      }: {
+        locationId: number;
+        payload: UpdateLocationPayload;
+      }) =>
+        fetchHandler(`${API_URL}company/dashboard/locations/${locationId}`, {
+          method: "PATCH",
+          auth: true,
+          body: JSON.stringify(payload),
+        }),
     },
   },
 };

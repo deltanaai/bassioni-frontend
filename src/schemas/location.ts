@@ -17,3 +17,8 @@ export const AddLocationSchema = z.object({
 export const GetLocationSchema = z.object({
   locationId: z.number("معرف الموقع غير صالح").int().positive(),
 });
+
+export const UpdateLocationSchema = z.object({
+  locationId: z.number("معرف الموقع مطلوب").int().positive(),
+  name: z.string().min(1, "اسم الموقع مطلوب").max(100).optional(),
+});
