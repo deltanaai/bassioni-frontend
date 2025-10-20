@@ -4,7 +4,7 @@ import { fetchHandler } from "@/lib/handlers/fetch";
 export const productsEndpoints = {
   getByWarehouse: ({ warehouseId, productId, filters }: GetProductsParams) =>
     fetchHandler(
-      `${API_URL}company/dashboard/warehouses/${warehouseId}/prodcuts${
+      `${API_URL}company/dashboard/warehouses/${warehouseId}/products${
         productId ? `/${productId}` : ""
       }`,
       {

@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-// import type { Resolver } from "react-hook-form";
 import { useParams } from "next/navigation";
 import {
   MapPin,
-  // Package,
-  // DollarSign,
   ArrowLeft,
   Edit,
   Trash2,
@@ -15,32 +12,33 @@ import {
   Building,
   RefreshCw,
   Calendar,
-  // Circle,
   Loader2,
   Circle,
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { AddProductSchema } from "@/schemas/warehouseProducts";
-// import { ProductInput } from "@/types";
+ import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteWarehouse, getWarehouse, updateWarehouse } from "@/lib/actions/company/warehouse.action";
 import { UpdateWarehouseSchema } from "@/schemas/warehouse";
 import { getAllLocations } from "@/lib/actions/company/locations.action";
-import { getProductsByWarehouse } from "@/lib/actions/company/warehouseProducts.action";
-
-
-
-// type Product = WarehouseProduct;
+import { addProductToWarehouse, getProductsByWarehouse } from "@/lib/actions/company/warehouseProducts.action";
+import { toast } from "sonner";
+import { ProductInput } from "@/types";
 
 export default function WarehouseDetailsPage() {
+  //warehouses
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingWarehouse, setEditingWarehouse] = useState<any>(null);
+
+  //products
+  const [showProductModal,setShowProductModel]=useState(false)
   
   const params = useParams();
+  const warehouseId = Number(params.id) || 0;
   const queryClient = useQueryClient();
-  const warehouseId = parseInt(params.id as string);
 
+  
   // start fuctions warehouse
   // جلب بيانات المخزن
   const { data, isLoading, error } = useQuery({
@@ -59,13 +57,24 @@ export default function WarehouseDetailsPage() {
    const locations = locationsData?.data || [];   
 
     //جلب ادويه المخزن
-  const { data: produtsData }= useQuery({
-    queryKey: ["warehouseProducts"  , warehouseId],
-    queryFn: ()=> getProductsByWarehouse({warehouseId})
-  })
-  const products = produtsData?.data || [];
-  console.log(products)
+  const { data: produtsData } = useQuery({
+    queryKey: ["warehouseProducts", warehouseId],
+    queryFn: () => getProductsByWarehouse({ warehouseId }),
+  });
+  // تصفية البيانات لاستخراج منتجات المخزن الحالي فقط
+const allWarehousesData = produtsData?.data || [];
+const currentWarehouseData = allWarehousesData.find(
+  (item: any) => item.warehouse?.id === warehouseId
+);
 
+const products = currentWarehouseData?.products || [];
+
+console.log(" Current warehouse ID:", warehouseId);
+console.log(" All warehouses data:", allWarehousesData);
+console.log(" Current warehouse data:", currentWarehouseData);
+console.log(" Products to display:", products);
+
+ 
   // نموذج تعديل المخزن
 const editForm = useForm({
   resolver: zodResolver(UpdateWarehouseSchema),
@@ -88,7 +97,7 @@ useEffect(() => {
       code: editingWarehouse.code ,
       locationId: editingWarehouse.locationId,
       warehouseId: editingWarehouse.id,
-      active: editingWarehouse.active ?? true, // تعيين حالة النشاط
+      active: editingWarehouse.active ?? true, 
 
     });
   }
@@ -153,6 +162,42 @@ useEffect(() => {
     }
   };
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ProductInput>({
+    resolver: zodResolver(AddProductSchema),
+    defaultValues:{warehouseId: warehouseId}
+   
+  });
+
+  const addProductsmutation = useMutation({
+    mutationFn: addProductToWarehouse,
+    onSuccess: async (res) => {
+      if (!res.success) {
+        toast.error(res.error?.message ?? "حدث خطأ أثناء اضافة المنتج");
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["warehouseProducts", warehouseId] });
+
+       setShowProductModel(false);
+       reset();
+
+      toast.success(`تم اضافه المنتج للمستودع بنجاح`);
+    },
+  });
+
+  const onSubmitproduct = (data: ProductInput) => {
+    console.log("onSubmitproduct:", data);
+  
+    addProductsmutation.mutate({
+      ...data,
+      warehouseId,
+    });
+  };
+  
   // التحقق من صحة الـ ID
   if (isNaN(warehouseId)) {
     return (
@@ -165,7 +210,6 @@ useEffect(() => {
     );
   }
 // endd functios warehouse
-
 
 
   if (isLoading) {
@@ -376,19 +420,7 @@ useEffect(() => {
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-bold text-emerald-600">🛒 المنتجات</h2>
           <button
-            // onClick={() => {
-            //   setEditingProductId(null);
-            //   setShowProductModal(true);
-            //   resetProduct({
-            //     warehouseId: id,
-            //     productId: 0,
-            //     warehousePrice: 0,
-            //     stock: 0,
-            //     reservedStock: 0,
-            //     expiryDate: new Date(),
-            //     batchNumber: "",
-            //   });
-            // }}
+          onClick={()=> setShowProductModel(true)}
             className="w-40 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
           >
             إضافة منتج +
@@ -413,7 +445,7 @@ useEffect(() => {
             <tbody>
               {products.map((p) => (
                 <tr
-                  key={p.id}
+                  key={`${p.id}-${p.batch_number}-${p.expiry_date}`}
                   className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
                 >
                   <td className="p-3 text-center">{p.id}</td>
@@ -421,7 +453,7 @@ useEffect(() => {
                   <td className="p-3 text-center">{p.batch_number}</td>
                   <td className="p-3 text-center">{p.stock}</td>
                   <td className="p-3 text-center">
-                    {Number(p.price).toLocaleString()} ج.م
+                    {p.price} ج.م
                   </td>
                   <td className="p-3 text-center">
                     {((p.stock ?? 0) * Number(p.price)).toLocaleString()} ج.م
@@ -509,30 +541,33 @@ useEffect(() => {
             </div>
           )}
 
-      {/* مودال إضافة/تعديل المنتج */}
-      {/* {showProductModal && (
+      {/* مودال إضافة المنتج */}
+       {showProductModal && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-xl shadow-lg">
-            <h2 className="text-2xl font-bold text-emerald-600 mb-4">
-              {editingProductId !== null ? "تعديل المنتج" : "إضافة منتج جديد"}
-            </h2>
-
+            
             <form
-              onSubmit={handleSubmitProduct(onSubmitProduct)}
+               onSubmit={handleSubmit(onSubmitproduct)}
               className="space-y-4"
             >
+                <input 
+                 type="hidden" 
+                {...register("warehouseId")} 
+                 defaultValue={warehouseId} 
+                />
+
               <div className="grid grid-cols-2 gap-5">
                 <div className="flex flex-col">
                   <label className="mb-1">معرف المنتج</label>
                   <input
                     type="number"
-                    {...registerProduct("productId", { valueAsNumber: true })}
+                    {...register("productId", { valueAsNumber: true })}
                     placeholder="ID"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.productId && (
+                  {errors.productId && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.productId.message as string}
+                      {errors.productId.message as string}
                     </p>
                   )}
                 </div>
@@ -542,15 +577,15 @@ useEffect(() => {
                   <input
                     type="number"
                     step="0.01"
-                    {...registerProduct("warehousePrice", {
+                    {...register("warehousePrice", {
                       valueAsNumber: true,
                     })}
                     placeholder="السعر"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.warehousePrice && (
+                  {errors.warehousePrice && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.warehousePrice.message as string}
+                      {errors.warehousePrice.message as string}
                     </p>
                   )}
                 </div>
@@ -561,13 +596,13 @@ useEffect(() => {
                   <label className="mb-1">المخزون المتاح</label>
                   <input
                     type="number"
-                    {...registerProduct("stock", { valueAsNumber: true })}
+                    {...register("stock", { valueAsNumber: true })}
                     placeholder="الكمية"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.stock && (
+                  {errors.stock && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.stock.message as string}
+                      {errors.stock.message as string}
                     </p>
                   )}
                 </div>
@@ -576,15 +611,15 @@ useEffect(() => {
                   <label className="mb-1">المخزون المحجوز</label>
                   <input
                     type="number"
-                    {...registerProduct("reservedStock", {
+                    {...register("reservedStock", {
                       valueAsNumber: true,
                     })}
                     placeholder="0"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.reservedStock && (
+                  {errors.reservedStock && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.reservedStock.message as string}
+                      {errors.reservedStock.message as string}
                     </p>
                   )}
                 </div>
@@ -594,13 +629,13 @@ useEffect(() => {
                 <div className="flex flex-col">
                   <label className="mb-1">رقم الدفعة</label>
                   <input
-                    {...registerProduct("batchNumber")}
+                    {...register("batchNumber")}
                     placeholder="Batch.No"
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.batchNumber && (
+                  {errors.batchNumber && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.batchNumber.message as string}
+                      {errors.batchNumber.message as string}
                     </p>
                   )}
                 </div>
@@ -609,12 +644,12 @@ useEffect(() => {
                   <label className="mb-1">تاريخ الانتهاء</label>
                   <input
                     type="date"
-                    {...registerProduct("expiryDate")}
+                    {...register("expiryDate")}
                     className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
                   />
-                  {productErrors.expiryDate && (
+                  {errors.expiryDate && (
                     <p className="text-red-500 text-sm">
-                      {productErrors.expiryDate.message as string}
+                      {errors.expiryDate.message as string}
                     </p>
                   )}
                 </div>
@@ -624,8 +659,7 @@ useEffect(() => {
                 <button
                   type="button"
                   onClick={() => {
-                    setShowProductModal(false);
-                    setEditingProductId(null);
+                    setShowProductModel(false);
                   }}
                   className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl"
                 >
@@ -634,14 +668,17 @@ useEffect(() => {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white"
+                  disabled={addProductsmutation.isPending}
+
                 >
-                  {editingProductId !== null ? "حفظ" : "إضافة"}
+                  {addProductsmutation.isPending ? "جار الاضافه" : "اضافه الدواء"}
+
                 </button>
               </div>
             </form>
           </div>
         </div>
-      )} */}
+      )} 
     </div>
   );
 }

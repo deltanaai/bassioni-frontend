@@ -39,6 +39,7 @@ export default function WarehousesPage() {
     queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
   });  
   const locations = locationsData?.data || [];   
+  console.log(locations)
     
   const [showModal, setShowModal] = useState(false);
 
