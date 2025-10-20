@@ -1,14 +1,16 @@
 "use client";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { signIn } from "@/lib/actions/company/login.action";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
-import { signIn } from "@/lib/actions/company/login.action";
-import { useEffect, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -59,15 +61,15 @@ export default function LoginPage() {
           localStorage.removeItem("rememberedEmail");
           localStorage.removeItem("rememberedPassword");
         }
-        alert("تم تسجيل الدخول بنجاح ✅");
+        toast.success("تم تسجيل الدخول بنجاح ✅");
         router.push("/company");
         router.refresh();
       } else {
-        alert(result.message || "بيانات الدخول غير صحيحة");
+        toast.error(result.message || "بيانات الدخول غير صحيحة");
       }
     },
     onError: (error: Error) => {
-      alert(error.message || "حدث خطأ أثناء تسجيل الدخول");
+      toast.error(error.message || "حدث خطأ أثناء تسجيل الدخول");
     },
   });
 
@@ -80,15 +82,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
+      <div className="w-full max-w-md overflow-hidden rounded-xl border border-gray-700 bg-gray-800 shadow-2xl">
         {/* الهيدر */}
         <div className="bg-gray-700 p-6 text-center">
           <h1 className="text-3xl font-bold text-white">
             <span className="text-blue-400">Bassiony</span>
             <span className="text-green-400">Care</span>
           </h1>
-          <p className="text-gray-300 mt-2">نظام إدارة الصيدليات</p>
+          <p className="mt-2 text-gray-300">نظام إدارة الصيدليات</p>
         </div>
 
         {/* الفورم */}
@@ -102,7 +104,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-300 mb-1"
+                className="mb-1 block text-sm font-medium text-gray-300"
               >
                 البريد الإلكتروني
               </label>
@@ -114,7 +116,7 @@ export default function LoginPage() {
                 placeholder="example@pharmacy.com"
               />
               {errors.email && (
-                <p className="text-red-400 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-400">
                   {errors.email.message}
                 </p>
               )}
@@ -124,7 +126,7 @@ export default function LoginPage() {
             <div className="relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-300 mb-1"
+                className="mb-1 block text-sm font-medium text-gray-300"
               >
                 كلمة المرور
               </label>
@@ -138,12 +140,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-3 top-[70%] transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                className="absolute top-[70%] left-3 -translate-y-1/2 transform text-gray-400 transition-colors hover:text-white"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
               {errors.password && (
-                <p className="text-red-400 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-400">
                   {errors.password.message}
                 </p>
               )}
@@ -156,7 +158,7 @@ export default function LoginPage() {
                   id="remember-me"
                   type="checkbox"
                   {...register("rememberMe")}
-                  className="h-4 w-4 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
                   checked={isRememberMeChecked}
                   onChange={(e) => setIsRememberMeChecked(e.target.checked)}
                 />
@@ -169,7 +171,7 @@ export default function LoginPage() {
               </div>
               <Link
                 href="/auth/Verify-email"
-                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                className="text-sm text-blue-400 transition-colors hover:text-blue-300"
               >
                 نسيت كلمة المرور؟
               </Link>
@@ -179,7 +181,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-medium rounded-lg shadow-lg transition-all flex items-center justify-center"
+              className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-4 py-3 font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700"
             >
               {mutation.isPending ? (
                 <span className="animate-pulse">جارٍ تسجيل الدخول...</span>
@@ -187,7 +189,7 @@ export default function LoginPage() {
                 <>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 ml-2"
+                    className="ml-2 h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

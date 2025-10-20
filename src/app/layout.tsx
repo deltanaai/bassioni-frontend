@@ -28,11 +28,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
-  if (!session?.token) {
-    redirect(ROUTES.LOGIN);
-  }
-  logger.info(`User Token: ${session.token}`);
+  // const session = await getSession();
+  // if (!session?.token) {
+  //   redirect(ROUTES.LOGIN);
+  // }
+  // logger.info(`User Token: ${session.token}`);
   return (
     <html lang="ar" dir="rtl">
       <body

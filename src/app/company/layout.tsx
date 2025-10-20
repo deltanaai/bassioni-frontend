@@ -22,10 +22,17 @@ import {
   Tag,
   TicketPercent,
   Trash2,
+  LogOut,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { signOut } from "@/lib/actions/company/login.action";
+import { toast } from "sonner";
+import ROUTES from "@/constants/routes";
+import { getSession } from "@/lib/session";
+import { Button } from "@/components/ui/button";
 
-const sideLinks = [
+const links = [
   { name: "الصفحة الرئيسية", href: "/company/", Icon: Home },
   { name: "طلبات اليوم", href: "/company/today", Icon: ClipboardList },
   { name: "عروض الشركات", href: "/company/sentorder", Icon: Send },
@@ -33,10 +40,10 @@ const sideLinks = [
   { name: "الفواتير", href: "/company/invoice", Icon: Archive },
   { name: "الأصناف والبراندات", href: "/company/attributes", Icon: PlusCircle },
   { name: "المنتجات", href: "/company/products", Icon: Mail },
-  { name: "سلة المحذوفات", href: "/company/trash", Icon: Trash2 },   
+  { name: "سلة المحذوفات", href: "/company/trash", Icon: Trash2 },
   { name: "الملف الشخصي", href: "/company/profile", Icon: User },
   { name: "الإعدادات", href: "/company/settings", Icon: Settings },
-  { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
+  // { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
 ];
 
 export default function DashboardLayout({
@@ -45,6 +52,36 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const router = useRouter();
+
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: () => getSession(),
+  });
+
+  const isLoggedIn = !!session?.token;
+
+  const authLinks = isLoggedIn
+    ? { name: "تسجيل الخروج", href: "#", Icon: LogOut }
+    : { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn };
+
+  const sideLinks = [...links, authLinks];
+
+  const mutation = useMutation({
+    mutationFn: signOut,
+    onSuccess: (res) => {
+      if (!res.success) {
+        toast.error(res.error?.message || "حدث خطأ أثناء تسجيل الخروج");
+        return;
+      }
+      toast.success("تم تسجيل الخروج بنجاح");
+      router.push(ROUTES.LOGIN);
+    },
+  });
+
+  const handleSignOut = () => {
+    mutation.mutate();
+  };
 
   return (
     <div className="min-h-screen flex bg-gray-100 text-gray-800" dir="rtl">
@@ -79,16 +116,28 @@ export default function DashboardLayout({
         </div>
         {/* الروابط */}
         <nav className="flex-1 p-4 space-y-2 text-sm overflow-y-auto">
-          {sideLinks.map((link) => (
-            <NavLink
-              href={link.href}
-              key={link.name}
-              icon={<link.Icon className="w-5 h-5" />}
-              sidebarOpen={sidebarOpen}
-            >
-              {link.name}
-            </NavLink>
-          ))}
+          {sideLinks.map((link) =>
+            link.name === "تسجيل الخروج" ? (
+              <Button
+                key={link.name}
+                onClick={handleSignOut}
+                variant="ghost"
+                className="flex text-red-600 w-full items-center justify-start gap-2 text-right px-4 py-2 hover:bg-red-50 hover:text-red-700 hover:shadow-md transition cursor-pointer"
+              >
+                <link.Icon className="w-5 h-5" />
+                {link.name}
+              </Button>
+            ) : (
+              <NavLink
+                href={link.href}
+                key={link.name}
+                icon={<link.Icon className="w-5 h-5" />}
+                sidebarOpen={sidebarOpen}
+              >
+                {link.name}
+              </NavLink>
+            )
+          )}
           {/* <NavLink
             href="/company/"
             icon={<Home className="w-5 h-5" />}
@@ -139,7 +188,7 @@ export default function DashboardLayout({
             المنتجات
           </NavLink> */}
 
-          {/* قائمة الخصومات */}
+          {/* قائمة الخصومات
           <SidebarDropdown sidebarOpen={sidebarOpen} />
 
           <NavLink
@@ -162,7 +211,7 @@ export default function DashboardLayout({
             sidebarOpen={sidebarOpen}
           >
             تسجيل الدخول
-          </NavLink>
+          </NavLink> */}
         </nav>
         {/* الفوتر */}
         <div className="p-4 text-xs text-center text-gray-400 border-t border-gray-200">

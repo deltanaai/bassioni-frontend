@@ -9,7 +9,7 @@ export const authEndpoints = {
     }),
 
   logout: () =>
-    fetchHandler(`${API_URL}company/logout`, {
+    fetchHandler(`${API_URL}company/dashboard/logout`, {
       method: "POST",
       auth: true,
     }),
