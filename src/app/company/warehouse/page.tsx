@@ -31,14 +31,13 @@ export default function WarehousesPage() {
     queryKey: ["warehouses"],
     queryFn: () => getAllWarehouses({ page: 1, perPage: 10 }),
   });
+  console.log(data)
 
     //   للمواقع
   const { data: locationsData} = useQuery({
     queryKey: ["locations"],
     queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
-  });
-
-  
+  });  
   const locations = locationsData?.data || [];   
     
   const [showModal, setShowModal] = useState(false);

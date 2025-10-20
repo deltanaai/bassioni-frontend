@@ -26,6 +26,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteWarehouse, getWarehouse, updateWarehouse } from "@/lib/actions/company/warehouse.action";
 import { UpdateWarehouseSchema } from "@/schemas/warehouse";
 import { getAllLocations } from "@/lib/actions/company/locations.action";
+import { getProductsByWarehouse } from "@/lib/actions/company/warehouseProducts.action";
 
 
 
@@ -40,24 +41,32 @@ export default function WarehouseDetailsPage() {
   const queryClient = useQueryClient();
   const warehouseId = parseInt(params.id as string);
 
+  // start fuctions warehouse
   // جلب بيانات المخزن
   const { data, isLoading, error } = useQuery({
     queryKey: ["warehouse", warehouseId],
     queryFn: () => getWarehouse({ warehouseId }),
     enabled: !isNaN(warehouseId),
   });
-  
   const warehouse = data?.data?.warehouse
   console.log("Warehouse data:", warehouse);
 
       //   للمواقع
-      const { data: locationsData} = useQuery({
-        queryKey: ["locations"],
-        queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
-      });  
-      const locations = locationsData?.data || [];   
+  const { data: locationsData} = useQuery({
+    queryKey: ["locations"],
+    queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
+  });  
+   const locations = locationsData?.data || [];   
 
-  // نموذج التعديل
+    //جلب ادويه المخزن
+  const { data: produtsData }= useQuery({
+    queryKey: ["warehouseProducts"  , warehouseId],
+    queryFn: ()=> getProductsByWarehouse({warehouseId})
+  })
+  const products = produtsData?.data || [];
+  console.log(products)
+
+  // نموذج تعديل المخزن
 const editForm = useForm({
   resolver: zodResolver(UpdateWarehouseSchema),
   mode: "onSubmit",
@@ -67,9 +76,7 @@ const editForm = useForm({
     code: "",
     locationId:  undefined as number | undefined,
     warehouseId: undefined as number | undefined,
-    active: true, // قيمة افتراضية
-
-
+    active: true, 
   },
 });
 
@@ -157,6 +164,9 @@ useEffect(() => {
       </div>
     );
   }
+// endd functios warehouse
+
+
 
   if (isLoading) {
     return (
@@ -176,57 +186,7 @@ useEffect(() => {
       </div>
     );
   }
-  // // حذف منتج لساااا
-  // const handleDeleteProduct = (productId: number) => {
-  //   alert("حذف المنتج غير مفعل حالياً.");
-  // };
-
-  // const handleEditProduct = (product: Product) => {
-  //   setEditingProductId(product.id);
-  //   setShowProductModal(true);
-  //   resetProduct({
-  //     warehouseId: id,
-  //     productId: product.id,
-  //     warehousePrice: Number(product.price),
-  //     stock: product.stock,
-  //     reservedStock: product.reserved_stock,
-  //     expiryDate: new Date(product.expiry_date),
-  //     batchNumber: product.batch_number,
-  //   } as unknown as ProductInput);
-  // };
-
-  // إضافة/تعديل المنتج
-  // const onSubmitProduct = async (data: ProductInput) => {
-  //   try {
-  //     console.log("🔄 بدء إضافة/تعديل المنتج:", data);
-
-  //     const payload: ProductInput = {
-  //       warehouseId: id,
-  //       productId: data.productId,
-  //       warehousePrice: data.warehousePrice,
-  //       stock: data.stock,
-  //       reservedStock: data.reservedStock ?? 0,
-  //       expiryDate: data.expiryDate,
-  //       batchNumber: data.batchNumber,
-  //     };
-
-  //     if (editingProductId !== null) {
-  //       await updateProductMutation.mutateAsync(payload);
-  //     } else {
-  //       await addProductMutation.mutateAsync(payload);
-  //     }
-
-  //     console.log("✅ تمت العملية بنجاح - جاري تحديث البيانات...");
-  //   } catch (error) {
-  //     console.error("❌ خطأ في إضافة/تعديل المنتج:", error);
-  //     alert("حدث خطأ أثناء حفظ المنتج");
-  //   }
-  // };
-
-  // const totalValue = products.reduce((sum, p) => {
-  //   const unitPrice = Number(p.price);
-  //   return sum + (p.stock ?? 0) * (isNaN(unitPrice) ? 0 : unitPrice);
-  // }, 0);
+ 
 
   return (
     <div className="min-h-screen p-6 bg-gray-100 text-gray-900">
@@ -374,7 +334,7 @@ useEffect(() => {
         </div>
 
           {/* حالة النشاط - Checkbox */}
-          <div className="flex items-center gap-2">
+          <div className="flex mt-4 items-center gap-2">
             <input
               type="checkbox"
               {...editForm.register("active")}
@@ -412,31 +372,31 @@ useEffect(() => {
 )}
 
       {/* قسم المنتجات */}
-      {/* <div className="bg-white p-6 rounded-2xl shadow-md overflow-x-auto">
+      <div className="bg-white p-6 rounded-2xl shadow-md overflow-x-auto">
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-bold text-emerald-600">🛒 المنتجات</h2>
           <button
-            onClick={() => {
-              setEditingProductId(null);
-              setShowProductModal(true);
-              resetProduct({
-                warehouseId: id,
-                productId: 0,
-                warehousePrice: 0,
-                stock: 0,
-                reservedStock: 0,
-                expiryDate: new Date(),
-                batchNumber: "",
-              });
-            }}
+            // onClick={() => {
+            //   setEditingProductId(null);
+            //   setShowProductModal(true);
+            //   resetProduct({
+            //     warehouseId: id,
+            //     productId: 0,
+            //     warehousePrice: 0,
+            //     stock: 0,
+            //     reservedStock: 0,
+            //     expiryDate: new Date(),
+            //     batchNumber: "",
+            //   });
+            // }}
             className="w-40 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold"
           >
             إضافة منتج +
           </button>
-        </div> */}
+        </div>
 
         {/* جدول المنتجات */}
-        {/* {products.length > 0 ? (
+        {products.length > 0 ? (
           <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-200">
               <tr>
@@ -470,14 +430,14 @@ useEffect(() => {
                   <td className="p-3 text-center">
                     <div className="inline-flex justify-center gap-2">
                       <button
-                        onClick={() => handleEditProduct(p)}
+                        // onClick={() => handleEditProduct(p)}
                         className="text-blue-500 hover:text-blue-600 p-1"
                         title="تعديل"
                       >
                         <Edit />
                       </button>
                       <button
-                        onClick={() => handleDeleteProduct(p.id)}
+                        // onClick={() => handleDeleteProduct(p.id)}
                         className="text-red-500 hover:text-red-600 p-1"
                         title="حذف"
                       >
@@ -494,7 +454,7 @@ useEffect(() => {
             لا توجد منتجات بعد.
           </p>
         )}
-      </div> */}
+      </div>
 
     
 {/* مودال حذف المخزن */}
