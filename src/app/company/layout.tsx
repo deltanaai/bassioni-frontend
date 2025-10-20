@@ -79,13 +79,16 @@ export default function DashboardLayout({
   // ✅ Redirect after mount, only when session is loaded
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
-      router.replace(ROUTES.LOGIN);
+      router.push(ROUTES.LOGIN);
     }
   }, [isLoading, isLoggedIn, router]);
 
-  // ✅ Optional: prevent flicker during check
-  if (isLoading) {
-    return null; // or a spinner/loading component
+  if (isLoading || !isLoggedIn) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <p className="text-sm text-gray-500">جارٍ التحقق من الجلسة...</p>
+      </div>
+    );
   }
 
   const authLinks = isLoggedIn
