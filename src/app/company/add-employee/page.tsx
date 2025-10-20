@@ -14,11 +14,21 @@ import {
 } from "@/lib/actions/company/employee.action";
 import Link from "next/link";
 import { toast } from "sonner";
+import { getAllRoles } from "@/lib/actions/company/role.action";
 
 export default function EmployeesPage() {
   const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
 
+  //roles
+  const { data: rolesData } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => getAllRoles({ page: 1, perPage: 10 }),
+  });
+  console.log(rolesData)
+  const roles = rolesData?.data || [];   
+
+  //employees
   const { data } = useQuery({
     queryKey: ["employees"],
     queryFn: () => getAllEmployees({ page: 1, perPage: 10 }),
@@ -35,7 +45,10 @@ export default function EmployeesPage() {
     defaultValues: {
       active: true,
       warehouseId: null,
+      roleId: 0, // ← اضبط قيمة افتراضية صحيحة للرقم
+
       address: null,
+
     },
   });
 
@@ -195,15 +208,18 @@ export default function EmployeesPage() {
               <div className="grid grid-cols-2 gap-4">
                 {/* الدور */}
                 <div>
-                  <select
-                    {...register("roleId", { valueAsNumber: true })}
-                    className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <option value="">اختر الدور</option>
-                    <option value="1">صيدلي</option>
-                    <option value="2">محاسب</option>
-                    <option value="3">إداري</option>
-                  </select>
+                <select 
+      {...register("roleId" , { valueAsNumber: true })}
+      className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+      defaultValue=""
+    >
+      <option value="" disabled  >-- اختر الدور --</option>
+      {(Array.isArray(roles) ? roles : []).map((role: any) => (
+        <option key={role.id} value={role.id}>
+          {role.name}
+        </option>
+      ))}
+    </select>
                   {errors.roleId && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.roleId.message}
