@@ -21,7 +21,7 @@ export async function getSession(): Promise<Session | null> {
   const cookie = (await cookies()).get(SESSION_KEY)?.value;
 
   if (!cookie) {
-    throw new Error("No auth token found");
+    return null;
   }
 
   try {
