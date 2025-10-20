@@ -35,16 +35,16 @@ import logger from "@/lib/logger";
 import { getSession } from "@/lib/session";
 
 const links = [
-  { name: "الصفحة الرئيسية", href: "/company/", Icon: Home },
-  { name: "طلبات اليوم", href: "/company/today", Icon: ClipboardList },
-  { name: "عروض الشركات", href: "/company/sentorder", Icon: Send },
-  { name: "طلباتي", href: "/company/massgeorder", Icon: Send },
-  { name: "الفواتير", href: "/company/invoice", Icon: Archive },
-  { name: "الأصناف والبراندات", href: "/company/attributes", Icon: PlusCircle },
-  { name: "المنتجات", href: "/company/products", Icon: Mail },
-  { name: "سلة المحذوفات", href: "/company/trash", Icon: Trash2 },
-  { name: "الملف الشخصي", href: "/company/profile", Icon: User },
-  { name: "الإعدادات", href: "/company/settings", Icon: Settings },
+  { name: "الصفحة الرئيسية", href: ROUTES.COMPANY_DASHBOARD, Icon: Home },
+  { name: "طلبات اليوم", href: ROUTES.DAY_ORDERS, Icon: ClipboardList },
+  { name: "عروض الشركات", href: ROUTES.SENT_ORDERS, Icon: Send },
+  { name: "طلباتي", href: ROUTES.MY_ORDERS, Icon: Send },
+  { name: "الفواتير", href: ROUTES.INVOICE, Icon: Archive },
+  { name: "الأصناف والبراندات", href: ROUTES.ATTRIBUTES, Icon: PlusCircle },
+  { name: "المنتجات", href: ROUTES.PRODUCTS, Icon: Mail },
+  { name: "سلة المحذوفات", href: ROUTES.TRASH, Icon: Trash2 },
+  { name: "الملف الشخصي", href: ROUTES.PROFILE, Icon: User },
+  { name: "الإعدادات", href: ROUTES.SETTINGS, Icon: Settings },
   // { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
 ];
 
