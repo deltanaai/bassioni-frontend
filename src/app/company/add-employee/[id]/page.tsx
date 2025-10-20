@@ -65,6 +65,7 @@ export default function EmployeeDetailsPage() {
     queryFn: () => getEmployeeById({ employeeId }),
     enabled: !isNaN(employeeId),
   });
+  // console.log(data)
 
   const editForm = useForm({
     resolver: zodResolver(UpdateEmployeeSchema),
