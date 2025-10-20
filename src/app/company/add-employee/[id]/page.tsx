@@ -90,8 +90,8 @@ export default function EmployeeDetailsPage() {
         email: editingEmployee.email,
         phone: editingEmployee.phone,
         address: editingEmployee.address || "",
-        roleId: Number(editingEmployee.roleId),
-        warehouseId: Number(editingEmployee.warehouseId),
+        roleId: Number(editingEmployee.role),
+        // warehouseId: Number(editingEmployee.warehouseId),
         active: editingEmployee.active,
         password: "",
         passwordConfirmation: "",
@@ -486,7 +486,7 @@ export default function EmployeeDetailsPage() {
               <Briefcase className="w-4 h-4 text-blue-500" />
               <div className="flex-1">
                 <p className="text-sm text-gray-500">الدور الوظيفي</p>
-                <p className="font-medium text-gray-900">{employee.roleId}</p>
+                <p className="font-medium text-gray-900">{employee.role}</p>
               </div>
             </div>
 
@@ -496,9 +496,9 @@ export default function EmployeeDetailsPage() {
               <div className="flex-1">
                 <p className="text-sm text-gray-500">المستودع المسؤول</p>
                 <p className="font-medium text-gray-900">
-                  {employee.warehouseId
+                  {/* {employee.warehouseId
                     ? ` ${employee.warehouseId}`
-                    : "لا يوجد"}
+                    : "لا يوجد"} */}
                 </p>
               </div>
             </div>
@@ -533,9 +533,9 @@ export default function EmployeeDetailsPage() {
               <div className="flex-1">
                 <p className="text-sm text-gray-500">نوع الصلاحية</p>
                 <p className="font-medium text-gray-900">
-                  {employee.roleId == "صيدلي"
+                  {employee.role == "صيدلي"
                     ? "صلاحيات كاملة"
-                    : employee.roleId == "محاسب"
+                    : employee.role == "محاسب"
                     ? "صلاحيات محاسب"
                     : "صلاحيات إدارية"}
                 </p>
