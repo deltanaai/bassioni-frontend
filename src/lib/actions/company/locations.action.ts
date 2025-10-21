@@ -127,7 +127,7 @@ export async function updateLocation(
       locationId,
       payload,
     });
-    if (!response || !response.data) {
+    if (!response) {
       throw new Error(
         "فشل في تحديث بيانات الموقع, لم يتم تلقي بيانات صالحة من الخادم"
       );
@@ -159,7 +159,7 @@ export async function deleteLocations(
 
   try {
     const response = await api.company.locations.delete({ payload });
-    if (!response || !response.data) {
+    if (!response) {
       throw new Error("فشل في حذف المواقع, لم يتم تلقي بيانات صالحة من الخادم");
     }
     return {

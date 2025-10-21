@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {  Plus, Trash2, ArrowLeft, X, Edit, MapPin } from "lucide-react";
+import {  Plus, Trash2, ArrowLeft, X, Edit, MapPin, Calendar, RefreshCw } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { LocationCreateInput, UpdateLocationInput } from "@/types";
@@ -197,39 +197,59 @@ export default function LocationsManagementPage() {
   {/* قائمة المواقع */}
   <div className="grid gap-4">
     {locations.map((location) => (
-      <div key={location.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <MapPin className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 capitalize">{location.name}</h3>
-            </div>
-            
-          </div>
-          
-          <div className="flex">
-            <button 
-              onClick={() => {
-                setLocationToUpdate(location);
-                setShowEditModal(true);
-              }}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-            >
-              <Edit className="w-5 h-5"/>
-            </button>
-            <button 
-              onClick={() => {
-                setLocationToDelete(location);
-                setShowDeleteModal(true);
-              }}
-              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-          </div>
+      <div key={location.id} className="bg-white border border-gray-200 rounded-2xl hover:shadow-md transition-shadow duration-300 p-6">
+        <div className="flex items-center justify-between p-4 bg-white rounded-lg  ">
+  <div className="flex items-center gap-4 flex-1">
+    <div className="p-3 bg-green-100 rounded-lg">
+      <MapPin className="w-6 h-6 text-green-600" />
+    </div>
+    
+    <div className="flex-1">
+      <h3 className="text-lg font-semibold text-gray-900 capitalize mb-1">
+        {location.name}
+      </h3>
+
+
+  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+        <div className="flex items-center gap-1">
+          <Calendar className="w-4 h-4" />
+          <span>أنشئ في: {location.createdAt}</span>
         </div>
+        
+        <div className="flex items-center gap-1">
+          <RefreshCw className="w-4 h-4" />
+          <span>حدث في: {location.updatedAt}</span>
+        </div>
+  </div>
+      
+      
+    </div>
+  </div>
+
+  
+  <div className="flex items-center gap-1">
+    <button 
+      onClick={() => {
+        setLocationToUpdate(location);
+        setShowEditModal(true);
+      }}
+      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200"
+      title="تعديل"
+    >
+      <Edit className="w-5 h-5"/>
+    </button>
+    <button 
+      onClick={() => {
+        setLocationToDelete(location);
+        setShowDeleteModal(true);
+      }}
+      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200"
+      title="حذف"
+    >
+      <Trash2 className="w-5 h-5" />
+    </button>
+  </div>
+</div>
       </div>
     ))}
   </div>
