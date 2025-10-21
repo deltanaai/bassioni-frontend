@@ -1,21 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Users, Plus, Trash2, ArrowLeft, X, Edit } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addNewRole, deleteRoles, getAllRoles } from "@/lib/actions/company/role.action";
+import { addNewRole, deleteRoles, getAllRoles, updateRole } from "@/lib/actions/company/role.action";
 import { useForm } from "react-hook-form";
-import { roleCreateInput } from "@/types";
+import { roleCreateInput, UpdateRoleInput } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AddNewRoleSchema } from "@/schemas/role";
+import { AddNewRoleSchema, UpdateRoleSchema } from "@/schemas/role";
 import { toast } from "sonner";
 
 export default function RolesManagementPage() {
   const router = useRouter();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
+  const [roleToUpdate, setRoleToUpdate] = useState<Role | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -71,11 +73,46 @@ export default function RolesManagementPage() {
   });
 
   const handleDelete = () => {
-    console.log("roleToDelete:", roleToDelete);
-    console.log("roleToDelete.id:", roleToDelete?.id);
     deleteMutation.mutate({
       itemsIds: [roleToDelete?.id],
     });
+  };
+
+  //التعديل
+  const { 
+    register: registerEdit, 
+    handleSubmit: handleEditSubmit, 
+    formState: { errors: editErrors }, 
+    reset: resetEdit,
+  } = useForm<UpdateRoleInput>({
+    resolver: zodResolver(UpdateRoleSchema),
+  });
+
+  useEffect(() => {
+    if (showEditModal && roleToUpdate) {
+      resetEdit({
+        roleId: roleToUpdate.id,
+        name: roleToUpdate.name
+      });
+    }
+  }, [showEditModal, roleToUpdate, resetEdit]);
+
+  //التعديل 
+  const editMutation = useMutation({
+    mutationFn: updateRole,
+    onSuccess: async (res) => {
+        if (!res.success) {
+            toast.error(res.error?.message ?? "حدث خطأ أثناء تعديل الدور ");
+            return;
+          }
+      await queryClient.invalidateQueries({ queryKey: ["roles"] });
+      setShowEditModal(false)
+
+      toast.success("تم تعديل الدور بنجاح");
+    },
+  })
+  const onSubmitEdit = (data: UpdateRoleInput) => {
+    editMutation.mutate(data);
   };
 
 
@@ -172,7 +209,12 @@ export default function RolesManagementPage() {
               
               <div className="flex">
               <button className=" p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
-                <Edit className="w-5 h-5"/>
+                <Edit
+                onClick={()=>{
+                    setRoleToUpdate(role);
+                    setShowEditModal(true)
+                }}
+                className="w-5 h-5"/>
               </button>
               <button 
               onClick={()=>{
@@ -195,6 +237,57 @@ export default function RolesManagementPage() {
           <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد أدوار</h3>
           <p className="text-gray-600 mb-4">ابدأ بإضافة أول دور في النظام</p>
+        </div>
+      )}
+
+       {/* مودال التعديل */}
+       {showEditModal && roleToUpdate && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-blue-600">تعديل الدور</h3>
+              <button 
+                onClick={()=>setShowEditModal(false)}
+                className="p-1 hover:bg-gray-100 rounded-lg transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSubmit(onSubmitEdit)} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  اسم الدور
+                </label>
+                <input type="hidden" 
+                {...registerEdit("roleId")}/>
+                <input
+                  type="text"
+                  {...registerEdit("name")}
+                  className="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                  placeholder="أدخل اسم الدور"
+                />
+                {editErrors.name && (
+                  <p className="text-red-500 text-sm mt-1">{editErrors.name.message}</p>
+                )}
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={editMutation.isPending}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition"
+                >
+                  {editMutation.isPending ? "جاري التعديل..." : "حفظ التعديلات"}
+                </button>
+                <button
+                  type="button"
+                  onClick={()=>setShowEditModal(false)}
+                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
