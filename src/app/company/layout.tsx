@@ -1,5 +1,5 @@
 "use client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   Home,
   User,
@@ -25,14 +25,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
 import { signOut } from "@/lib/actions/company/login.action";
 import logger from "@/lib/logger";
-import { getSession } from "@/lib/session";
+import { useGetSession } from "@/hooks/useGetSession";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES.COMPANY_DASHBOARD, Icon: Home },
@@ -56,10 +56,7 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
 
-  const { data: session, isLoading } = useQuery({
-    queryKey: ["session"],
-    queryFn: () => getSession(),
-  });
+  const { session, isLoadingSession } = useGetSession();
 
   const mutation = useMutation({
     mutationFn: signOut,
@@ -73,23 +70,26 @@ export default function DashboardLayout({
     },
   });
 
-  const isLoggedIn = !!session?.token;
-  logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
-
   // ✅ Redirect after mount, only when session is loaded
-  useEffect(() => {
-    if (!isLoading && !isLoggedIn) {
-      router.push(ROUTES.LOGIN);
-    }
-  }, [isLoading, isLoggedIn, router]);
+  // useEffect(() => {
+  //   if (!isLoadingSession && !isLoggedIn) {
+  //     router.push(ROUTES.LOGIN);
+  //   }
+  // }, [isLoadingSession, isLoggedIn, router]);
 
-  if (isLoading || !isLoggedIn) {
+  if (isLoadingSession) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
         <p className="text-sm text-gray-500">جارٍ التحقق من الجلسة...</p>
       </div>
     );
   }
+
+  const isLoggedIn = !!session?.token;
+  if (!isLoggedIn) {
+    router.push(ROUTES.LOGIN);
+  }
+  logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
 
   const authLinks = isLoggedIn
     ? { name: "تسجيل الخروج", href: "#", Icon: LogOut }
@@ -156,80 +156,6 @@ export default function DashboardLayout({
               </NavLink>
             )
           )}
-          {/* <NavLink
-            href="/company/"
-            icon={<Home className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الصفحة الرئيسية
-          </NavLink>
-          <NavLink
-            href="/company/today"
-            icon={<ClipboardList className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            طلبات اليوم
-          </NavLink>
-          <NavLink
-            href="/company/sentorder"
-            icon={<Send className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            عروض الشركات
-          </NavLink>
-          <NavLink
-            href="/company/massgeorder"
-            icon={<Send className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            طلباتي
-          </NavLink>
-          <NavLink
-            href="/company/invoice"
-            icon={<Archive className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الفواتير
-          </NavLink>
-          <NavLink
-            href="/company/attributes"
-            icon={<PlusCircle className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الأصناف والبراندات
-          </NavLink>
-          <NavLink
-            href="/company/products"
-            icon={<Mail className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            المنتجات
-          </NavLink> */}
-
-          {/* قائمة الخصومات
-          <SidebarDropdown sidebarOpen={sidebarOpen} />
-
-          <NavLink
-            href="/company/profile"
-            icon={<User className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الملف الشخصي
-          </NavLink>
-          <NavLink
-            href="/company/settings"
-            icon={<Settings className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الإعدادات
-          </NavLink>
-          <NavLink
-            href="/auth/login"
-            icon={<LogIn className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            تسجيل الدخول
-          </NavLink> */}
         </nav>
         {/* الفوتر */}
         <div className="border-t border-gray-200 p-4 text-center text-xs text-gray-400">

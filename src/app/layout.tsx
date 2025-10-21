@@ -29,6 +29,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // const session = await getSession();
+  // logger.info(`Session: ${JSON.stringify(session)}`);
   // if (!session?.token) {
   //   redirect(ROUTES.LOGIN);
   // }

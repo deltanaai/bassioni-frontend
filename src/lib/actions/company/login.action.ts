@@ -43,6 +43,7 @@ export async function signOut(): Promise<ActionResponse<{ message: string }>> {
   const validatioResult = await action({
     authorize: true,
   });
+
   if (validatioResult instanceof Error) {
     return handleError(validatioResult) as ErrorResponse;
   }
