@@ -4,6 +4,7 @@ import {
   AddProductSchema,
   DeleteWarehouseProductSchema,
   GetWarehouseProductsSchema,
+  WarehouseProductsIndexSchema,
 } from "@/schemas/warehouseProducts";
 
 import { api } from "../../api";
@@ -11,6 +12,45 @@ import action from "../../handlers/action";
 import handleError from "../../handlers/error";
 import { ValidationError } from "../../http-errors";
 import { normalizeExpiryDateMaybe } from "../../utils";
+
+export async function getAllProducts(
+  params: WarehouseProductsIndexParams
+): Promise<ActionResponse<PaginatedResponse<WarehouseProduct>>> {
+  const validationResult = await action({
+    params,
+    schema: WarehouseProductsIndexSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { warehouseId, page, perPage, search, active } =
+    validationResult.params!;
+
+  const payload: PaginatedSearchPayload = {
+    page,
+    per_page: perPage,
+    search,
+    active,
+  };
+
+  try {
+    const response = await api.company.products.getAll({
+      warehouseId,
+      payload,
+    });
+    if (!response || !response.data) {
+      throw new Error("لم يتم العثور على بيانات المنتجات");
+    }
+    return {
+      success: true,
+      data: response.data as PaginatedResponse<WarehouseProduct>,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
 
 export async function getProductsByWarehouse(
   params: GetProductsParams

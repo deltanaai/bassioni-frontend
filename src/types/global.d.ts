@@ -20,10 +20,10 @@ interface Role {
 interface WarehouseProduct {
   id: number;
   name: string;
-  description: string;
+  description?: string | null;
   price: string;
   active: boolean;
-  imageUrl: string;
+  imageUrl?: string | null;
   stock: number;
   reserved_stock: number;
   expiry_date: string;

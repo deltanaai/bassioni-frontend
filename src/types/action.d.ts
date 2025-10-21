@@ -73,6 +73,10 @@ interface GetProductsParams {
   filters?: Record<string, string | number>;
 }
 
+interface WarehouseProductsIndexParams extends PaginatedSearchParams {
+  warehouseId: number;
+}
+
 interface AddWarehouseProductParams {
   warehouseId: number;
   productId: number;
