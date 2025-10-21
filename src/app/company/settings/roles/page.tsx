@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Plus, Trash2, ArrowLeft, X } from "lucide-react";
+import { Users, Plus, Trash2, ArrowLeft, X, Edit } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addNewRole, deleteRoles, getAllRoles } from "@/lib/actions/company/role.action";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ export default function RolesManagementPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
 
-  const queryclient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const {data: rolesData} = useQuery({
     queryKey:["roles"],
@@ -40,7 +40,7 @@ export default function RolesManagementPage() {
         toast.error(res.error?.message ?? "حدث خطأ أثناء اضافه الدور ");
         return;
       }
-       await queryclient.invalidateQueries({ queryKey: ["roles"] });
+       await queryClient.invalidateQueries({ queryKey: ["roles"] });
 
        setShowAddForm(false);
        reset();
@@ -71,6 +71,8 @@ export default function RolesManagementPage() {
   });
 
   const handleDelete = () => {
+    console.log("roleToDelete:", roleToDelete);
+    console.log("roleToDelete.id:", roleToDelete?.id);
     deleteMutation.mutate({
       itemsIds: [roleToDelete?.id],
     });
@@ -167,7 +169,11 @@ export default function RolesManagementPage() {
                   <p className="text-sm text-gray-600">Guard: {role.guard_name}</p>
                 </div>
               </div>
-
+              
+              <div className="flex">
+              <button className=" p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                <Edit className="w-5 h-5"/>
+              </button>
               <button 
               onClick={()=>{
                 setRoleToDelete(role);
@@ -176,6 +182,8 @@ export default function RolesManagementPage() {
               >
                 <Trash2 className="w-5 h-5" />
               </button>
+              </div>
+              
             </div>
           </div>
         ))}
