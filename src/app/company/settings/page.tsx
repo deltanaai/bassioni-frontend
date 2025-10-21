@@ -2,10 +2,85 @@
 
 import DashboardLayout from "../layout";
 import React from "react";
+import { useRouter } from "next/navigation";
+import { Users, Key, MapPin, Building } from "lucide-react";
 
 export default function SettingsPage() {
+  const router = useRouter();
+
   return (
     <div className="p-6 space-y-8 bg-gray-50 text-gray-800 min-h-screen">
+      {/* إدارة الأدوار */}
+      <section className="bg-white border border-gray-100 rounded-2xl shadow-md p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-indigo-600 border-b border-gray-200 pb-2">
+          إدارة الأدوار والصلاحيات
+        </h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* كارد إدارة الأدوار */}
+          <div 
+            className="p-4 border-2 border-indigo-200 bg-indigo-50 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all duration-200 hover:shadow-md"
+            onClick={() => router.push('/company/settings/roles')}
+          >
+            <div className="flex items-center gap-3">
+              <Users className="w-6 h-6 text-indigo-700" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg text-indigo-700">إدارة الأدوار</h3>
+                <p className="text-sm text-indigo-600">إضافة، تعديل أو حذف الأدوار مثل مدير، محاسب، مشرف وغيرها</p>
+              </div>
+            </div>
+          </div>
+
+          {/* كارد إدارة الصلاحيات */}
+          <div 
+            className="p-4 border-2 border-purple-200 bg-purple-50 rounded-xl cursor-pointer hover:bg-purple-100 transition-all duration-200 hover:shadow-md"
+            onClick={() => router.push('/company/settings/permissions')}
+          >
+            <div className="flex items-center gap-3">
+              <Key className="w-6 h-6 text-purple-700" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg text-purple-700">إدارة الصلاحيات</h3>
+                <p className="text-sm text-purple-600">تحديد الصلاحيات الممنوحة لكل دور في النظام</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* إدارة المواقع */}
+      <section className="bg-white border border-gray-100 rounded-2xl shadow-md p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-green-600 border-b border-gray-200 pb-2">
+          إدارة المواقع والفروع
+        </h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* كارد إدارة المواقع */}
+          <div 
+            className="p-4 border-2 border-green-200 bg-green-50 rounded-xl cursor-pointer hover:bg-green-100 transition-all duration-200 hover:shadow-md"
+            onClick={() => router.push('/company/settings/locations')}
+          >
+            <div className="flex items-center gap-3">
+              <MapPin className="w-6 h-6 text-green-700" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg text-green-700">إدارة المواقع</h3>
+                <p className="text-sm text-green-600">إضافة، تعديل أو حذف المواقع والفروع المختلفة</p>
+              </div>
+            </div>
+          </div>
+
+          {/* كارد إعدادات الفروع */}
+          <div 
+            className="p-4 border-2 border-blue-200 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-all duration-200 hover:shadow-md"
+            onClick={() => router.push('/settings/branches')}
+          >
+            <div className="flex items-center gap-3">
+              <Building className="w-6 h-6 text-blue-700" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg text-blue-700">إعدادات الفروع</h3>
+                <p className="text-sm text-blue-600">تحديد إعدادات كل فرع ومعلومات الاتصال</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* إعدادات الخصوصية */}
       <section className="bg-white border border-gray-100 rounded-2xl shadow-md p-6 space-y-4">
         <h2 className="text-xl font-semibold text-emerald-600 border-b border-gray-200 pb-2">

@@ -20,6 +20,7 @@ import { resetPasswordSchema } from "@/schemas/Resetpassword"
 
 import { z } from "zod";
 import { CreateEmployeeSchema } from "@/schemas/employee";
+import { AddNewRoleSchema } from "@/schemas/role";
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -43,4 +44,6 @@ export type LocationUpdateInput = z.infer<typeof locationUpdateSchema>;
 export type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export type EmployeeCreateInput = z.infer<typeof CreateEmployeeSchema>;
+
+export type roleCreateInput = z.infer<typeof AddNewRoleSchema>
 
