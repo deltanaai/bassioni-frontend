@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { signIn } from "@/lib/actions/company/login.action";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
+import ROUTES from "@/constants/routes";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function LoginPage() {
           localStorage.removeItem("rememberedPassword");
         }
         toast.success("تم تسجيل الدخول بنجاح ✅");
-        router.push("/company");
+        router.push(ROUTES.COMPANY_DASHBOARD);
         router.refresh();
       } else {
         toast.error(result.message || "بيانات الدخول غير صحيحة");

@@ -11,6 +11,8 @@ const ROUTES = {
   TRASH:"/company/trash",
   PROFILE:"/company/profile",
   SETTINGS:"/company/settings",
+  ROLES:"/company/settings/roles",
+  LOCATIONS:"/company/settings/locations"
 
 };
 
