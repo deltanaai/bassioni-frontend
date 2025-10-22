@@ -30,7 +30,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    if (userType === "company" && pathname.startsWith("/pharma")) {
+    if (userType === "company" && pathname.startsWith("/Pharma")) {
       router.replace(ROUTES.COMPANY_DASHBOARD);
     } else if (userType !== "company" && pathname.startsWith("/company")) {
       router.replace(ROUTES.PHARMA_DASHBOARD);

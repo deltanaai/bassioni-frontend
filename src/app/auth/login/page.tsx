@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,9 +10,9 @@ import { toast } from "sonner";
 
 import ROUTES from "@/constants/routes";
 import { signIn } from "@/lib/actions/company/login.action";
+import { queryClient } from "@/lib/queryClient";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
-import { queryClient } from "@/lib/queryClient";
 
 export default function LoginPage() {
   const router = useRouter();

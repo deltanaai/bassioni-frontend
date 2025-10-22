@@ -2,7 +2,7 @@ const ROUTES = {
   BASE: "/",
   LOGIN: "/auth/login",
   COMPANY_DASHBOARD: "/company",
-  PHARMA_DASHBOARD: "/pharma",
+  PHARMA_DASHBOARD: "/Pharma",
   DAY_ORDERS: "/company/today",
   SENT_ORDERS: "/company/sentorder",
   MY_ORDERS: "/company/massgeorder",
