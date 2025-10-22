@@ -48,3 +48,13 @@ interface Location {
   createdAt: string;
   updatedAt: string;
 }
+
+interface TrashItem {
+  id: number;
+  name: string;
+  type: "employee" | "warehouse" | "role";
+  role?: string;
+  code?: string;
+  deletedAt: string;
+  originalData: any;
+}

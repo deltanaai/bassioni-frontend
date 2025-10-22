@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Plus } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  Briefcase,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  User,
+  Warehouse,
+} from "lucide-react";
 
 import { useForm } from "react-hook-form";
 import { CreateEmployeeSchema } from "@/schemas/employee";
@@ -16,9 +25,12 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { getAllRoles } from "@/lib/actions/company/role.action";
 import logger from "@/lib/logger";
+import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
 
 export default function EmployeesPage() {
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const queryClient = useQueryClient();
 
   //roles
@@ -26,15 +38,30 @@ export default function EmployeesPage() {
     queryKey: ["roles"],
     queryFn: () => getAllRoles({ page: 1, perPage: 10 }),
   });
-  console.log(rolesData)
-  const roles = rolesData?.data || [];   
+  console.log(rolesData);
+  const roles = rolesData?.data || [];
+
+  //warehouses
+  const { data: warehousesdata } = useQuery({
+    queryKey: ["warehouses"],
+    queryFn: () => getAllWarehouses({ page: 1, perPage: 10 }),
+  });
+  const warehouses = warehousesdata?.data || [];
 
   //employees
   const { data } = useQuery({
-    queryKey: ["employees"],
-    queryFn: () => getAllEmployees({ page: 1, perPage: 10 }),
+    queryKey: ["employees", currentPage],
+    queryFn: () =>
+      getAllEmployees({
+        page: currentPage,
+        perPage: 9,
+        deleted: false,
+        paginate: true,
+      }),
   });
-  // console.log('Full data:', data);
+
+  console.log("كامل البيانات:", data);
+
   logger.info(`Employees data: ${JSON.stringify(data)}`);
 
   const {
@@ -47,10 +74,7 @@ export default function EmployeesPage() {
     defaultValues: {
       active: true,
       warehouseId: null,
-      roleId: 0, // اضبط قيمة افتراضية صحيحة للرقم همسحهههههه
-
       address: null,
-
     },
   });
 
@@ -61,10 +85,10 @@ export default function EmployeesPage() {
         toast.error(res.error?.message ?? "حدث خطأ أثناء إنشاء الموظف");
         return;
       }
-       await queryClient.invalidateQueries({ queryKey: ["employees"] });
+      await queryClient.invalidateQueries({ queryKey: ["employees"] });
 
-       setShowModal(false);
-       reset();
+      setShowModal(false);
+      reset();
 
       toast.success(`تم إنشاء الموظف بنجاح`);
     },
@@ -95,33 +119,64 @@ export default function EmployeesPage() {
               key={employee.id}
               className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
             >
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                {employee.name}
-              </h2>
+              {/* الهيدر مع صورة المستخدم */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                  <User size={24} color="#059669" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {employee.name}
+                </h2>
+              </div>
 
-              <p className="text-gray-600 mt-1">
-                الدور:{" "}
-                <span className="font-bold text-gray-800">{employee.role}</span>
-              </p>
-              <p className="text-gray-600 mt-1">
-                نشط:{" "}
-                <span className="font-bold text-gray-800">
-                  {employee.active ? "نشط" : "غير نشط"}
-                </span>
-              </p>
-              <p className="text-gray-600 mt-1">
-                المستودع:{" "}
-                <span className="font-bold text-gray-800">
-                  {employee.warehouse ? employee.warehouse : "لا يوجد"}
-                </span>
-              </p>
+              {/* معلومات الموظف */}
+              <div className="space-y-3">
+                {/* الدور */}
+                <div className="flex items-center gap-2">
+                  <Briefcase size={16} color="#6B7280" />
+                  <span className="text-gray-600">الدور:</span>
+                  <span className="font-bold text-gray-800 mr-1">
+                    {employee.role}
+                  </span>
+                </div>
+
+                {/* النشاط */}
+                <div className="flex items-center gap-2">
+                  <Activity
+                    className={`w-4 h-4 ${
+                      employee.active ? "text-green-500" : "text-red-500"
+                    }`}
+                  />
+                  <span className="text-gray-600">نشط:</span>
+                  <span
+                    className={`font-bold ${
+                      employee.active ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {employee.active ? "نشط" : "غير نشط"}
+                  </span>
+                </div>
+
+                {/* المستودع */}
+                <div className="flex items-center gap-2">
+                  <Warehouse size={16} color="#6B7280" />
+                  <span className="text-gray-600">المستودع:</span>
+                  <span className="font-bold text-gray-800 mr-1">
+                    {employee.warehouse_name
+                      ? employee.warehouse_name
+                      : "لا يوجد"}
+                  </span>
+                </div>
+              </div>
+
+              {/* زر المزيد */}
               <div className="mt-6 text-left">
                 <Link
                   href={`/company/add-employee/${employee.id}`}
                   className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-semibold text-white transition duration-300"
                 >
                   المزيد
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight size={20} />
                 </Link>
               </div>
             </div>
@@ -132,6 +187,47 @@ export default function EmployeesPage() {
           </div>
         )}
       </div>
+      {/* Pagination بس لما يكون فيه اكتر من صفحة */}
+      {data?.meta && data.meta.last_page > 1 && (
+        <div className="flex justify-center items-center space-x-4 mt-6">
+          {/* السهم اليمين */}
+          <button
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            disabled={currentPage === 1}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          {/* أرقام الصفحات */}
+          <div className="flex space-x-1">
+            {Array.from({ length: data.meta.last_page }, (_, i) => i + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                    currentPage === page
+                      ? "bg-emerald-600 text-white shadow-md"
+                      : "text-emerald-600 border border-emerald-600 hover:bg-emerald-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
+
+          {/* السهم الشمال */}
+          <button
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={currentPage === data.meta.last_page}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeft size={16} />
+          </button>
+        </div>
+      )}
 
       {/* مودال الإضافة  */}
       {showModal && (
@@ -210,18 +306,20 @@ export default function EmployeesPage() {
               <div className="grid grid-cols-2 gap-4">
                 {/* الدور */}
                 <div>
-                <select 
-      {...register("roleId" , { valueAsNumber: true })}
-      className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-      defaultValue=""
-    >
-      <option value="" disabled  >-- اختر الدور --</option>
-      {(Array.isArray(roles) ? roles : []).map((role: any) => (
-        <option key={role.id} value={role.id}>
-          {role.name}
-        </option>
-      ))}
-    </select>
+                  <select
+                    {...register("roleId", { valueAsNumber: true })}
+                    className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      -- اختر الدور --
+                    </option>
+                    {(Array.isArray(roles) ? roles : []).map((role: any) => (
+                      <option key={role.id} value={role.id}>
+                        {role.name}
+                      </option>
+                    ))}
+                  </select>
                   {errors.roleId && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.roleId.message}
@@ -234,10 +332,18 @@ export default function EmployeesPage() {
                   <select
                     {...register("warehouseId", { valueAsNumber: true })}
                     className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                    defaultValue=""
                   >
-                    <option value="">اختر المستودع (اختياري)</option>
-                    <option value="1">المستودع الرئيسي</option>
-                    <option value="2">المستودع الفرعي</option>
+                    <option value="" disabled>
+                      -- اختر المستودع (اختياري) --
+                    </option>
+                    {(Array.isArray(warehouses) ? warehouses : []).map(
+                      (warehouse: any) => (
+                        <option key={warehouse.id} value={warehouse.id}>
+                          {warehouse.name}
+                        </option>
+                      )
+                    )}
                   </select>
                   {errors.warehouseId && (
                     <p className="text-red-500 text-sm mt-1">

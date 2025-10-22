@@ -29,6 +29,8 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateEmployeeSchema } from "@/schemas/employee";
+import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
+import { getAllRoles } from "@/lib/actions/company/role.action";
 
 export default function EmployeeDetailsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -65,7 +67,20 @@ export default function EmployeeDetailsPage() {
     queryFn: () => getEmployeeById({ employeeId }),
     enabled: !isNaN(employeeId),
   });
-  // console.log(data)
+
+  //roles
+  const { data: rolesData } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => getAllRoles({}),
+  });
+  const roles = rolesData?.data || [];
+
+  //warehouses
+  const { data: warehousesdata } = useQuery({
+    queryKey: ["warehouses"],
+    queryFn: () => getAllWarehouses({}),
+  });
+  const warehouses = warehousesdata?.data || [];
 
   const editForm = useForm({
     resolver: zodResolver(UpdateEmployeeSchema),
@@ -92,7 +107,7 @@ export default function EmployeeDetailsPage() {
         phone: editingEmployee.phone,
         address: editingEmployee.address || "",
         roleId: Number(editingEmployee.role),
-        // warehouseId: Number(editingEmployee.warehouseId),
+        warehouseId: Number(editingEmployee.warehouse_name),
         active: editingEmployee.active,
         password: "",
         passwordConfirmation: "",
@@ -293,11 +308,16 @@ export default function EmployeeDetailsPage() {
                       setValueAs: (v) => (v ? Number(v) : null),
                     })}
                     className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                    defaultValue=""
                   >
-                    <option value="">اختر الدور</option>
-                    <option value="1">صيدلي</option>
-                    <option value="2">محاسب</option>
-                    <option value="3">إداري</option>
+                    <option value="" disabled>
+                      -- اختر الدور --
+                    </option>
+                    {(Array.isArray(roles) ? roles : []).map((role: any) => (
+                      <option key={role.id} value={role.id}>
+                        {role.name}
+                      </option>
+                    ))}
                   </select>
                   {editForm.formState.errors.roleId && (
                     <p className="text-red-500 text-sm mt-1">
@@ -316,10 +336,18 @@ export default function EmployeeDetailsPage() {
                       setValueAs: (v) => (v ? Number(v) : null),
                     })}
                     className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
+                    defaultValue=""
                   >
-                    <option value="">اختر المستودع (اختياري)</option>
-                    <option value="1">المستودع الرئيسي</option>
-                    <option value="2">المستودع الفرعي</option>
+                    <option value="" disabled>
+                      -- اختر المستودع (اختياري) --
+                    </option>
+                    {(Array.isArray(warehouses) ? warehouses : []).map(
+                      (warehouse: any) => (
+                        <option key={warehouse.id} value={warehouse.id}>
+                          {warehouse.name}
+                        </option>
+                      )
+                    )}
                   </select>
                   {editForm.formState.errors.warehouseId && (
                     <p className="text-red-500 text-sm mt-1">
@@ -497,9 +525,9 @@ export default function EmployeeDetailsPage() {
               <div className="flex-1">
                 <p className="text-sm text-gray-500">المستودع المسؤول</p>
                 <p className="font-medium text-gray-900">
-                  {/* {employee.warehouseId
-                    ? ` ${employee.warehouseId}`
-                    : "لا يوجد"} */}
+                  {employee.warehouse_name
+                    ? ` ${employee.warehouse_name}`
+                    : "لا يوجد"}
                 </p>
               </div>
             </div>
@@ -529,19 +557,19 @@ export default function EmployeeDetailsPage() {
             </div>
 
             {/* الصلاحيات */}
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+            {/* <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
               <Shield className="w-4 h-4 text-blue-500" />
               <div className="flex-1">
                 <p className="text-sm text-gray-500">نوع الصلاحية</p>
                 <p className="font-medium text-gray-900">
-                  {employee.role == "صيدلي"
+                  {employee.role == "manager"
                     ? "صلاحيات كاملة"
                     : employee.role == "محاسب"
                     ? "صلاحيات محاسب"
                     : "صلاحيات إدارية"}
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -603,14 +631,8 @@ export default function EmployeeDetailsPage() {
                 <p className="text-sm text-gray-500">كلمة المرور</p>
                 <p className="font-medium text-gray-900">••••••••</p>
               </div>
-
-              <div className="p-3 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-500">آخر تسجيل دخول</p>
-                <p className="font-medium text-gray-900">قبل ساعتين</p>
-              </div>
             </div>
           </div>
-
           {/* كارد إجراءات خطيرة */}
           <div className="bg-white rounded-2xl border-gray-200 shadow-sm border p-5">
             <div className="flex items-center gap-3 mb-4">
@@ -635,7 +657,6 @@ export default function EmployeeDetailsPage() {
               </button>
             </div>
           </div>
-
           {/* مودال الحذف */}
           {showDeleteModal && (
             <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4 backdrop-blur-md">

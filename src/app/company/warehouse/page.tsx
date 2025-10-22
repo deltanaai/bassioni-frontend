@@ -9,6 +9,8 @@ import {
   MapPin,
   Warehouse,
   Activity,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -25,22 +27,29 @@ import { getAllLocations } from "@/lib/actions/company/locations.action";
 
 export default function WarehousesPage() {
   const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
 
   // المخازنن
   const { data } = useQuery({
-    queryKey: ["warehouses"],
-    queryFn: () => getAllWarehouses({ page: 1, perPage: 10 }),
+    queryKey: ["warehouses", currentPage],
+    queryFn: () =>
+      getAllWarehouses({
+        page: currentPage,
+        perPage: 6,
+        deleted: false,
+        paginate: true,
+      }),
   });
-  console.log(data)
+  console.log(data);
 
-    //   للمواقع
-  const { data: locationsData} = useQuery({
+  //   للمواقع
+  const { data: locationsData } = useQuery({
     queryKey: ["locations"],
     queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
-  });  
-  const locations = locationsData?.data || [];   
-  console.log(locations)
-    
+  });
+  const locations = locationsData?.data || [];
+  console.log(locations);
+
   const [showModal, setShowModal] = useState(false);
 
   const {
@@ -73,8 +82,6 @@ export default function WarehousesPage() {
     console.log(data);
   };
 
-  
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -87,7 +94,6 @@ export default function WarehousesPage() {
           إضافة مخزن
         </button>
       </div>
-      
 
       {/* عرض المخازن */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -97,7 +103,6 @@ export default function WarehousesPage() {
               key={warehouse.id}
               className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg"
             >
-              
               {/* العنوان */}
               <h2 className="mb-4 text-xl font-bold text-gray-900">
                 {warehouse.name}
@@ -106,32 +111,36 @@ export default function WarehousesPage() {
               {/* بيانات المخزن */}
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
-                  <Warehouse  className="h-5 w-5 text-emerald-500" /> كود المخزن :
+                  <Warehouse className="h-5 w-5 text-emerald-500" /> كود المخزن
+                  :
                   <span className="font-semibold text-gray-900">
                     {warehouse.code}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <MapPin  className="h-5 w-5 text-emerald-500" /> 
+                  <MapPin className="h-5 w-5 text-emerald-500" />
                   الموقع:
                   <span className="font-semibold text-gray-900">
-                  {warehouse.location}
+                    {warehouse.location}
                   </span>
                 </div>
 
-
-                {/* مش موجوده في الداتا اللي راجعه لسا */}
                 <div className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-emerald-500" /> حاله النشاط :
-                   <div className={`w-2 h-2 rounded-full ${
-                     warehouse.active ? 'bg-green-500' : 'bg-red-500'
-                   }`}></div>
-                   <span className={`font-semibold ${
-                     warehouse.active ? 'text-green-700' : 'text-red-700'
-                   }`}>
-                     {warehouse.active ? 'نشط' : 'غير نشط'}
-                   </span>
+                  <Activity className="h-5 w-5 text-emerald-500" /> حاله النشاط
+                  :
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      warehouse.active ? "bg-green-500" : "bg-red-500"
+                    }`}
+                  ></div>
+                  <span
+                    className={`font-semibold ${
+                      warehouse.active ? "text-green-700" : "text-red-700"
+                    }`}
+                  >
+                    {warehouse.active ? "نشط" : "غير نشط"}
+                  </span>
                 </div>
               </div>
 
@@ -160,6 +169,47 @@ export default function WarehousesPage() {
           </div>
         )}
       </div>
+      {/* Pagination بس لما يكون فيه اكتر من صفحة */}
+      {data?.meta && data.meta.last_page > 1 && (
+        <div className="flex justify-center items-center space-x-4 mt-6">
+          {/* السهم اليمين */}
+          <button
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            disabled={currentPage === 1}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          {/* أرقام الصفحات */}
+          <div className="flex space-x-1">
+            {Array.from({ length: data.meta.last_page }, (_, i) => i + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                    currentPage === page
+                      ? "bg-emerald-600 text-white shadow-md"
+                      : "text-emerald-600 border border-emerald-600 hover:bg-emerald-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
+
+          {/* السهم الشمال */}
+          <button
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={currentPage === data.meta.last_page}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeft size={16} />
+          </button>
+        </div>
+      )}
       {/* مودال الإضافة */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -189,19 +239,20 @@ export default function WarehousesPage() {
               )}
 
               {/* الموقع */}
-              <select 
-      {...register("locationId" , { valueAsNumber: true })}
-      className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-      defaultValue=""
-
-    >
-      <option value="" disabled  >-- اختر الموقع --</option>
-      {locations.map((location) => (
-        <option key={location.id} value={location.id}>
-          {location.name}
-        </option>
-      ))}
-    </select>
+              <select
+                {...register("locationId", { valueAsNumber: true })}
+                className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  -- اختر الموقع --
+                </option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
               {errors.locationId && (
                 <p className="text-sm text-red-500">
                   {errors.locationId.message}
