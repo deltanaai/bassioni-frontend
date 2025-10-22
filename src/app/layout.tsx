@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
 
 import ROUTES from "@/constants/routes";
+import AuthGuard from "@/context/providers/authGuard";
 import { QueryProvider } from "@/context/providers/query-provider";
 import logger from "@/lib/logger";
 import { getSession } from "@/lib/session";
@@ -40,9 +41,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          {children}
-          <Toaster richColors />
+          <AuthGuard>{children}</AuthGuard>
         </QueryProvider>
+        <Toaster richColors />
       </body>
     </html>
   );

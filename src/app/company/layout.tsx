@@ -86,10 +86,10 @@ export default function DashboardLayout({
   }
 
   const isLoggedIn = !!session?.token;
-  if (!isLoggedIn) {
-    router.push(ROUTES.LOGIN);
-  }
-  logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
+  // if (!isLoggedIn) {
+  //   router.push(ROUTES.LOGIN);
+  // }
+  // logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
 
   const authLinks = isLoggedIn
     ? { name: "تسجيل الخروج", href: "#", Icon: LogOut }

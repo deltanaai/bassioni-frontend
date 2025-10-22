@@ -21,15 +21,18 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 
     if (!session?.token && !isAuthRoute) {
       router.replace(ROUTES.LOGIN);
+      return;
     }
 
     if (isAuthRoute && session?.token) {
       if (userType === "company") router.replace(ROUTES.COMPANY_DASHBOARD);
-      else if (userType !== "company") router.replace(ROUTES.PHARMA_DASHBOARD);
+      else if (userType === "pharmacy") router.replace(ROUTES.PHARMA_DASHBOARD);
       return;
     }
 
-    if (pathname.startsWith("/company") && userType !== "company") {
+    if (userType === "company" && pathname.startsWith("/pharma")) {
+      router.replace(ROUTES.COMPANY_DASHBOARD);
+    } else if (userType !== "company" && pathname.startsWith("/company")) {
       router.replace(ROUTES.PHARMA_DASHBOARD);
     }
   }, [session, isLoadingSession, pathname, router]);
