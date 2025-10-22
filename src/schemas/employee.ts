@@ -169,3 +169,10 @@ export const AssignEmployeesRoleSchema = z.object({
     .array(z.number().int().positive())
     .nonempty("يجب تحديد موظف واحد على الأقل لتعيين الدور"),
 });
+
+export const AssignEmployeesWarehouseSchema = z.object({
+  warehouseId: z.number("معرف المستودع مطلوب").int().positive(),
+  employeesId: z
+    .array(z.number().int().positive())
+    .nonempty("يجب تحديد موظف واحد على الأقل لتعيين المستودع"),
+});

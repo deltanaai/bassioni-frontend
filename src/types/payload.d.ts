@@ -59,6 +59,11 @@ interface AssignEmployeesRolePayload {
   items: number[];
 }
 
+interface AssignEmployeesWarehousePayload {
+  warehouse_id: number;
+  items: number[];
+}
+
 interface DeleteEmployeesPayload {
   items: number[];
 }

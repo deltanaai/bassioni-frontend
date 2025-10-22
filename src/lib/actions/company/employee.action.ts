@@ -2,6 +2,7 @@
 
 import {
   AssignEmployeesRoleSchema,
+  AssignEmployeesWarehouseSchema,
   CreateEmployeeSchema,
   DeleteEmployeesSchema,
   GetEmployeeSchema,
@@ -232,6 +233,40 @@ export async function assignEmployeeRole(
     return {
       success: true,
       data: { message: response.message ?? "تم تعيين الدور للموظفين بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function assignEmployeesWarehouse(
+  params: AssignEmployeesWarehouseParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: AssignEmployeesWarehouseSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { warehouseId, employeesId } = validationResult.params!;
+  const payload: AssignEmployeesWarehousePayload = {
+    warehouse_id: warehouseId,
+    items: employeesId,
+  };
+  try {
+    const response = await api.company.employee.assignEmployeesWarehouse({
+      payload,
+    });
+    if (!response) {
+      throw new Error(
+        "فشل في تعيين المستودع للموظفين, لم يتم تلقي رد من الخادم"
+      );
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تعيين المستودع للموظفين بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

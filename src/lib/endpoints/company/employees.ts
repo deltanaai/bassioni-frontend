@@ -46,6 +46,17 @@ export const employeesEndpoints = {
       body: JSON.stringify(payload),
     }),
 
+  assignEmployeesWarehouse: ({
+    payload,
+  }: {
+    payload: AssignEmployeesWarehousePayload;
+  }) =>
+    fetchHandler(`${API_URL}company/dashboard/employees/assign-warehouse`, {
+      method: "PUT",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
+
   deleteEmployees: ({ payload }: { payload: DeleteEmployeesPayload }) =>
     fetchHandler(`${API_URL}company/dashboard/employees/delete`, {
       method: "DELETE",

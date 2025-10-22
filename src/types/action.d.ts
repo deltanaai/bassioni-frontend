@@ -136,6 +136,11 @@ interface AssignEmployeesRoleParams {
   employeesId: number[];
 }
 
+interface AssignEmployeesWarehouseParams {
+  warehouseId: number;
+  employeesId: number[];
+}
+
 interface DeleteEmployeesParams {
   employeesId: number[];
 }
