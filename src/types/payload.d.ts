@@ -54,6 +54,11 @@ interface UpdateEmployeePayload {
   address?: string | null;
 }
 
+interface AssignEmployeesRolePayload {
+  role_id: number;
+  items: number[];
+}
+
 interface DeleteEmployeesPayload {
   items: number[];
 }

@@ -131,6 +131,11 @@ interface UpdateEmployeeParams {
   address?: string | null;
 }
 
+interface AssignEmployeesRoleParams {
+  roleId: number;
+  employeesId: number[];
+}
+
 interface DeleteEmployeesParams {
   employeesId: number[];
 }

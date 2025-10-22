@@ -162,3 +162,10 @@ export const UpdateEmployeeSchema = z
       path: ["passwordConfirmation"],
     }
   );
+
+export const AssignEmployeesRoleSchema = z.object({
+  roleId: z.number("معرف الدور مطلوب").int().positive(),
+  employeesId: z
+    .array(z.number().int().positive())
+    .nonempty("يجب تحديد موظف واحد على الأقل لتعيين الدور"),
+});

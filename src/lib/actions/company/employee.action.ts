@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  AssignEmployeesRoleSchema,
   CreateEmployeeSchema,
   DeleteEmployeesSchema,
   GetEmployeeSchema,
@@ -198,6 +199,39 @@ export async function updateEmployee(
     return {
       success: true,
       data: { message: response.message ?? "تم تحديث بيانات الموظف بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function assignEmployeeRole(
+  params: AssignEmployeesRoleParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: AssignEmployeesRoleSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { roleId, employeesId } = validationResult.params!;
+  const payload: AssignEmployeesRolePayload = {
+    role_id: roleId,
+    items: employeesId,
+  };
+  try {
+    const response = await api.company.employee.assignEmployeesRole({
+      payload,
+    });
+    if (!response) {
+      throw new Error("فشل في تعيين الدور للموظفين, لم يتم تلقي رد من الخادم");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تعيين الدور للموظفين بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
