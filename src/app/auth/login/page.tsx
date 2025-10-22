@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,10 +8,11 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import ROUTES from "@/constants/routes";
 import { signIn } from "@/lib/actions/company/login.action";
 import { loginSchema } from "@/schemas/login";
 import { LoginFormData } from "@/types";
-import ROUTES from "@/constants/routes";
+import { queryClient } from "@/lib/queryClient";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function LoginPage() {
 
   const mutation = useMutation({
     mutationFn: signIn,
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       if (result.success && result.data) {
         const email = getValues().email;
         const password = getValues().password;
@@ -63,6 +64,7 @@ export default function LoginPage() {
           localStorage.removeItem("rememberedPassword");
         }
         toast.success("تم تسجيل الدخول بنجاح ✅");
+        await queryClient.invalidateQueries({ queryKey: ["session"] });
         router.push(ROUTES.COMPANY_DASHBOARD);
         router.refresh();
       } else {

@@ -33,6 +33,7 @@ import ROUTES from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
 import logger from "@/lib/logger";
+import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES.COMPANY_DASHBOARD, Icon: Home },
@@ -60,12 +61,14 @@ export default function DashboardLayout({
 
   const mutation = useMutation({
     mutationFn: signOut,
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       if (!res.success) {
         toast.error(res.error?.message || "حدث خطأ أثناء تسجيل الخروج");
         return;
       }
       toast.success("تم تسجيل الخروج بنجاح");
+
+      await queryClient.invalidateQueries({ queryKey: ["session"] });
       router.push(ROUTES.LOGIN);
     },
   });
