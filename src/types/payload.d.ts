@@ -3,8 +3,10 @@
 interface PaginatedSearchPayload {
   page?: number;
   per_page?: number;
-  search?: string;
-  active?: boolean;
+  deleted?: boolean;
+  paginate?: boolean;
+  order_by_direction?: "asc" | "desc";
+  order_by?: string;
 }
 
 interface AddWarehouseProductPayload {

@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { getAllRoles } from "@/lib/actions/company/role.action";
+import logger from "@/lib/logger";
 
 export default function EmployeesPage() {
   const [showModal, setShowModal] = useState(false);
@@ -34,6 +35,7 @@ export default function EmployeesPage() {
     queryFn: () => getAllEmployees({ page: 1, perPage: 10 }),
   });
   // console.log('Full data:', data);
+  logger.info(`Employees data: ${JSON.stringify(data)}`);
 
   const {
     register,

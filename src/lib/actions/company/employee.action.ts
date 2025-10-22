@@ -18,7 +18,7 @@ import { NotFoundError } from "../../http-errors";
 
 export async function getAllEmployees(
   params: PaginatedSearchParams = {}
-): Promise<ActionResponse<PaginatedResponse<Employee>>> {
+): Promise<IndexedActionResponse<Employee>> {
   const validationResult = await action({
     params,
     schema: GetEmployeesSchema,
@@ -29,13 +29,16 @@ export async function getAllEmployees(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { page, perPage, search, active } = validationResult.params!;
+  const { page, perPage, orderBy, orderByDirection, deleted, paginate } =
+    validationResult.params!;
 
   const payload: PaginatedSearchPayload = {
-    ...(page && { page }),
-    ...(perPage && { per_page: perPage }),
-    ...(search && { search }),
-    ...(active !== undefined && { active }),
+    page,
+    per_page: perPage,
+    order_by: orderBy,
+    order_by_direction: orderByDirection,
+    deleted,
+    paginate,
   };
 
   try {
@@ -49,6 +52,8 @@ export async function getAllEmployees(
     return {
       success: true,
       data: response.data as PaginatedResponse<Employee>,
+      links: response.links,
+      meta: response.meta,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

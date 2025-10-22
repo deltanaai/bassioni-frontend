@@ -6,12 +6,16 @@ type ActionResponse<T = null> = {
   token?: string;
   result?: "Success" | "Error";
   message?: string;
+  links?: PaginationLinks;
+  meta?: PaginationMeta;
   error?: {
     message: string;
     details?: Record<string, string[]>;
   };
   status?: number;
 };
+
+type IndexedActionResponse<T = null> = ActionResponse<PaginatedResponse<T>>;
 
 type SuccessResponse<T = null> = ActionResponse<T> & { success: true };
 
@@ -35,8 +39,10 @@ interface BackendErrorResponse {
 interface PaginatedSearchParams {
   page?: number;
   perPage?: number;
-  search?: string;
-  active?: boolean;
+  deleted?: boolean;
+  paginate?: boolean;
+  orderByDirection?: "asc" | "desc";
+  orderBy?: string;
 }
 
 interface PaginationLinks {
@@ -47,10 +53,10 @@ interface PaginationLinks {
 }
 
 interface PaginationMeta {
-  current_Page: number;
+  current_page: number;
   from: number | null;
-  last_Page: number;
-  per_Page: number;
+  last_page: number;
+  per_page: number;
   to: number | null;
   total: number;
 }
