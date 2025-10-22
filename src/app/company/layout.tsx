@@ -30,9 +30,9 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
 import logger from "@/lib/logger";
-import { useGetSession } from "@/hooks/useGetSession";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES.COMPANY_DASHBOARD, Icon: Home },
