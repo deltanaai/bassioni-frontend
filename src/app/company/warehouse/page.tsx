@@ -35,7 +35,7 @@ export default function WarehousesPage() {
     queryFn: () =>
       getAllWarehouses({
         page: currentPage,
-        perPage: 6,
+        perPage: 9,
         deleted: false,
         paginate: true,
       }),
@@ -84,16 +84,23 @@ export default function WarehousesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-emerald-400">المخازن</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-2 font-semibold text-white transition hover:bg-emerald-700"
-        >
-          <Plus className="h-5 w-5" />
-          إضافة مخزن
-        </button>
-      </div>
+      <div className="mb-8 flex items-center justify-between p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
+  <div className="flex items-center gap-3">
+    <Warehouse className="w-8 h-8 text-emerald-600" />
+    <div>
+      <h1 className="text-3xl font-bold text-emerald-600">المخازن</h1>
+      <p className="text-gray-600">إدارة وتنظيم مخازن الشركة</p>
+    </div>
+  </div>
+  
+  <button
+    onClick={() => setShowModal(true)}
+    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+  >
+    <Plus className="w-5 h-5" />
+    إضافة مخزن
+  </button>
+</div>
 
       {/* عرض المخازن */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">

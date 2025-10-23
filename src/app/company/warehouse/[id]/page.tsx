@@ -8,12 +8,12 @@ import {
   ArrowLeft,
   Edit,
   Trash2,
-  Code,
   Building,
   RefreshCw,
   Calendar,
   Loader2,
   Circle,
+  Warehouse,
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddProductSchema } from "@/schemas/warehouseProducts";
@@ -27,6 +27,7 @@ import { UpdateWarehouseSchema } from "@/schemas/warehouse";
 import { getAllLocations } from "@/lib/actions/company/locations.action";
 import {
   addProductToWarehouse,
+  deleteProductFromWarehouse,
   getProductsByWarehouse,
 } from "@/lib/actions/company/warehouseProducts.action";
 import { toast } from "sonner";
@@ -40,13 +41,18 @@ export default function WarehouseDetailsPage() {
 
   //products
   const [showProductModal, setShowProductModel] = useState(false);
+  const [showDeleteProductModal, setShowDeleteProductModal] = useState(false);
+const [productToDelete, setProductToDelete] = useState<{
+  id: number;
+  name: string;
+  batch_number: string;
+} | null>(null);
 
   const params = useParams();
   const warehouseId = Number(params.id) || 0;
   const queryClient = useQueryClient();
 
-  // start fuctions warehouse
-  // جلب بيانات المخزن
+  // جلب المخزن
   const { data, isLoading, error } = useQuery({
     queryKey: ["warehouse", warehouseId],
     queryFn: () => getWarehouse({ warehouseId }),
@@ -203,6 +209,36 @@ export default function WarehouseDetailsPage() {
     });
   };
 
+  const deleteProductFromWarehouseMutation = useMutation({
+    mutationFn: deleteProductFromWarehouse,
+    onSuccess: async (res) => {
+      if (!res.success) {
+        toast.error(res.error?.message ?? "حدث خطأ أثناء حذف المنتج");
+        return;
+      }
+      await queryClient.invalidateQueries({
+        queryKey: ["warehouseProducts", warehouseId],
+      });
+  
+      setShowDeleteProductModal(false);
+      setProductToDelete(null);
+      toast.success(`تم حذف المنتج من المستودع بنجاح`);
+    },
+    onError: (error) => {
+      toast.error("حدث خطأ غير متوقع أثناء حذف المنتج");
+    }
+  });
+   
+  const handleProductDelete = () => {
+    if (productToDelete) {
+      deleteProductFromWarehouseMutation.mutate({
+        warehouseId,
+        itemsId: [productToDelete.id],
+        batchNumber: productToDelete.batch_number
+      });
+    }
+  };
+
   // التحقق من صحة الـ ID
   if (isNaN(warehouseId)) {
     return (
@@ -274,7 +310,7 @@ export default function WarehouseDetailsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <p className="flex items-center gap-2 text-gray-700">
-            <Code className="w-5 h-5 text-emerald-500" /> الكود:
+            <Warehouse className="w-5 h-5 text-emerald-500" /> كود المخزن:
             <span className="font-semibold text-gray-900">
               {warehouse?.code}
             </span>
@@ -316,16 +352,16 @@ export default function WarehouseDetailsPage() {
           <p className="flex items-center gap-2 text-gray-700">
             <Circle
               className={`w-5 h-5 ${
-                warehouse?.deleted ? "text-red-500" : "text-green-500"
+                warehouse?.active ? "text-green-500" : "text-red-500"
               }`}
             />
             الحالة:
             <span
               className={`font-semibold ${
-                warehouse?.deleted ? "text-red-600" : "text-green-600"
+                warehouse?.active ? "text-green-600" : "text-red-600"
               }`}
             >
-              {warehouse?.deleted ? "محذوف" : "نشط"}
+              {warehouse?.active ? "نشط" : "غير نشط"}
             </span>
           </p>
         </div>
@@ -498,7 +534,10 @@ export default function WarehouseDetailsPage() {
                         <Edit />
                       </button>
                       <button
-                        // onClick={() => handleDeleteProduct(p.id)}
+                        onClick={() => 
+                          {setShowDeleteProductModal(true);
+                            setProductToDelete(p);
+                          }}
                         className="text-red-500 hover:text-red-600 p-1"
                         title="حذف"
                       >
@@ -706,6 +745,99 @@ export default function WarehouseDetailsPage() {
           </div>
         </div>
       )}
+
+{/* مودال حذف المنتج */}
+{showDeleteProductModal && productToDelete && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200">
+      
+      {/* الهيدر مع لون متدرج */}
+      <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <span className="text-xl">⚠️</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">حذف المنتج</h3>
+              <p className="text-red-100 text-sm">عملية حذف نهائية</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => {
+              setShowDeleteProductModal(false);
+              setProductToDelete(null);
+            }}
+            className="w-10 h-10 rounded-full hover:bg-white/20 flex items-center justify-center transition-all"
+          >
+            <span className="text-white text-lg">✕</span>
+          </button>
+        </div>
+      </div>
+
+      {/* محتوى المودال */}
+      <div className="p-6">
+        <div className="text-center mb-6">
+          <p className="text-gray-700 text-lg mb-4 font-medium">
+            هل أنت متأكد من حذف هذا المنتج؟
+          </p>
+          
+          {/* بطاقة المنتج */}
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-5 mb-4 transform hover:scale-[1.02] transition-transform">
+            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <span className="text-red-600 text-2xl">📦</span>
+            </div>
+            <p className="text-gray-900 font-bold text-xl mb-2">
+              {productToDelete.name}
+            </p>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-gray-600 text-sm bg-gray-200 px-3 py-1 rounded-full">
+                #{productToDelete.batch_number}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-red-600 bg-red-50 rounded-xl p-3">
+            <span>ⓘ</span>
+            <p className="text-sm font-medium">هذا الإجراء لا يمكن التراجع عنه</p>
+          </div>
+        </div>
+      </div>
+
+      {/* أزرار المودال */}
+      <div className="flex gap-3 p-6 bg-gray-50 border-t border-gray-200">
+        <button
+          onClick={() => {
+            setShowDeleteProductModal(false);
+            setProductToDelete(null);
+          }}
+          disabled={deleteProductFromWarehouseMutation.isPending}
+          className="flex-1 py-4 px-6 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 transition-all duration-200 font-bold text-lg shadow-sm hover:shadow-md"
+        >
+          تراجع
+        </button>
+        
+        <button
+          onClick={handleProductDelete}
+          disabled={deleteProductFromWarehouseMutation.isPending}
+          className="flex-1 py-4 px-6 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 transition-all duration-200 font-bold text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+        >
+          {deleteProductFromWarehouseMutation.isPending ? (
+            <>
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              جاري الحذف...
+            </>
+          ) : (
+            <>
+              <span className="text-lg">🗑️</span>
+              تأكيد الحذف
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

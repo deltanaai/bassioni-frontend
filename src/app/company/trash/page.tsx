@@ -71,30 +71,33 @@ export default function TrashPage() {
   const warehouses = warehousesData?.data || [];
   const roles = rolesData?.data || [];
 
-  const allTrashItems: TrashItem[] = [
-    ...employees.map((emp: any) => ({
-      id: emp.id,
-      name: emp.name,
-      type: "employee" as const,
-      role: emp.role,
-      deletedAt: emp.deletedAt || "غير معروف",
-      originalData: emp,
-    })),
-    ...warehouses.map((wh: any) => ({
-      id: wh.id,
-      name: wh.name,
-      type: "warehouse" as const,
-      code: wh.code,
-      deletedAt: wh.deletedAt || "غير معروف",
-      originalData: wh,
-    })),
-    ...roles.map((role: any) => ({
+  const allTrashItems = [
+    ...(Array.isArray(employees)
+      ? employees.map((emp: Employee) => ({
+          id: emp.id,
+          name: emp.name,
+          type: "employee" as const,
+          role: emp.role,
+          originalData: emp,
+        }))
+      : []),
+    ...(Array.isArray(warehouses)
+      ? warehouses.map((wh: Warehouse) => ({
+          id: wh.id,
+          name: wh.name,
+          type: "warehouse" as const,
+          code: wh.code,
+          originalData: wh,
+        }))
+      : []),
+    ...(Array.isArray(roles)
+      ? roles.map((role: Role) => ({
       id: role.id,
       name: role.name,
       type: "role" as const,
-      deletedAt: role.deletedAt || "غير معروف",
       originalData: role,
-    })),
+    }))
+    :[]),
   ];
 
   // Filter and search
@@ -384,21 +387,20 @@ export default function TrashPage() {
                       {item.type === "warehouse" && (
                         <span>الكود: {item.code}</span>
                       )}
-                      <span>تم الحذف: {item.deletedAt}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => handleAction(item, "restore")}
+                    onClick={() => handleAction(item as unknown as TrashItem, "restore")}
                     className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-semibold text-white transition duration-300"
                   >
                     <RotateCcw className="w-4 h-4" />
                     استعادة
                   </button>
                   <button
-                    onClick={() => handleAction(item, "delete")}
+                    onClick={() => handleAction(item as unknown as TrashItem, "delete")}
                     className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-2xl text-sm font-semibold text-white transition duration-300"
                   >
                     <Trash2 className="w-4 h-4" />

@@ -8,7 +8,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Settings,
   User,
+  Users,
   Warehouse,
 } from "lucide-react";
 
@@ -26,10 +28,12 @@ import { toast } from "sonner";
 import { getAllRoles } from "@/lib/actions/company/role.action";
 import logger from "@/lib/logger";
 import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
+import BulkAssignModal from "@/components/BulkAssignModal";
 
 export default function EmployeesPage() {
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -101,16 +105,41 @@ export default function EmployeesPage() {
 
   return (
     <div className="p-6 min-h-screen bg-white">
+      <div className="flex justify-between items-center mb-8 p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
+  <div className="flex items-center gap-3">
+    <Users className="w-8 h-8 text-emerald-600" />
+    <div>
+      <h1 className="text-3xl font-bold text-emerald-600">ادارة الموظفين</h1>
+      <p className="text-gray-600">إدارة وتنظيم فريق العمل</p>
+    </div>
+  </div>
+  
+  <div className="flex items-center gap-3">
+    <button
+      onClick={() => setIsBulkModalOpen(true)}
+      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+    >
+      <Settings className="w-5 h-5" />
+      تعيين جماعي
+    </button>
+    
+    <button
+      onClick={() => setShowModal(true)}
+      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+    >
+      <Plus className="w-5 h-5" />
+      إضافة موظف
+    </button>
+  </div>
+</div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-emerald-600">الموظفين</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-white font-semibold transition"
-        >
-          <Plus className="w-5 h-5" />
-          إضافة موظف
-        </button>
+        
       </div>
+
+      <BulkAssignModal
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {Array.isArray(data?.data) && data.data.length > 0 ? (

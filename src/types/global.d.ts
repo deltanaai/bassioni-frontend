@@ -40,6 +40,7 @@ interface Warehouse {
   updatedAt: string;
   deletedAt?: string | null;
   deleted: boolean;
+  active: boolean;
 }
 
 interface Location {
@@ -55,6 +56,5 @@ interface TrashItem {
   type: "employee" | "warehouse" | "role";
   role?: string;
   code?: string;
-  deletedAt: string;
-  originalData: any;
+  originalData: string;  //anyyy
 }
