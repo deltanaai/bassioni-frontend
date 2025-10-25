@@ -13,7 +13,7 @@ import {
 
 export async function getAllLocations(
   params?: PaginatedSearchParams
-): Promise<ActionResponse<Location[]>> {
+): Promise<IndexedActionResponse<Location[]>> {
   const validationResult = await action({
     params,
     schema: GetAllLocationsSchema,
@@ -24,13 +24,16 @@ export async function getAllLocations(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { page, perPage, search, active } = validationResult.params!;
+  const { page, perPage, orderBy, orderByDirection, deleted, paginate } =
+    validationResult.params!;
 
   const payload: PaginatedSearchPayload = {
-    ...(page && { page }),
-    ...(perPage && { per_page: perPage }),
-    ...(search && { search }),
-    ...(active !== undefined && { active }),
+    page,
+    per_page: perPage,
+    order_by: orderBy,
+    order_by_direction: orderByDirection,
+    deleted,
+    paginate,
   };
   try {
     const response = await api.company.locations.getAll({ payload });
@@ -39,7 +42,9 @@ export async function getAllLocations(
     }
     return {
       success: true,
-      data: response.data as Location[],
+      data: response.data as PaginatedResponse<Location[]>,
+      links: response.links,
+      meta: response.meta,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
