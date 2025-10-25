@@ -10,9 +10,13 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const { session, isLoadingSession } = useGetSession();
+  const { session, isLoadingSession, refetch } = useGetSession();
 
   const userType = "company";
+
+  useEffect(() => {
+    refetch();
+  }, [refetch, pathname]);
 
   useEffect(() => {
     if (isLoadingSession) return;

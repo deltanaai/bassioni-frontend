@@ -3,7 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getSession } from "@/lib/session";
 
 export const useGetSession = () => {
-  const { data: session, isLoading: isLoadingSession } = useQuery({
+  const {
+    data: session,
+    isLoading: isLoadingSession,
+    refetch,
+  } = useQuery({
     queryKey: ["session"],
     queryFn: () => getSession(),
     staleTime: 0,
@@ -12,5 +16,5 @@ export const useGetSession = () => {
     retry: false,
   });
 
-  return { session, isLoadingSession };
+  return { session, isLoadingSession, refetch };
 };
