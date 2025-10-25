@@ -11,6 +11,8 @@ import {
   MapPin,
   Calendar,
   RefreshCw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -39,10 +41,12 @@ export default function LocationsManagementPage() {
   );
 
   const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   const { data: LocationsData } = useQuery({
-    queryKey: ["locations"],
-    queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
+    queryKey: ["locations", currentPage],
+    queryFn: () => getAllLocations({ page:currentPage , perPage: 6 , deleted:false, paginate:true }),
   });
   const locations = LocationsData?.data || [];
   console.log(locations);
@@ -96,7 +100,7 @@ export default function LocationsManagementPage() {
 
   const handleDelete = () => {
     deleteMutation.mutate({
-      itemsIds: [LocationToDelete?.id],
+      itemsIds: LocationToDelete?.id !== undefined ? [LocationToDelete.id] : [],
     });
   };
 
@@ -216,7 +220,7 @@ export default function LocationsManagementPage() {
 
       {/* قائمة المواقع */}
       <div className="grid gap-4">
-        {locations.map((location) => (
+        {(Array.isArray(locations) ? locations : []).map((location: Location) => (
           <div
             key={location.id}
             className="bg-white border border-gray-200 rounded-2xl hover:shadow-md transition-shadow duration-300 p-6"
@@ -274,7 +278,15 @@ export default function LocationsManagementPage() {
       </div>
 
       {/* رسالة عندما لا توجد مواقع */}
-      {locations.length === 0 && (
+      {/* 
+        سبب الايرور: 
+        المتغير locations قد يكون نوعه PaginatedResponse<Location> وليس دائما مصفوفة. 
+        الـPaginatedResponse لا يملك خاصية length، 
+        لكن إذا كانت القيمة تأتي كـ[] (مصفوفة فارغة)، فسيكون هناك length. 
+        الافضل التأكد أن locations مصفوفة قبل استخدام length، 
+        أو التأكد مباشرة من نوع الاستجابة من API لجعل .data هو دائما مصفوفة. 
+      */}
+      {Array.isArray(locations) && locations.length === 0 && (
         <div className="text-center py-12">
           <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -283,6 +295,48 @@ export default function LocationsManagementPage() {
           <p className="text-gray-600 mb-4">ابدأ بإضافة أول موقع في النظام</p>
         </div>
       )}
+
+      {/* paginationnn */}
+      {LocationsData?.meta && LocationsData.meta.last_page > 1 && (
+  <div className="flex justify-center items-center space-x-4 mt-6">
+    {/* السهم اليسار */}
+    <button
+      onClick={() => setCurrentPage((prev) => prev - 1)}
+      disabled={currentPage === 1}
+      className="w-8 h-8 flex items-center justify-center rounded-lg border border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+    >
+      <ChevronRight size={16} />
+    </button>
+
+    {/* أرقام الصفحات */}
+    <div className="flex space-x-1">
+      {Array.from({ length: LocationsData.meta.last_page }, (_, i) => i + 1).map(
+        (page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+              currentPage === page
+                ? "bg-green-600 text-white shadow-md"
+                : "text-green-600 border border-green-600 hover:bg-green-100"
+            }`}
+          >
+            {page}
+          </button>
+        )
+      )}
+    </div>
+
+    {/* السهم اليمين */}
+    <button
+      onClick={() => setCurrentPage((prev) => prev + 1)}
+      disabled={currentPage === LocationsData.meta.last_page}
+      className="w-8 h-8 flex items-center justify-center rounded-lg border border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+    >
+      <ChevronLeft size={16} />
+    </button>
+  </div>
+)}
 
       {/* مودال التعديل */}
       {showEditModal && LocationToUpdate && (

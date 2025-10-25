@@ -415,11 +415,11 @@ export default function EmployeesPage() {
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  id="active"
+                  id="activecheckbox"
                   {...register("active")}
                   className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
                 />
-                <label htmlFor="active" className="text-gray-700">
+                <label  htmlFor="activecheckbox" className="text-gray-700">
                   موظف نشط
                 </label>
               </div>

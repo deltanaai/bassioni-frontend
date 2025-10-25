@@ -64,7 +64,7 @@ const [productToDelete, setProductToDelete] = useState<{
   //   للمواقع
   const { data: locationsData } = useQuery({
     queryKey: ["locations"],
-    queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
+    queryFn: () => getAllLocations({ }),
   });
   const locations = locationsData?.data || [];
 
@@ -445,10 +445,10 @@ const [productToDelete, setProductToDelete] = useState<{
                   type="checkbox"
                   {...editForm.register("active")}
                   className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                  id="active-checkbox"
+                  id="edit-activecheckbox"
                 />
                 <label
-                  htmlFor="active-checkbox"
+                  htmlFor="edit-activecheckbox"
                   className="text-sm font-medium text-gray-700"
                 >
                   المخزن نشط

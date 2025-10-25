@@ -32,7 +32,7 @@ export default function SettingsPage() {
           </div>
 
           {/* كارد إدارة الصلاحيات */}
-          <div 
+          {/* <div 
             className="p-4 border-2 border-purple-200 bg-purple-50 rounded-xl cursor-pointer hover:bg-purple-100 transition-all duration-200 hover:shadow-md"
             onClick={() => router.push('/company/settings/permissions')}
           >
@@ -43,7 +43,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-purple-600">تحديد الصلاحيات الممنوحة لكل دور في النظام</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -68,7 +68,7 @@ export default function SettingsPage() {
           </div>
 
           {/* كارد إعدادات الفروع */}
-          <div 
+          {/* <div 
             className="p-4 border-2 border-blue-200 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-all duration-200 hover:shadow-md"
             onClick={() => router.push('/settings/branches')}
           >
@@ -79,7 +79,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-blue-600">تحديد إعدادات كل فرع ومعلومات الاتصال</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
       {/* إعدادات الخصوصية */}

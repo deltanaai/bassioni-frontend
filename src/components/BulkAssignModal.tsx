@@ -85,7 +85,11 @@ export default function BulkAssignModal({ isOpen, onClose }: BulkAssignModalProp
     console.log(' البيانات اللي بتتبعت:', {
         roleId: selectedRole,
         employeesId: selectedEmployees,
-        employeesData: employees.filter(emp => selectedEmployees.includes(emp.id))
+        // سبب الايرور: المتغير employees قد يكون نوعه never[] أو PaginatedResponse<Employee>، 
+        // و PaginatedResponse لا يحتوي على دالة filter. الحل أن نتحقق أن employees مصفوفة قبل استخدام filter
+        employeesData: Array.isArray(employees)
+          ? (employees as {id: number}[]).filter((emp) => selectedEmployees.includes(emp.id))
+          : []
       });
     if (selectedEmployees.length === 0) {
       toast.error('يجب اختيار موظفين على الأقل');
@@ -171,7 +175,7 @@ export default function BulkAssignModal({ isOpen, onClose }: BulkAssignModalProp
             </div>
             
             <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3">
-              {Array.isArray(employees) && employees.map((employee: any) => (
+              {Array.isArray(employees) && employees.map((employee: { id: number; name: string; role: string; warehouse_name: string }) => (
                 <label key={employee.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                   <input
                     type="checkbox"

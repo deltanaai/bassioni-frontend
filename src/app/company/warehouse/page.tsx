@@ -269,11 +269,12 @@ export default function WarehousesPage() {
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
+                  id="activecheckbox"
                   {...register("active")}
                   className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
                   defaultChecked
                 />
-                <label className="text-sm text-gray-700">المخزن نشط</label>
+                <label htmlFor="activecheckbox" className="text-sm text-gray-700">المخزن نشط</label>
               </div>
 
               <div className="mt-4 flex justify-end gap-2">

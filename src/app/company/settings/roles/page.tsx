@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Plus, Trash2, ArrowLeft, X, Edit } from "lucide-react";
+import { Users, Plus, Trash2, ArrowLeft, X, Edit, ChevronLeft, ChevronRight } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addNewRole,
@@ -24,12 +24,14 @@ export default function RolesManagementPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
   const [roleToUpdate, setRoleToUpdate] = useState<Role | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   const queryClient = useQueryClient();
 
   const { data: rolesData } = useQuery({
-    queryKey: ["roles"],
-    queryFn: () => getAllRoles({ page: 1, perPage: 10 }),
+    queryKey: ["roles" , currentPage],
+    queryFn: () => getAllRoles({ page: currentPage, perPage: 5, deleted:false , paginate:true }),
   });
   const roles = rolesData?.data || [];
   console.log(roles);
@@ -81,7 +83,7 @@ export default function RolesManagementPage() {
 
   const handleDelete = () => {
     deleteMutation.mutate({
-      itemsIds: [roleToDelete?.id],
+      itemsIds: roleToDelete?.id !== undefined ? [roleToDelete.id] : [],
     });
   };
 
@@ -199,7 +201,7 @@ export default function RolesManagementPage() {
 
       {/* قائمة الأدوار */}
       <div className="grid gap-4">
-        {roles.map((role) => (
+        {(Array.isArray(roles) ? roles : []).map((role: Role) => (
           <div
             key={role.id}
             className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6"
@@ -215,7 +217,7 @@ export default function RolesManagementPage() {
                     {role.name}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Guard: {role.guard_name}
+                    Guard: {role.guardName}
                   </p>
                 </div>
               </div>
@@ -246,7 +248,7 @@ export default function RolesManagementPage() {
       </div>
 
       {/* رسالة عندما لا توجد أدوار */}
-      {roles.length === 0 && (
+      {Array.isArray(roles) && roles.length === 0 && (
         <div className="text-center py-12">
           <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -255,6 +257,48 @@ export default function RolesManagementPage() {
           <p className="text-gray-600 mb-4">ابدأ بإضافة أول دور في النظام</p>
         </div>
       )}
+
+       {/* Pagination بس لما يكون فيه اكتر من صفحة */}
+       {rolesData?.meta && rolesData.meta.last_page > 1 && (
+  <div className="flex justify-center items-center space-x-4 mt-6">
+    {/* السهم اليسار */}
+    <button
+      onClick={() => setCurrentPage((prev) => prev - 1)}
+      disabled={currentPage === 1}
+      className="w-8 h-8 flex items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+    >
+      <ChevronRight size={16} />
+    </button>
+
+    {/* أرقام الصفحات */}
+    <div className="flex space-x-1">
+      {Array.from({ length: rolesData.meta.last_page }, (_, i) => i + 1).map(
+        (page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+              currentPage === page
+                ? "bg-indigo-600 text-white shadow-md"
+                : "text-indigo-600 border border-indigo-600 hover:bg-indigo-100"
+            }`}
+          >
+            {page}
+          </button>
+        )
+      )}
+    </div>
+
+    {/* السهم اليمين */}
+    <button
+      onClick={() => setCurrentPage((prev) => prev + 1)}
+      disabled={currentPage === rolesData.meta.last_page}
+      className="w-8 h-8 flex items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+    >
+      <ChevronLeft size={16} />
+    </button>
+  </div>
+)}
 
       {/* مودال التعديل */}
       {showEditModal && roleToUpdate && (

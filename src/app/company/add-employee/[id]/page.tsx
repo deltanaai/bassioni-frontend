@@ -34,6 +34,7 @@ import { getAllRoles } from "@/lib/actions/company/role.action";
 
 export default function EmployeeDetailsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
 
   const deleteMutation = useMutation({
     mutationFn: deleteEmployees,
@@ -59,6 +60,7 @@ export default function EmployeeDetailsPage() {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+
 
   const employeeId = parseInt(params.id as string);
 
@@ -101,13 +103,16 @@ export default function EmployeeDetailsPage() {
 
   useEffect(() => {
     if (showEditModal && editingEmployee) {
+    
+      console.log("Role:", editingEmployee.id);
+      console.log("Warehouse:", editingEmployee.warehouse_id);
       editForm.reset({
         name: editingEmployee.name,
         email: editingEmployee.email,
         phone: editingEmployee.phone,
         address: editingEmployee.address || "",
-        roleId: Number(editingEmployee.role),
-        warehouseId: Number(editingEmployee.warehouse_name),
+        roleId: Number(editingEmployee.role), //لساا مش شغالههههه
+        warehouseId: editingEmployee.warehouse_id,
         active: editingEmployee.active,
         password: "",
         passwordConfirmation: "",
@@ -399,11 +404,11 @@ export default function EmployeeDetailsPage() {
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  id="edit-active"
+                  id="edit-activecheckbox"
                   {...editForm.register("active")}
                   className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
                 />
-                <label htmlFor="edit-active" className="text-gray-700">
+                <label htmlFor="edit-activecheckbox" className="text-gray-700">
                   موظف نشط
                 </label>
               </div>

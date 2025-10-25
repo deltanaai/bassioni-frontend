@@ -6,6 +6,7 @@ interface Employee {
   phone: string;
   active: boolean;
   role: string; // role name is what api returns, not role id
+  warehouse_id?: number; // for update employee details 
   address?: string | null;
   createdAt: string;
   updatedAt: string;
