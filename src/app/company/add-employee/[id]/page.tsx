@@ -102,23 +102,31 @@ export default function EmployeeDetailsPage() {
   });
 
   useEffect(() => {
-    if (showEditModal && editingEmployee) {
-    
-      console.log("Role:", editingEmployee.id);
-      console.log("Warehouse:", editingEmployee.warehouse_id);
+    if ( showEditModal && editingEmployee && Array.isArray(roles) && roles.length > 0) {
+      
+      console.log("Role name:", editingEmployee.role); 
+      console.log("All roles:", roles);
+      
+      // البحث عن الـ role اللي اسمه matches
+      const foundRole = roles.find((role: { id: number; name: string }) => 
+        role.name === editingEmployee.role
+      );
+  
+      console.log("Found role:", foundRole); //object
+  
       editForm.reset({
         name: editingEmployee.name,
         email: editingEmployee.email,
         phone: editingEmployee.phone,
         address: editingEmployee.address || "",
-        roleId: Number(editingEmployee.role), //لساا مش شغالههههه
+        roleId: foundRole ? (foundRole as { id: number }).id : undefined,
         warehouseId: editingEmployee.warehouse_id,
         active: editingEmployee.active,
         password: "",
         passwordConfirmation: "",
       });
     }
-  }, [showEditModal, editingEmployee, editForm]);
+  }, [showEditModal, editingEmployee, editForm, roles]); 
 
   const editMutation = useMutation({
     mutationFn: updateEmployee,
