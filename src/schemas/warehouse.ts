@@ -3,8 +3,10 @@ import z from "zod";
 export const GetAllWarehousesSchema = z.object({
   page: z.number().int().positive().optional(),
   perPage: z.number().int().positive().optional(),
-  search: z.string().optional(),
-  active: z.boolean().optional(),
+  deleted: z.boolean().optional(),
+  paginate: z.boolean().optional(),
+  orderByDirection: z.enum(["asc", "desc"]).optional(),
+  orderBy: z.string().optional(),
 });
 
 export const AddWarehouseSchema = z.object({
