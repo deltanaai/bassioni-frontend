@@ -9,7 +9,8 @@ export const useGetSession = () => {
     refetch,
   } = useQuery({
     queryKey: ["session"],
-    queryFn: () => getSession(),
+    queryFn: getSession,
+    refetchInterval: 60_000, // Refetch every 60 seconds
     staleTime: 0,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
