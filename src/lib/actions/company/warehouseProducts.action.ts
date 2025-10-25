@@ -15,7 +15,7 @@ import { normalizeExpiryDateMaybe } from "../../utils";
 
 export async function getAllProducts(
   params: WarehouseProductsIndexParams
-): Promise<ActionResponse<PaginatedResponse<WarehouseProduct>>> {
+): Promise<IndexedActionResponse<WarehouseProduct>> {
   const validationResult = await action({
     params,
     schema: WarehouseProductsIndexSchema,
@@ -25,14 +25,23 @@ export async function getAllProducts(
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  const { warehouseId, page, perPage, search, active } =
-    validationResult.params!;
+  const {
+    warehouseId,
+    page,
+    perPage,
+    orderBy,
+    orderByDirection,
+    deleted,
+    paginate,
+  } = validationResult.params!;
 
   const payload: PaginatedSearchPayload = {
     page,
     per_page: perPage,
-    search,
-    active,
+    order_by: orderBy,
+    order_by_direction: orderByDirection,
+    deleted,
+    paginate,
   };
 
   try {
@@ -46,6 +55,8 @@ export async function getAllProducts(
     return {
       success: true,
       data: response.data as PaginatedResponse<WarehouseProduct>,
+      links: response.links,
+      meta: response.meta,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
