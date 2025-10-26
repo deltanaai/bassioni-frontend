@@ -4,23 +4,21 @@ import {
   Home,
   User,
   Settings,
-  ClipboardList,
-  Send,
-  Archive,
-  PlusCircle,
-  Mail,
   Bell,
   LogIn,
-  Percent,
   ChevronDown,
   ChevronUp,
   Package,
   Users,
   Store,
-  Tag,
-  TicketPercent,
-  Trash2,
+  Image as ImageIcon,
+  Sliders,
+  Shield,
+  Building,
+  Tags,
+  MapPin,
   LogOut,
+  LocateIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -32,24 +30,24 @@ import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
-import logger from "@/lib/logger";
 import { queryClient } from "@/lib/queryClient";
 
 const links = [
-  { name: "الصفحة الرئيسية", href: ROUTES.COMPANY_DASHBOARD, Icon: Home },
-  { name: "طلبات اليوم", href: ROUTES.DAY_ORDERS, Icon: ClipboardList },
-  { name: "عروض الشركات", href: ROUTES.SENT_ORDERS, Icon: Send },
-  { name: "طلباتي", href: ROUTES.MY_ORDERS, Icon: Send },
-  { name: "الفواتير", href: ROUTES.INVOICE, Icon: Archive },
-  { name: "الأصناف والبراندات", href: ROUTES.ATTRIBUTES, Icon: PlusCircle },
-  { name: "المنتجات", href: ROUTES.PRODUCTS, Icon: Mail },
-  { name: "سلة المحذوفات", href: ROUTES.TRASH, Icon: Trash2 },
-  { name: "الملف الشخصي", href: ROUTES.PROFILE, Icon: User },
-  { name: "الإعدادات", href: ROUTES.SETTINGS, Icon: Settings },
-  // { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
+  { name: "Dashboard", href: ROUTES.OWNER_DASHBOARD, Icon: Home },
+  { name: "Media", href: 'ROUTES.MEDIA', Icon: ImageIcon },
+  { name: "Slider", href: 'ROUTES.SLIDER', Icon: Sliders },
+  { name: "Admins", href: 'ROUTES.ADMINS', Icon: Shield },
+  { name: "Pharmacist", href: 'ROUTES.PHARMACIST', Icon: Users },
+  { name: "Auth Admin", href: 'ROUTES.AUTH_ADMIN', Icon: Shield },
+  { name: "Brands", href: 'ROUTES.BRANDS', Icon: Building },
+  { name: "Categories", href:' ROUTES.CATEGORIES', Icon: Tags },
+  { name: "Branches", href: 'ROUTES.BRANCHES', Icon: MapPin },
+  { name: "Locations", href: 'ROUTES.LOCATIONS', Icon: LocateIcon },
+  { name: "الملف الشخصي", href: 'ROUTES.PROFILE', Icon: User },
+  { name: "الإعدادات", href: 'ROUTES.SETTINGS', Icon: Settings },
 ];
 
-export default function DashboardLayout({
+export default function OwnerDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -73,13 +71,6 @@ export default function DashboardLayout({
     },
   });
 
-  // ✅ Redirect after mount, only when session is loaded
-  // useEffect(() => {
-  //   if (!isLoadingSession && !isLoggedIn) {
-  //     router.push(ROUTES.LOGIN);
-  //   }
-  // }, [isLoadingSession, isLoggedIn, router]);
-
   if (isLoadingSession) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
@@ -89,10 +80,6 @@ export default function DashboardLayout({
   }
 
   const isLoggedIn = !!session?.token;
-  // if (!isLoggedIn) {
-  //   router.push(ROUTES.LOGIN);
-  // }
-  // logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
 
   const authLinks = isLoggedIn
     ? { name: "تسجيل الخروج", href: "#", Icon: LogOut }
@@ -116,12 +103,12 @@ export default function DashboardLayout({
         <div className="flex items-center justify-between border-b border-gray-200 p-4">
           {sidebarOpen ? (
             <div className="text-center text-2xl font-bold tracking-wide">
-              <span className="text-gray-800">company</span>
-              <span className="text-emerald-600">bassiony</span>
+              <span className="text-gray-800">Owner</span>
+              <span className="text-blue-600">Dashboard</span>
             </div>
           ) : (
             <div className="mx-auto">
-              <span className="font-bold text-emerald-600">PC</span>
+              <span className="font-bold text-blue-600">OD</span>
             </div>
           )}
           <button
@@ -146,7 +133,7 @@ export default function DashboardLayout({
                 className="flex w-full cursor-pointer items-center justify-start gap-2 px-4 py-2 text-right text-red-600 transition hover:bg-red-50 hover:text-red-700 hover:shadow-md"
               >
                 <link.Icon className="h-5 w-5" />
-                {link.name}
+                {sidebarOpen && <span>{link.name}</span>}
               </Button>
             ) : (
               <NavLink
@@ -162,7 +149,7 @@ export default function DashboardLayout({
         </nav>
         {/* الفوتر */}
         <div className="border-t border-gray-200 p-4 text-center text-xs text-gray-400">
-          © 2026 PharmaCare
+          © 2026 Owner Dashboard
         </div>
       </aside>
 
@@ -184,40 +171,34 @@ export default function DashboardLayout({
             </button>
             <Image
               src="/images.png"
-              alt="Company Logo"
+              alt="Owner Logo"
               width={40}
               height={40}
               className="h-10 w-10 rounded-full border border-gray-300"
             />
-            <span className="text-lg font-semibold text-gray-800">بسيوني</span>
+            <span className="text-lg font-semibold text-gray-800">
+              Owner Panel
+            </span>
           </div>
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
-  <CompanyHeaderNavLink href="/company/" icon={<Package className="h-5 w-5" />}>
-    تقارير
-  </CompanyHeaderNavLink>
+  <HeaderNavLink href={ROUTES.OWNER_PRODUCTS} icon={<Package className="h-5 w-5" />}>
+    المنتجات
+  </HeaderNavLink>
   
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_WAREHOUSES} icon={<Package className="h-5 w-5" />}>
-    المخازن
-  </CompanyHeaderNavLink>
+  <HeaderNavLink href={ROUTES.OWNER_PHARMACY} icon={<Store className="h-5 w-5" />}>
+    الصيدليات
+  </HeaderNavLink>
   
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_PHARMACY} icon={<Store className="h-5 w-5" />}>
-    إضافة صيدلية
-  </CompanyHeaderNavLink>
-  
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_ADD_EMPLOYEE} icon={<Users className="h-5 w-5" />}>
-    إضافة موظفين
-  </CompanyHeaderNavLink>
-  
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_SYSTEM} icon={<Store className="h-5 w-5" />}>
-    النظام
-  </CompanyHeaderNavLink>
+  <HeaderNavLink href={ROUTES.OWNER_COMPANIES} icon={<Building className="h-5 w-5" />}>
+    الشركات
+  </HeaderNavLink>
 </nav>
 
           {/* الإشعارات */}
           <div className="relative">
-            <Bell className="h-6 w-6 cursor-pointer text-gray-700 hover:text-emerald-600" />
+            <Bell className="h-6 w-6 cursor-pointer text-gray-700 hover:text-blue-600" />
             <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500"></span>
           </div>
         </header>
@@ -229,7 +210,7 @@ export default function DashboardLayout({
 }
 
 //active link in nav
-function CompanyHeaderNavLink({
+function HeaderNavLink({
   href,
   icon,
   children,
@@ -240,14 +221,13 @@ function CompanyHeaderNavLink({
 }) {
   const pathname = usePathname();
   const isActive = pathname === href;
-
   return (
     <Link
       href={href}
       className={`flex items-center justify-start gap-2 px-3 py-2 rounded-md transition-all ${
         isActive
-          ? " font-semibold text-emerald-700"
-          : "text-gray-700  hover:text-emerald-600"
+          ? " font-semibold text-blue-700"
+          : "text-gray-700  hover:text-blue-600"
       }`}
     >
       <span>{icon}</span>
@@ -255,6 +235,7 @@ function CompanyHeaderNavLink({
     </Link>
   );
 }
+
 
 /* مكوّن الرابط */
 function NavLink({
@@ -278,64 +259,12 @@ function NavLink({
         sidebarOpen ? "justify-start gap-3 px-4" : "justify-center px-2"
       } rounded-md py-2 transition-all ${
         isActive
-          ? "bg-emerald-100 font-semibold text-emerald-700"
-          : "text-gray-700 hover:bg-emerald-50 hover:text-emerald-600"
+          ? "bg-blue-100 font-semibold text-blue-700"
+          : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
       }`}
     >
       <span>{icon}</span>
       {sidebarOpen && <span>{children}</span>}
     </Link>
-  );
-}
-
-/* القائمة المنسدلة */
-function SidebarDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="transition-all">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex w-full items-center ${
-          sidebarOpen ? "justify-between px-4" : "justify-center px-2"
-        } rounded-md border border-gray-200 bg-white py-2 text-gray-700 transition hover:bg-emerald-50`}
-      >
-        <div className="flex items-center gap-2">
-          <Percent className="h-5 w-5 text-gray-600" />
-          {sidebarOpen && <span>الخصومات</span>}
-        </div>
-        {sidebarOpen &&
-          (isOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-600" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-gray-600" />
-          ))}
-      </button>
-
-      {sidebarOpen && (
-        <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="mt-2 space-y-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-2">
-            <Link
-              href="/company/offers"
-              className="flex items-center gap-2 rounded-md px-4 py-2 text-gray-700 transition hover:bg-emerald-50 hover:text-emerald-600"
-            >
-              <Tag className="h-4 w-4" />
-              <span>العروض</span>
-            </Link>
-            <Link
-              href="/company/coupons"
-              className="flex items-center gap-2 rounded-md px-4 py-2 text-gray-700 transition hover:bg-emerald-50 hover:text-emerald-600"
-            >
-              <TicketPercent className="h-4 w-4" />
-              <span>الكوبونات</span>
-            </Link>
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
