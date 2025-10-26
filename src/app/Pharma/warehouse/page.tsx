@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { warehouseSchema } from "@/schemas/Warehouse";
+// import { warehouseSchema } from "@/schemas/Warehouse";
 import { AddProductSchema } from "@/schemas/warehouseProducts";
 import { ProductInput, WarehouseFormData } from "@/types";
 // import { useQuery } from "@tanstack/react-query";
@@ -59,8 +59,8 @@ export default function WarehousesPage() {
     reset,
     formState: { errors },
   } = useForm<WarehouseFormData>({
-    resolver: zodResolver(warehouseSchema),
-    defaultValues: { name: "", location: "", pharmacy: pharmacies[0] },
+    
+    
   });
 
   //  نموذج المنتج

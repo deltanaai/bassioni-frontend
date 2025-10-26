@@ -1,5 +1,5 @@
 'use client'
-import { productFormSchema } from '@/schemas/AddProduts'
+// import { productFormSchema } from '@/schemas/AddProduts'
 import { ProductFormData } from '@/types'
 import { useState } from 'react'
 import { FiSearch, FiPlus, FiEdit, FiTrash2, FiImage, FiFilter } from 'react-icons/fi'

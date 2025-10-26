@@ -41,7 +41,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <AuthGuard>{children}</AuthGuard>
+          {/* <AuthGuard> */}
+            {children}
+            {/* </AuthGuard> */}
         </QueryProvider>
         <Toaster richColors />
       </body>
