@@ -109,119 +109,121 @@ export default function PharmaciesPage() {
 
       {/* الجدول */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        {/* رأس الجدول مع أزرار الترتيب */}
-        <div className="border-b border-gray-200">
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
-            <div className="col-span-1">#</div>
+        <div className="overflow-x-auto">
+          <div className="border-b border-gray-200 min-w-[800px]">
+            <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
+              <div className="col-span-1 text-center">#</div>
 
-            <div className="col-span-3">
-              <button
-                onClick={() => handleSortClick("name")}
-                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-              >
-                <span>اسم الصيدلية</span>
-                {getSortIcon("name")}
-              </button>
-            </div>
-
-            <div className="col-span-4">
-              <button
-                onClick={() => handleSortClick("address")}
-                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-              >
-                <span>العنوان</span>
-                {getSortIcon("address")}
-              </button>
-            </div>
-
-            <div className="col-span-2">
-              <button
-                onClick={() => handleSortClick("phone")}
-                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-              >
-                <span>التليفون</span>
-                {getSortIcon("phone")}
-              </button>
-            </div>
-
-            <div className="col-span-2 text-center">الإجراءات</div>
-          </div>
-        </div>
-
-        {/* جسم الجدول */}
-        <div className="divide-y divide-gray-200">
-          {filteredPharmacies.length > 0 ? (
-            filteredPharmacies.map((pharmacy, index) => (
-              <div
-                key={pharmacy.id}
-                className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
-              >
-                <div className="col-span-1 text-sm text-gray-600">
-                  {index + 1}
-                </div>
-
-                <div className="col-span-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Store className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {pharmacy.name}
-                      </p>
-                      <p className="text-xs text-gray-500">ID: {pharmacy.id}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-span-4">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-700 line-clamp-1">
-                      {pharmacy.address}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="col-span-2">
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-700">{pharmacy.phone}</p>
-                  </div>
-                </div>
-
-                <div className="col-span-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <button
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      title="تعديل"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-
-                    <button
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="حذف"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
+              <div className="col-span-3 text-center">
+                <button
+                  onClick={() => handleSortClick("name")}
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
+                >
+                  <span>اسم الصيدلية</span>
+                  {getSortIcon("name")}
+                </button>
               </div>
-            ))
-          ) : (
-            <div className="px-6 py-12 text-center">
-              <Store className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                لا توجد صيدليات
-              </h3>
-              <p className="mt-2 text-gray-500">
-                {searchTerm
-                  ? "لم نتمكن من العثور على صيدليات تطابق بحثك."
-                  : "لم يتم إضافة أي صيدليات بعد."}
-              </p>
+
+              <div className="col-span-4 text-center">
+                <button
+                  onClick={() => handleSortClick("address")}
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
+                >
+                  <span>العنوان</span>
+                  {getSortIcon("address")}
+                </button>
+              </div>
+
+              <div className="col-span-2 text-center">
+                <button
+                  onClick={() => handleSortClick("phone")}
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
+                >
+                  <span>التليفون</span>
+                  {getSortIcon("phone")}
+                </button>
+              </div>
+
+              <div className="col-span-2 text-center">الإجراءات</div>
             </div>
-          )}
+          </div>
+          {/* جسم الجدول */}
+          <div className="divide-y divide-gray-200 min-w-[800px]">
+            {filteredPharmacies.length > 0 ? (
+              filteredPharmacies.map((pharmacy, index) => (
+                <div
+                  key={pharmacy.id}
+                  className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
+                >
+                  <div className="col-span-1 text-sm text-gray-600 text-center">
+                    {index + 1}
+                  </div>
+
+                  <div className="col-span-3">
+                    <div className="flex items-center gap-3 justify-center text-center">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Store className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="text-center">
+                        <p className="font-medium text-gray-900">
+                          {pharmacy.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          ID: {pharmacy.id}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-4 text-center">
+                    <div className="flex items-center gap-2 justify-center">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-700 line-clamp-1">
+                        {pharmacy.address}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <div className="flex items-center gap-2 justify-center">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-700">{pharmacy.phone}</p>
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="تعديل"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="حذف"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="px-6 py-12 text-center min-w-[800px]">
+                <Store className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-4 text-lg font-medium text-gray-900">
+                  لا توجد صيدليات
+                </h3>
+                <p className="mt-2 text-gray-500">
+                  {searchTerm
+                    ? "لم نتمكن من العثور على صيدليات تطابق بحثك."
+                    : "لم يتم إضافة أي صيدليات بعد."}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

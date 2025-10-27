@@ -6,6 +6,8 @@ export const ROUTES_OWNER = {
   PHARMACIES: "/Owner/pharmacies",
   COMPANIES: "/Owner/companies",
   PRODUCTS: "/Owner/products",
+  CATEGORIES: '/Owner/categories',
+  BRANDS: '/Owner/brands',
 };
 
 export const ROUTES_PHARMA = {

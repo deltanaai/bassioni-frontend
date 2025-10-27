@@ -5,40 +5,63 @@ import {
   Search,
   Edit,
   Trash2,
-  MapPin,
-  Phone,
-  ChevronUp,
-  ChevronDown,
-  Building,
+  Tag,
+  Home,
+  ArrowUpDown,
+  CheckCircle,
+  XCircle,
+  Tags,
 } from "lucide-react";
+import Image from "next/image";
 
-interface Company {
+// نوع بيانات الـ Category
+interface Category {
   id: number;
   name: string;
-  address: string;
-  phone: string;
-  createdAt: string | null;
-  updatedAt: string | null;
+  showHome: boolean;
+  position: number;
+  active: boolean;
+  imageUrl: string;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
   deletedAt: string | null;
   deleted: boolean;
 }
 
-export default function CompaniesPage() {
+export default function CategoriesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortStates, setSortStates] = useState({
     name: false,
-    address: false,
-    phone: false,
+    position: false,
+    active: false,
   });
 
-  const mockCompanies: Company[] = [
+  // بيانات وهمية للعرض فقط
+  const mockCategories: Category[] = [
+    {
+      id: 2,
+      name: "فيتامينات",
+      showHome: true,
+      position: 2,
+      active: true,
+      imageUrl: "/placeholder.jpg",
+      image: null,
+      createdAt: "2025-Oct-26 18:22:01 PM",
+      updatedAt: "2025-Oct-26 18:22:01 PM",
+      deletedAt: null,
+      deleted: false,
+    },
     {
       id: 1,
-      name: "شركه الحياه ",
-      address: "شارع الجمهورية، القاهرة",
-      phone: "0000000000",
-      createdAt: "2024-01-15",
-      updatedAt: "2024-01-15",
+      name: "مكملات غذائية",
+      showHome: false,
+      position: 1,
+      active: false,
+      imageUrl: "/placeholder.jpg",
+      image: null,
+      createdAt: "2025-Oct-26 18:22:00 PM",
+      updatedAt: "2025-Oct-26 18:22:00 PM",
       deletedAt: null,
       deleted: false,
     },
@@ -55,17 +78,18 @@ export default function CompaniesPage() {
   // دالة لعرض السهم
   const getSortIcon = (field: keyof typeof sortStates) => {
     return sortStates[field] ? (
-      <ChevronUp className="h-4 w-4 text-blue-600" />
+      <ArrowUpDown className="h-4 w-4 text-blue-600" />
     ) : (
-      <ChevronDown className="h-4 w-4 text-blue-600" />
+      <ArrowUpDown className="h-4 w-4 text-blue-600" />
     );
   };
 
-  const filteredCompanies = mockCompanies.filter(
-    (company) =>
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.phone.includes(searchTerm)
+  const handleToggleStatus = (category: Category) => {
+    console.log("تغيير حالة الفئة:", category);
+  };
+
+  const filteredCategories = mockCategories.filter((category) =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -73,26 +97,26 @@ export default function CompaniesPage() {
       {/* الهيدر */}
       <div className="mb-8 flex items-center justify-between p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
         <div className="flex items-center gap-3">
-          <Building className="w-8 h-8 text-blue-600" />
+          <Tags className="w-8 h-8 text-blue-600" />
           <div>
-            <h1 className="text-3xl font-bold text-blue-600">الشركات</h1>
-            <p className="text-gray-600">إدارة وتنظيم الشركات</p>
+            <h1 className="text-3xl font-bold text-blue-600">الفئات</h1>
+            <p className="text-gray-600">إدارة وتنظيم الفئات</p>
           </div>
         </div>
         <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
           <Plus className="w-5 h-5" />
-          إضافة شركة
+          إضافة فئة
         </button>
       </div>
 
-      {/* شريط البحث */}
+      {/* شريط البحث والإحصائيات */}
       <div className="bg-white rounded-xl border border-gray-200 p-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
-              placeholder="ابحث باسم الشركة أو العنوان أو التليفون..."
+              placeholder="ابحث باسم الفئة..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -101,7 +125,16 @@ export default function CompaniesPage() {
 
           <div className="flex items-center gap-4 text-sm text-gray-600">
             <span>
-              إجمالي الشركات: <strong>{filteredCompanies.length}</strong>
+              إجمالي الفئات: <strong>{filteredCategories.length}</strong>
+            </span>
+            <span className="flex items-center gap-1">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span>
+                نشطة:
+                <strong>
+                  {filteredCategories.filter((c) => c.active).length}
+                </strong>
+              </span>
             </span>
           </div>
         </div>
@@ -110,39 +143,47 @@ export default function CompaniesPage() {
       {/* الجدول */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          {/* رأس الجدول مع أزرار الترتيب */}
+          {/* رأس الجدول */}
           <div className="border-b border-gray-200 min-w-[800px]">
             <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
               <div className="col-span-1 text-center">#</div>
 
-              <div className="col-span-3 text-center">
+              <div className="col-span-2 text-center">
                 <button
                   onClick={() => handleSortClick("name")}
                   className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
                 >
-                  <span>اسم الشركة</span>
+                  <span>اسم الفئة</span>
                   {getSortIcon("name")}
                 </button>
               </div>
 
-              <div className="col-span-4 text-center">
+              <div className="col-span-1 text-center">
                 <button
-                  onClick={() => handleSortClick("address")}
+                  onClick={() => handleSortClick("position")}
                   className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
                 >
-                  <span>العنوان</span>
-                  {getSortIcon("address")}
+                  <span>الترتيب</span>
+                  {getSortIcon("position")}
                 </button>
               </div>
 
               <div className="col-span-2 text-center">
+                <span>العرض في الرئيسية</span>
+              </div>
+
+              <div className="col-span-2 text-center">
                 <button
-                  onClick={() => handleSortClick("phone")}
+                  onClick={() => handleSortClick("active")}
                   className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
                 >
-                  <span>التليفون</span>
-                  {getSortIcon("phone")}
+                  <span>الحالة</span>
+                  {getSortIcon("active")}
                 </button>
+              </div>
+
+              <div className="col-span-2 text-center">
+                <span>الصورة</span>
               </div>
 
               <div className="col-span-2 text-center">الإجراءات</div>
@@ -150,45 +191,85 @@ export default function CompaniesPage() {
           </div>
           {/* جسم الجدول */}
           <div className="divide-y divide-gray-200 min-w-[800px]">
-            {filteredCompanies.length > 0 ? (
-              filteredCompanies.map((company, index) => (
+            {" "}
+            {filteredCategories.length > 0 ? (
+              filteredCategories.map((category, index) => (
                 <div
-                  key={company.id}
+                  key={category.id}
                   className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
                 >
                   <div className="col-span-1 text-sm text-gray-600 text-center">
                     {index + 1}
                   </div>
 
-                  <div className="col-span-3">
+                  <div className="col-span-2">
                     <div className="flex items-center gap-3 justify-center text-center">
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Building className="h-4 w-4 text-blue-600" />
+                        <Tag className="h-4 w-4 text-blue-600" />
                       </div>
                       <div className="text-center">
                         <p className="font-medium text-gray-900">
-                          {company.name}
+                          {category.name}
                         </p>
                         <p className="text-xs text-gray-500">
-                          ID: {company.id}
+                          ID: {category.id}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="col-span-4 text-center">
-                    <div className="flex items-center gap-2 justify-center">
-                      <MapPin className="h-4 w-4 text-gray-400" />
-                      <p className="text-sm text-gray-700 line-clamp-1">
-                        {company.address}
-                      </p>
+                  <div className="col-span-1 text-center">
+                    <div className="flex items-center justify-center w-8 h-8 bg-purple-100 text-purple-700 rounded-lg font-semibold mx-auto">
+                      {category.position}
                     </div>
                   </div>
 
                   <div className="col-span-2 text-center">
-                    <div className="flex items-center gap-2 justify-center">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <p className="text-sm text-gray-700">{company.phone}</p>
+                    {category.showHome ? (
+                      <div className="flex items-center justify-center gap-1 text-green-600">
+                        <Home className="h-4 w-4" />
+                        <span className="text-sm">معروض</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1 text-gray-400">
+                        <Home className="h-4 w-4" />
+                        <span className="text-sm">مخفي</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <button
+                      onClick={() => handleToggleStatus(category)}
+                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors mx-auto ${
+                        category.active
+                          ? "bg-green-100 text-green-800 hover:bg-green-200"
+                          : "bg-red-100 text-red-800 hover:bg-red-200"
+                      }`}
+                    >
+                      {category.active ? (
+                        <>
+                          <CheckCircle className="h-3 w-3" />
+                          <span>نشط</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3" />
+                          <span>غير نشط</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden mx-auto">
+                      <Image
+                        src={category.imageUrl}
+                        alt={category.name}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
 
@@ -213,14 +294,14 @@ export default function CompaniesPage() {
               ))
             ) : (
               <div className="px-6 py-12 text-center min-w-[800px]">
-                <Building className="mx-auto h-12 w-12 text-gray-400" />{" "}
+                <Tag className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-4 text-lg font-medium text-gray-900">
-                  لا توجد شركات
+                  لا توجد فئات
                 </h3>
                 <p className="mt-2 text-gray-500">
                   {searchTerm
-                    ? "لم نتمكن من العثور على شركة تطابق بحثك."
-                    : "لم يتم إضافة أي شركات بعد."}
+                    ? "لم نتمكن من العثور على فئات تطابق بحثك."
+                    : "لم يتم إضافة أي فئات بعد."}
                 </p>
               </div>
             )}
@@ -231,9 +312,10 @@ export default function CompaniesPage() {
       {/* الباجينيشن */}
       {/* <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-6 py-3">
         <div className="text-sm text-gray-600">
-          عرض <strong>1-{filteredPharmacies.length}</strong> من <strong>{filteredPharmacies.length}</strong>
+          عرض <strong>1-{filteredCategories.length}</strong> من{" "}
+          <strong>{filteredCategories.length}</strong>
         </div>
-        
+
         <div className="flex gap-2">
           <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
             السابق

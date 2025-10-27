@@ -27,7 +27,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import ROUTES, { ROUTES_OWNER } from "@/constants/routes";
+import { ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
@@ -39,8 +39,8 @@ const links = [
   { name: "Admins", href: "ROUTES.ADMINS", Icon: Shield },
   { name: "Pharmacist", href: "ROUTES.PHARMACIST", Icon: Users },
   { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
-  { name: "Brands", href: "ROUTES.BRANDS", Icon: Building },
-  { name: "Categories", href: " ROUTES.CATEGORIES", Icon: Tags },
+  { name: "Brands", href: ROUTES_OWNER.BRANDS, Icon: Building },
+  { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
   { name: "Branches", href: "ROUTES.BRANCHES", Icon: MapPin },
   { name: "Locations", href: "ROUTES.LOCATIONS", Icon: LocateIcon },
   { name: "الملف الشخصي", href: "ROUTES.PROFILE", Icon: User },
