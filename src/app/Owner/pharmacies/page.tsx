@@ -1,15 +1,15 @@
 "use client";
 import { useState } from "react";
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
   Store,
   MapPin,
   Phone,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
 
 interface Pharmacy {
@@ -28,7 +28,7 @@ export default function PharmaciesPage() {
   const [sortStates, setSortStates] = useState({
     name: false,
     address: false,
-    phone: false
+    phone: false,
   });
 
   const mockPharmacies: Pharmacy[] = [
@@ -40,43 +40,48 @@ export default function PharmaciesPage() {
       createdAt: "2024-01-15",
       updatedAt: "2024-01-15",
       deletedAt: null,
-      deleted: false
-    }
+      deleted: false,
+    },
   ];
 
   // دالة قلب السهم فقط
   const handleSortClick = (field: keyof typeof sortStates) => {
-    setSortStates(prev => ({
+    setSortStates((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
   // دالة لعرض السهم
   const getSortIcon = (field: keyof typeof sortStates) => {
-    return sortStates[field] 
-      ? <ChevronUp className="h-4 w-4 text-blue-600" />
-      : <ChevronDown className="h-4 w-4 text-blue-600" />;
+    return sortStates[field] ? (
+      <ChevronUp className="h-4 w-4 text-blue-600" />
+    ) : (
+      <ChevronDown className="h-4 w-4 text-blue-600" />
+    );
   };
 
-  const filteredPharmacies = mockPharmacies.filter(pharmacy =>
-    pharmacy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pharmacy.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pharmacy.phone.includes(searchTerm)
+  const filteredPharmacies = mockPharmacies.filter(
+    (pharmacy) =>
+      pharmacy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pharmacy.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pharmacy.phone.includes(searchTerm)
   );
 
   return (
     <div className="space-y-6">
       {/* الهيدر */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">إدارة الصيدليات</h1>
-          <p className="text-gray-600 mt-1">عرض وإدارة جميع الصيدليات في النظام</p>
+      <div className="mb-8 flex items-center justify-between p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <Store className="w-8 h-8 text-blue-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-blue-600">الصيدليات</h1>
+            <p className="text-gray-600">إدارة وتنظيم الصيدليات</p>
+          </div>
         </div>
-        
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-fit">
-          <Plus className="h-5 w-5" />
-          <span>إضافة صيدلية</span>
+        <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
+          <Plus className="w-5 h-5" />
+          إضافة صيدلية
         </button>
       </div>
 
@@ -93,9 +98,11 @@ export default function PharmaciesPage() {
               className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
           <div className="flex items-center gap-4 text-sm text-gray-600">
-            <span>إجمالي الصيدليات: <strong>{filteredPharmacies.length}</strong></span>
+            <span>
+              إجمالي الصيدليات: <strong>{filteredPharmacies.length}</strong>
+            </span>
           </div>
         </div>
       </div>
@@ -106,37 +113,37 @@ export default function PharmaciesPage() {
         <div className="border-b border-gray-200">
           <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
             <div className="col-span-1">#</div>
-            
+
             <div className="col-span-3">
-              <button 
-                onClick={() => handleSortClick('name')}
+              <button
+                onClick={() => handleSortClick("name")}
                 className="flex items-center gap-1 hover:text-blue-600 transition-colors"
               >
                 <span>اسم الصيدلية</span>
-                {getSortIcon('name')}
+                {getSortIcon("name")}
               </button>
             </div>
-            
+
             <div className="col-span-4">
-              <button 
-                onClick={() => handleSortClick('address')}
+              <button
+                onClick={() => handleSortClick("address")}
                 className="flex items-center gap-1 hover:text-blue-600 transition-colors"
               >
                 <span>العنوان</span>
-                {getSortIcon('address')}
+                {getSortIcon("address")}
               </button>
             </div>
-            
+
             <div className="col-span-2">
-              <button 
-                onClick={() => handleSortClick('phone')}
+              <button
+                onClick={() => handleSortClick("phone")}
                 className="flex items-center gap-1 hover:text-blue-600 transition-colors"
               >
                 <span>التليفون</span>
-                {getSortIcon('phone')}
+                {getSortIcon("phone")}
               </button>
             </div>
-            
+
             <div className="col-span-2 text-center">الإجراءات</div>
           </div>
         </div>
@@ -145,47 +152,53 @@ export default function PharmaciesPage() {
         <div className="divide-y divide-gray-200">
           {filteredPharmacies.length > 0 ? (
             filteredPharmacies.map((pharmacy, index) => (
-              <div key={pharmacy.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors">
+              <div
+                key={pharmacy.id}
+                className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
+              >
                 <div className="col-span-1 text-sm text-gray-600">
                   {index + 1}
                 </div>
-                
+
                 <div className="col-span-3">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <Store className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{pharmacy.name}</p>
+                      <p className="font-medium text-gray-900">
+                        {pharmacy.name}
+                      </p>
                       <p className="text-xs text-gray-500">ID: {pharmacy.id}</p>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="col-span-4">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-700 line-clamp-1">{pharmacy.address}</p>
+                    <p className="text-sm text-gray-700 line-clamp-1">
+                      {pharmacy.address}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="col-span-2">
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-gray-400" />
                     <p className="text-sm text-gray-700">{pharmacy.phone}</p>
                   </div>
                 </div>
-                
+
                 <div className="col-span-2">
                   <div className="flex items-center justify-center gap-2">
-                    
                     <button
                       className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                       title="تعديل"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
-                    
+
                     <button
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="حذف"
@@ -199,9 +212,13 @@ export default function PharmaciesPage() {
           ) : (
             <div className="px-6 py-12 text-center">
               <Store className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">لا توجد صيدليات</h3>
+              <h3 className="mt-4 text-lg font-medium text-gray-900">
+                لا توجد صيدليات
+              </h3>
               <p className="mt-2 text-gray-500">
-                {searchTerm ? "لم نتمكن من العثور على صيدليات تطابق بحثك." : "لم يتم إضافة أي صيدليات بعد."}
+                {searchTerm
+                  ? "لم نتمكن من العثور على صيدليات تطابق بحثك."
+                  : "لم يتم إضافة أي صيدليات بعد."}
               </p>
             </div>
           )}

@@ -85,22 +85,21 @@ export default function WarehousesPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-8 flex items-center justify-between p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
-  <div className="flex items-center gap-3">
-    <Warehouse className="w-8 h-8 text-emerald-600" />
-    <div>
-      <h1 className="text-3xl font-bold text-emerald-600">المخازن</h1>
-      <p className="text-gray-600">إدارة وتنظيم مخازن الشركة</p>
-    </div>
-  </div>
-  
-  <button
-    onClick={() => setShowModal(true)}
-    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-  >
-    <Plus className="w-5 h-5" />
-    إضافة مخزن
-  </button>
-</div>
+        <div className="flex items-center gap-3">
+          <Warehouse className="w-8 h-8 text-emerald-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-emerald-600">المخازن</h1>
+            <p className="text-gray-600">إدارة وتنظيم مخازن الشركة</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+        >
+          <Plus className="w-5 h-5" />
+          إضافة مخزن
+        </button>
+      </div>
 
       {/* عرض المخازن */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -274,7 +273,12 @@ export default function WarehousesPage() {
                   className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
                   defaultChecked
                 />
-                <label htmlFor="activecheckbox" className="text-sm text-gray-700">المخزن نشط</label>
+                <label
+                  htmlFor="activecheckbox"
+                  className="text-sm text-gray-700"
+                >
+                  المخزن نشط
+                </label>
               </div>
 
               <div className="mt-4 flex justify-end gap-2">

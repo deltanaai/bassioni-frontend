@@ -34,17 +34,17 @@ import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "Dashboard", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
-  { name: "Media", href: 'ROUTES.MEDIA', Icon: ImageIcon },
-  { name: "Slider", href: 'ROUTES.SLIDER', Icon: Sliders },
-  { name: "Admins", href: 'ROUTES.ADMINS', Icon: Shield },
-  { name: "Pharmacist", href: 'ROUTES.PHARMACIST', Icon: Users },
-  { name: "Auth Admin", href: 'ROUTES.AUTH_ADMIN', Icon: Shield },
-  { name: "Brands", href: 'ROUTES.BRANDS', Icon: Building },
-  { name: "Categories", href:' ROUTES.CATEGORIES', Icon: Tags },
-  { name: "Branches", href: 'ROUTES.BRANCHES', Icon: MapPin },
-  { name: "Locations", href: 'ROUTES.LOCATIONS', Icon: LocateIcon },
-  { name: "الملف الشخصي", href: 'ROUTES.PROFILE', Icon: User },
-  { name: "الإعدادات", href: 'ROUTES.SETTINGS', Icon: Settings },
+  { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
+  { name: "Slider", href: "ROUTES.SLIDER", Icon: Sliders },
+  { name: "Admins", href: "ROUTES.ADMINS", Icon: Shield },
+  { name: "Pharmacist", href: "ROUTES.PHARMACIST", Icon: Users },
+  { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
+  { name: "Brands", href: "ROUTES.BRANDS", Icon: Building },
+  { name: "Categories", href: " ROUTES.CATEGORIES", Icon: Tags },
+  { name: "Branches", href: "ROUTES.BRANCHES", Icon: MapPin },
+  { name: "Locations", href: "ROUTES.LOCATIONS", Icon: LocateIcon },
+  { name: "الملف الشخصي", href: "ROUTES.PROFILE", Icon: User },
+  { name: "الإعدادات", href: "ROUTES.SETTINGS", Icon: Settings },
 ];
 
 export default function OwnerDashboardLayout({
@@ -183,18 +183,27 @@ export default function OwnerDashboardLayout({
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
-  <HeaderNavLink href={ROUTES_OWNER.PRODUCTS} icon={<Package className="h-5 w-5" />}>
-    المنتجات
-  </HeaderNavLink>
-  
-  <HeaderNavLink href={ROUTES_OWNER.PHARMACIES} icon={<Store className="h-5 w-5" />}>
-    الصيدليات
-  </HeaderNavLink>
-  
-  <HeaderNavLink href={ROUTES_OWNER.COMPANIES} icon={<Building className="h-5 w-5" />}>
-    الشركات
-  </HeaderNavLink>
-</nav>
+            <HeaderNavLink
+              href={ROUTES_OWNER.PRODUCTS}
+              icon={<Package className="h-5 w-5" />}
+            >
+              المنتجات
+            </HeaderNavLink>
+
+            <HeaderNavLink
+              href={ROUTES_OWNER.PHARMACIES}
+              icon={<Store className="h-5 w-5" />}
+            >
+              الصيدليات
+            </HeaderNavLink>
+
+            <HeaderNavLink
+              href={ROUTES_OWNER.COMPANIES}
+              icon={<Building className="h-5 w-5" />}
+            >
+              الشركات
+            </HeaderNavLink>
+          </nav>
 
           {/* الإشعارات */}
           <div className="relative">
@@ -235,7 +244,6 @@ function HeaderNavLink({
     </Link>
   );
 }
-
 
 /* مكوّن الرابط */
 function NavLink({
