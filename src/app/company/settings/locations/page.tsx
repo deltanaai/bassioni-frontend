@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { LocationCreateInput, UpdateLocationInput } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import ROUTES from "@/constants/routes";
+import ROUTES, { ROUTES_COMPANY } from "@/constants/routes";
 import {
   addLocation,
   deleteLocations,
@@ -148,7 +148,7 @@ export default function LocationsManagementPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push(ROUTES.SETTINGS)}
+            onClick={() => router.push(ROUTES_COMPANY.SETTINGS)}
             className="p-2 hover:bg-gray-200 rounded-lg transition"
           >
             <ArrowLeft className="w-5 h-5" />

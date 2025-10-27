@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import ROUTES from "@/constants/routes";
+import  { ROUTES_COMPANY } from "@/constants/routes";
 import { signIn } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
 import { loginSchema } from "@/schemas/login";
@@ -65,7 +65,7 @@ export default function LoginPage() {
         }
         toast.success("تم تسجيل الدخول بنجاح ✅");
         await queryClient.invalidateQueries({ queryKey: ["session"] });
-        router.push(ROUTES.COMPANY_DASHBOARD);
+        router.push(ROUTES_COMPANY.DASHBOARD);
         router.refresh();
       } else {
         toast.error(result.message || "بيانات الدخول غير صحيحة");

@@ -3,7 +3,11 @@
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-import ROUTES from "@/constants/routes";
+import {
+  ROUTES_COMPANY,
+  ROUTES_OWNER,
+  ROUTES_PHARMA,
+} from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
@@ -23,20 +27,22 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     if (isLoadingSession) return;
 
     if (!session?.token && !isAuthRoute) {
-      router.replace(ROUTES.LOGIN);
+      router.replace(ROUTES_OWNER.LOGIN);
       return;
     }
 
     if (isAuthRoute && session?.token) {
-      if (userType === "company") router.replace(ROUTES.COMPANY_DASHBOARD);
-      else if (userType === "pharmacy") router.replace(ROUTES.PHARMA_DASHBOARD);
+      if (userType === "company")
+        router.replace(ROUTES_COMPANY.DASHBOARD);
+      else if (userType === "pharmacy")
+        router.replace(ROUTES_PHARMA.DASHBOARD);
       return;
     }
 
     if (userType === "company" && pathname.startsWith("/Pharma")) {
-      router.replace(ROUTES.COMPANY_DASHBOARD);
+      router.replace(ROUTES_COMPANY.DASHBOARD);
     } else if (userType !== "company" && pathname.startsWith("/company")) {
-      router.replace(ROUTES.PHARMA_DASHBOARD);
+      router.replace(ROUTES_PHARMA.DASHBOARD);
     }
   }, [session, isLoadingSession, pathname, router, isAuthRoute]);
 

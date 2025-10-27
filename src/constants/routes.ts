@@ -1,12 +1,29 @@
-const ROUTES = {
+export const ROUTES_OWNER = {
   BASE: "/",
   LOGIN: "/auth/login",
 
-//pharma_dashboard
-  PHARMA_DASHBOARD: "/Pharma",
+  MAIN_DASHBOARD: "/Owner",
+  PHARMACIES: "/Owner/pharmacies",
+  COMPANIES: "/Owner/companies",
+  PRODUCTS: "/Owner/products",
+};
 
-//company_dashboard
-  COMPANY_DASHBOARD: "/company",
+export const ROUTES_PHARMA = {
+  DASHBOARD: "/Pharma",
+  STAGNANT_GOODS: "/Pharma/stagnant-goods",
+  DAY_ORDERS: "/Pharma/today-orders",
+  SENT_ORDERS: "/Pharma/sent-orders",
+  MY_ORDERS: "/Pharma/my-orders",
+  INVOICE: "/Pharma/invoice",
+  ATTRIBUTES: "/Pharma/attributes",
+  PRODUCTS: "/Pharma/products",
+  PROFILE: "/Pharma/profile",
+  SETTINGS: "/Pharma/settings",
+  TRASH: "/Pharma/trash",
+};
+
+export const ROUTES_COMPANY = {
+  DASHBOARD: "/company",
   DAY_ORDERS: "/company/today",
   SENT_ORDERS: "/company/sentorder",
   MY_ORDERS: "/company/massgeorder",
@@ -18,16 +35,8 @@ const ROUTES = {
   SETTINGS: "/company/settings",
   ROLES: "/company/settings/roles",
   LOCATIONS: "/company/settings/locations",
-  COMPANY_ADD_EMPLOYEE: '/company/add-employee',
-  COMPANY_PHARMACY: '/company/add-pharmacy',
-  COMPANY_SYSTEM: '/company/system',
-  COMPANY_WAREHOUSES: '/company/warehouse',
-
-//owner_dashboard
-  OWNER_DASHBOARD: '/Owner',
-  OWNER_PHARMACY: '/Owner/pharmacies',
-  OWNER_COMPANIES:'/Owner/companies',
-  OWNER_PRODUCTS: '/Owner/products'
+  ADD_EMPLOYEE: "/company/add-employee",
+  ADD_PHARMACY: "/company/add-pharmacy",
+  SYSTEM: "/company/system",
+  WAREHOUSES: "/company/warehouse",
 };
-
-export default ROUTES;

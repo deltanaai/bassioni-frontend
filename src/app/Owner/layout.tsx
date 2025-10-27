@@ -27,13 +27,13 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import ROUTES from "@/constants/routes";
+import ROUTES, { ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
 
 const links = [
-  { name: "Dashboard", href: ROUTES.OWNER_DASHBOARD, Icon: Home },
+  { name: "Dashboard", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
   { name: "Media", href: 'ROUTES.MEDIA', Icon: ImageIcon },
   { name: "Slider", href: 'ROUTES.SLIDER', Icon: Sliders },
   { name: "Admins", href: 'ROUTES.ADMINS', Icon: Shield },
@@ -67,7 +67,7 @@ export default function OwnerDashboardLayout({
       toast.success("تم تسجيل الخروج بنجاح");
 
       await queryClient.invalidateQueries({ queryKey: ["session"] });
-      router.push(ROUTES.LOGIN);
+      router.push(ROUTES_OWNER.LOGIN);
     },
   });
 
@@ -183,15 +183,15 @@ export default function OwnerDashboardLayout({
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
-  <HeaderNavLink href={ROUTES.OWNER_PRODUCTS} icon={<Package className="h-5 w-5" />}>
+  <HeaderNavLink href={ROUTES_OWNER.PRODUCTS} icon={<Package className="h-5 w-5" />}>
     المنتجات
   </HeaderNavLink>
   
-  <HeaderNavLink href={ROUTES.OWNER_PHARMACY} icon={<Store className="h-5 w-5" />}>
+  <HeaderNavLink href={ROUTES_OWNER.PHARMACIES} icon={<Store className="h-5 w-5" />}>
     الصيدليات
   </HeaderNavLink>
   
-  <HeaderNavLink href={ROUTES.OWNER_COMPANIES} icon={<Building className="h-5 w-5" />}>
+  <HeaderNavLink href={ROUTES_OWNER.COMPANIES} icon={<Building className="h-5 w-5" />}>
     الشركات
   </HeaderNavLink>
 </nav>

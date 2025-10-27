@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import React, { useState } from "react";
-import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import {
   Home,
   User,
@@ -22,49 +20,156 @@ import {
   Store,
   Tag,
   TicketPercent,
+  Trash2,
+  LogOut,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+import { Button } from "@/components/ui/button";
+import { ROUTES_OWNER, ROUTES_PHARMA } from "@/constants/routes";
+import { useGetSession } from "@/hooks/useGetSession";
+import { signOut } from "@/lib/actions/company/login.action";
+import { queryClient } from "@/lib/queryClient";
+
+const links = [
+  { name: "الصفحة الرئيسية", href: ROUTES_PHARMA.DASHBOARD, Icon: Home },
+  { name: "طلبات اليوم", href: ROUTES_PHARMA.DAY_ORDERS, Icon: ClipboardList },
+  { name: "عروض الشركات", href: ROUTES_PHARMA.SENT_ORDERS, Icon: Send },
+  { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
+  { name: "الفواتير", href: ROUTES_PHARMA.INVOICE, Icon: Archive },
+  {
+    name: "الأصناف والبراندات",
+    href: ROUTES_PHARMA.ATTRIBUTES,
+    Icon: PlusCircle,
+  },
+  { name: "المنتجات", href: ROUTES_PHARMA.PRODUCTS, Icon: Mail },
+  { name: "الرواكد", href: ROUTES_PHARMA.STAGNANT_GOODS, Icon: Package },
+  { name: "سلة المحذوفات", href: ROUTES_PHARMA.TRASH, Icon: Trash2 },
+  { name: "الملف الشخصي", href: ROUTES_PHARMA.PROFILE, Icon: User },
+  { name: "الإعدادات", href: ROUTES_PHARMA.SETTINGS, Icon: Settings },
+  // { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
+];
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const router = useRouter();
+
+  const { session, isLoadingSession } = useGetSession();
+
+  const mutation = useMutation({
+    mutationFn: signOut, // TODO : change to pharma signOut action when available
+    onSuccess: async (res) => {
+      if (!res.success) {
+        toast.error(res.error?.message || "حدث خطأ أثناء تسجيل الخروج");
+        return;
+      }
+      toast.success("تم تسجيل الخروج بنجاح");
+
+      await queryClient.invalidateQueries({ queryKey: ["session"] });
+      router.push(ROUTES_OWNER.LOGIN);
+    },
+  });
+
+  // ✅ Redirect after mount, only when session is loaded
+  // useEffect(() => {
+  //   if (!isLoadingSession && !isLoggedIn) {
+  //     router.push(ROUTES.LOGIN);
+  //   }
+  // }, [isLoadingSession, isLoggedIn, router]);
+
+  if (isLoadingSession) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <p className="text-sm text-gray-500">جارٍ التحقق من الجلسة...</p>
+      </div>
+    );
+  }
+
+  const isLoggedIn = !!session?.token;
+  // if (!isLoggedIn) {
+  //   router.push(ROUTES.LOGIN);
+  // }
+  // logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
+
+  const authLinks = isLoggedIn
+    ? { name: "تسجيل الخروج", href: "#", Icon: LogOut }
+    : { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn };
+
+  const sideLinks = [...links, authLinks];
+
+  const handleSignOut = () => {
+    mutation.mutate();
+  };
 
   return (
-    <div
-      className="min-h-screen  flex text-white"
-      dir="rtl"
-    >
+    <div className="flex  min-h-screen text-white" dir="rtl">
       {/* القائمة الجانبية */}
       <aside
-        className={`${sidebarOpen ? "w-64" : "w-20"
-          } bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col transition-all duration-300 ease-in-out h-screen sticky top-0`}
+        className={`${
+          sidebarOpen ? "w-64" : "w-20"
+        } sticky top-0 flex h-screen flex-col bg-gradient-to-b from-gray-800 to-gray-900 transition-all duration-300 ease-in-out`}
       >
         {/* اللوجو */}
-        <div className="p-4 flex items-center justify-between border-b border-gray-700">
+        <div className="flex items-center justify-between border-b border-gray-700 p-4">
           {sidebarOpen ? (
-            <div className="text-center font-bold text-2xl tracking-wide">
+            <div className="text-center text-2xl font-bold tracking-wide">
               <span className="text-white">Pharma</span>
               <span className="text-emerald-400">bassiony</span>
             </div>
           ) : (
             <div className="mx-auto">
-              <span className="text-emerald-400 font-bold">PC</span>
+              <span className="font-bold text-emerald-400">PC</span>
             </div>
           )}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1 rounded-md hover:bg-gray-700"
+            className="rounded-md p-1 hover:bg-gray-700"
           >
             {sidebarOpen ? (
-              <ChevronDown className="w-5 h-5 transform rotate-90" />
+              <ChevronDown className="h-5 w-5 rotate-90 transform" />
             ) : (
-              <ChevronUp className="w-5 h-5 transform rotate-90" />
+              <ChevronUp className="h-5 w-5 rotate-90 transform" />
             )}
           </button>
         </div>
 
         {/* الروابط */}
-        <nav className="flex-1 p-4 space-y-2 text-sm overflow-y-auto">
-          <NavLink href="/Pharma" icon={<Home className="w-5 h-5" />} sidebarOpen={sidebarOpen}>
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4 text-sm">
+          {sideLinks.map((link) =>
+            link.name === "تسجيل الخروج" ? (
+              <Button
+                key={link.name}
+                onClick={handleSignOut}
+                variant="ghost"
+                className="flex w-full cursor-pointer items-center justify-start gap-2 px-4 py-2 text-right text-red-600 transition hover:bg-red-50 hover:text-red-700 hover:shadow-md"
+              >
+                <link.Icon className="h-5 w-5" />
+                {link.name}
+              </Button>
+            ) : (
+              <NavLink
+                href={link.href}
+                key={link.name}
+                icon={<link.Icon className="h-5 w-5" />}
+                sidebarOpen={sidebarOpen}
+              >
+                {link.name}
+              </NavLink>
+            )
+          )}
+          {/* <NavLink
+            href="/Pharma"
+            icon={<Home className="w-5 h-5" />}
+            sidebarOpen={sidebarOpen}
+          >
             الصفحة الرئيسية
           </NavLink>
           <NavLink
@@ -111,7 +216,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </NavLink>
 
           {/* قائمة الخصومات */}
-          <SidebarDropdown sidebarOpen={sidebarOpen} />
+          {/* <SidebarDropdown sidebarOpen={sidebarOpen} />
 
           <NavLink
             href="/Pharma/profile"
@@ -133,29 +238,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             sidebarOpen={sidebarOpen}
           >
             تسجيل الدخول
-          </NavLink>
+          </NavLink> */}
         </nav>
 
         {/* الفوتر */}
-        <div className="p-4 text-xs text-center text-gray-400 border-t border-gray-700">
+        <div className="border-t border-gray-700 p-4 text-center text-xs text-gray-400">
           © 2026 PharmaCare
         </div>
       </aside>
 
       {/* المحتوى */}
-      <main className="flex-1 overflow-y-auto flex flex-col bg-gray-950 min-h-screen">
+      <main className="flex min-h-screen flex-1 flex-col overflow-y-auto bg-gray-950">
         {/* الهيدر */}
-        <header className="flex items-center justify-between px-6 py-4 bg-gray-900 border-b border-gray-700 shadow-sm sticky top-0 z-10">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-700 bg-gray-900 px-6 py-4 shadow-sm">
           {/* لوجو + زرار القائمة */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1 rounded-md hover:bg-gray-700 md:hidden"
+              className="rounded-md p-1 hover:bg-gray-700 md:hidden"
             >
               {sidebarOpen ? (
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="h-5 w-5" />
               ) : (
-                <ChevronUp className="w-5 h-5" />
+                <ChevronUp className="h-5 w-5" />
               )}
             </button>
             <Image
@@ -163,58 +268,58 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               alt="Company Logo"
               width={40}
               height={40}
-              className="w-10 h-10 rounded-full border border-gray-600"
+              className="h-10 w-10 rounded-full border border-gray-600"
             />
             <span className="text-lg font-semibold text-white">بسيوني</span>
           </div>
 
           {/* روابط إضافية في الهيدر */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
             <Link
               href="/Pharma/"
-              className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Package className="w-5 h-5" />
+              <Package className="h-5 w-5" />
               <span>تقارير</span>
             </Link>
             <Link
               href="/Pharma/warehouse"
-              className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Package className="w-5 h-5" />
+              <Package className="h-5 w-5" />
               <span>المخازن</span>
             </Link>
             <Link
               href="/Pharma/add-pharmacy"
-              className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Store className="w-5 h-5" />
+              <Store className="h-5 w-5" />
               <span>إضافة صيدلية</span>
             </Link>
             <Link
               href="/Pharma/add-employee"
-              className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Users className="w-5 h-5" />
+              <Users className="h-5 w-5" />
               <span>إضافة موظفين</span>
             </Link>
             <Link
               href="/Pharma/system"
-              className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Store className="w-5 h-5" />
+              <Store className="h-5 w-5" />
               <span>النظام </span>
             </Link>
           </nav>
 
           {/* الإشعارات */}
           <div className="relative">
-            <Bell className="w-6 h-6 text-white hover:text-emerald-400 cursor-pointer" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+            <Bell className="h-6 w-6 cursor-pointer text-white hover:text-emerald-400" />
+            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500"></span>
           </div>
         </header>
 
-        <div className="p-6 flex-1 bg-gray-950 text-white">{children}</div>
+        <div className="flex-1 bg-gray-950 p-6 text-white">{children}</div>
       </main>
     </div>
   );
@@ -238,9 +343,13 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`flex items-center ${sidebarOpen ? "justify-start gap-3 px-4" : "justify-center px-2"
-        } py-2 rounded-md transition-all ${isActive ? "bg-emerald-600/20 text-emerald-400" : "bg-white/5 hover:bg-emerald-600/20"
-        }`}
+      className={`flex items-center ${
+        sidebarOpen ? "justify-start gap-3 px-4" : "justify-center px-2"
+      } rounded-md py-2 transition-all ${
+        isActive
+          ? "bg-emerald-600/20 text-emerald-400"
+          : "bg-white/5 hover:bg-emerald-600/20"
+      }`}
     >
       <span>{icon}</span>
       {sidebarOpen && <span>{children}</span>}
@@ -256,35 +365,41 @@ function SidebarDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
     <div className="transition-all">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center ${sidebarOpen ? "justify-between px-4" : "justify-center px-2"
-          } py-2 rounded-xl bg-white/5 hover:bg-emerald-600/20 transition-all text-white border border-gray-700`}
+        className={`flex w-full items-center ${
+          sidebarOpen ? "justify-between px-4" : "justify-center px-2"
+        } rounded-xl border border-gray-700 bg-white/5 py-2 text-white transition-all hover:bg-emerald-600/20`}
       >
         <div className="flex items-center gap-2">
-          <Percent className="w-5 h-5" />
+          <Percent className="h-5 w-5" />
           {sidebarOpen && <span>الخصومات</span>}
         </div>
         {sidebarOpen &&
-          (isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+          (isOpen ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          ))}
       </button>
 
       {sidebarOpen && (
         <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-            }`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
-          <div className="bg-gray-800 border border-gray-700 rounded-xl px-2 py-2 space-y-1 mt-2">
+          <div className="mt-2 space-y-1 rounded-xl border border-gray-700 bg-gray-800 px-2 py-2">
             <Link
               href="/Pharma/offers"
-              className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-emerald-600/20 transition text-white"
+              className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition hover:bg-emerald-600/20"
             >
-              <Tag className="w-4 h-4" />
+              <Tag className="h-4 w-4" />
               <span>العروض</span>
             </Link>
             <Link
               href="/Pharma/coupons"
-              className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-emerald-600/20 transition text-white"
+              className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition hover:bg-emerald-600/20"
             >
-              <TicketPercent className="w-4 h-4" />
+              <TicketPercent className="h-4 w-4" />
               <span>الكوبونات</span>
             </Link>
           </div>

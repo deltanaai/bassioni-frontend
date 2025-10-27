@@ -4,7 +4,7 @@ import DashboardLayout from "../layout";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Users, Key, MapPin, Building } from "lucide-react";
-import ROUTES from "@/constants/routes";
+import ROUTES, { ROUTES_COMPANY } from "@/constants/routes";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function SettingsPage() {
           {/* كارد إدارة الأدوار */}
           <div 
             className="p-4 border-2 border-indigo-200 bg-indigo-50 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all duration-200 hover:shadow-md"
-            onClick={() => router.push(ROUTES.ROLES)}
+            onClick={() => router.push(ROUTES_COMPANY.ROLES)}
           >
             <div className="flex items-center gap-3">
               <Users className="w-6 h-6 text-indigo-700" />
@@ -56,7 +56,7 @@ export default function SettingsPage() {
           {/* كارد إدارة المواقع */}
           <div 
             className="p-4 border-2 border-green-200 bg-green-50 rounded-xl cursor-pointer hover:bg-green-100 transition-all duration-200 hover:shadow-md"
-            onClick={() => router.push(ROUTES.LOCATIONS)}
+            onClick={() => router.push(ROUTES_COMPANY.LOCATIONS)}
           >
             <div className="flex items-center gap-3">
               <MapPin className="w-6 h-6 text-green-700" />

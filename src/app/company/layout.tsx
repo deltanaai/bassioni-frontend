@@ -29,23 +29,27 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import ROUTES from "@/constants/routes";
+import ROUTES, { ROUTES_COMPANY, ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
 import logger from "@/lib/logger";
 import { queryClient } from "@/lib/queryClient";
 
 const links = [
-  { name: "الصفحة الرئيسية", href: ROUTES.COMPANY_DASHBOARD, Icon: Home },
-  { name: "طلبات اليوم", href: ROUTES.DAY_ORDERS, Icon: ClipboardList },
-  { name: "عروض الشركات", href: ROUTES.SENT_ORDERS, Icon: Send },
-  { name: "طلباتي", href: ROUTES.MY_ORDERS, Icon: Send },
-  { name: "الفواتير", href: ROUTES.INVOICE, Icon: Archive },
-  { name: "الأصناف والبراندات", href: ROUTES.ATTRIBUTES, Icon: PlusCircle },
-  { name: "المنتجات", href: ROUTES.PRODUCTS, Icon: Mail },
-  { name: "سلة المحذوفات", href: ROUTES.TRASH, Icon: Trash2 },
-  { name: "الملف الشخصي", href: ROUTES.PROFILE, Icon: User },
-  { name: "الإعدادات", href: ROUTES.SETTINGS, Icon: Settings },
+  { name: "الصفحة الرئيسية", href: ROUTES_COMPANY.DASHBOARD, Icon: Home },
+  { name: "طلبات اليوم", href: ROUTES_COMPANY.DAY_ORDERS, Icon: ClipboardList },
+  { name: "عروض الشركات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Send },
+  { name: "طلباتي", href: ROUTES_COMPANY.MY_ORDERS, Icon: Send },
+  { name: "الفواتير", href: ROUTES_COMPANY.INVOICE, Icon: Archive },
+  {
+    name: "الأصناف والبراندات",
+    href: ROUTES_COMPANY.ATTRIBUTES,
+    Icon: PlusCircle,
+  },
+  { name: "المنتجات", href: ROUTES_COMPANY.PRODUCTS, Icon: Mail },
+  { name: "سلة المحذوفات", href: ROUTES_COMPANY.TRASH, Icon: Trash2 },
+  { name: "الملف الشخصي", href: ROUTES_COMPANY.PROFILE, Icon: User },
+  { name: "الإعدادات", href: ROUTES_COMPANY.SETTINGS, Icon: Settings },
   // { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
 ];
 
@@ -69,7 +73,7 @@ export default function DashboardLayout({
       toast.success("تم تسجيل الخروج بنجاح");
 
       await queryClient.invalidateQueries({ queryKey: ["session"] });
-      router.push(ROUTES.LOGIN);
+      router.push(ROUTES_OWNER.LOGIN);
     },
   });
 
@@ -194,26 +198,41 @@ export default function DashboardLayout({
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
-  <CompanyHeaderNavLink href="/company/" icon={<Package className="h-5 w-5" />}>
-    تقارير
-  </CompanyHeaderNavLink>
-  
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_WAREHOUSES} icon={<Package className="h-5 w-5" />}>
-    المخازن
-  </CompanyHeaderNavLink>
-  
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_PHARMACY} icon={<Store className="h-5 w-5" />}>
-    إضافة صيدلية
-  </CompanyHeaderNavLink>
-  
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_ADD_EMPLOYEE} icon={<Users className="h-5 w-5" />}>
-    إضافة موظفين
-  </CompanyHeaderNavLink>
-  
-  <CompanyHeaderNavLink href={ROUTES.COMPANY_SYSTEM} icon={<Store className="h-5 w-5" />}>
-    النظام
-  </CompanyHeaderNavLink>
-</nav>
+            <CompanyHeaderNavLink
+              href="/company/"
+              icon={<Package className="h-5 w-5" />}
+            >
+              تقارير
+            </CompanyHeaderNavLink>
+
+            <CompanyHeaderNavLink
+              href={ROUTES_COMPANY.WAREHOUSES}
+              icon={<Package className="h-5 w-5" />}
+            >
+              المخازن
+            </CompanyHeaderNavLink>
+
+            <CompanyHeaderNavLink
+              href={ROUTES_COMPANY.ADD_PHARMACY}
+              icon={<Store className="h-5 w-5" />}
+            >
+              إضافة صيدلية
+            </CompanyHeaderNavLink>
+
+            <CompanyHeaderNavLink
+              href={ROUTES_COMPANY.ADD_EMPLOYEE}
+              icon={<Users className="h-5 w-5" />}
+            >
+              إضافة موظفين
+            </CompanyHeaderNavLink>
+
+            <CompanyHeaderNavLink
+              href={ROUTES_COMPANY.SYSTEM}
+              icon={<Store className="h-5 w-5" />}
+            >
+              النظام
+            </CompanyHeaderNavLink>
+          </nav>
 
           {/* الإشعارات */}
           <div className="relative">
@@ -228,7 +247,7 @@ export default function DashboardLayout({
   );
 }
 
-//active link in nav
+// active link in nav
 function CompanyHeaderNavLink({
   href,
   icon,
@@ -244,7 +263,7 @@ function CompanyHeaderNavLink({
   return (
     <Link
       href={href}
-      className={`flex items-center justify-start gap-2 px-3 py-2 rounded-md transition-all ${
+      className={`flex items-center justify-start gap-2 rounded-md px-3 py-2 transition-all ${
         isActive
           ? " font-semibold text-emerald-700"
           : "text-gray-700  hover:text-emerald-600"
