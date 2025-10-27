@@ -295,7 +295,7 @@ export default function OrdersTodayPage() {
 
                   <div className="flex flex-col items-end gap-2">
                     <div className="flex items-center justify-between gap-2">
-                      <button className="cursor-pointer " onClick={()=>{}}>
+                      <button className="cursor-pointer " onClick={() => {}}>
                         <Trash size={18} className="text-red-700 " />
                       </button>
                       {renderStatusBadge(order.status)}

@@ -11,9 +11,9 @@ export const ROUTES_OWNER = {
 export const ROUTES_PHARMA = {
   DASHBOARD: "/Pharma",
   STAGNANT_GOODS: "/Pharma/stagnant-goods",
-  DAY_ORDERS: "/Pharma/today-orders",
-  SENT_ORDERS: "/Pharma/sent-orders",
-  MY_ORDERS: "/Pharma/my-orders",
+  DAY_ORDERS: "/Pharma/today",
+  SENT_ORDERS: "/Pharma/sentorder",
+  MY_ORDERS: "/Pharma/massgeorder",
   INVOICE: "/Pharma/invoice",
   ATTRIBUTES: "/Pharma/attributes",
   PRODUCTS: "/Pharma/products",
