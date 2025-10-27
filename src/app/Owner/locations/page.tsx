@@ -1,13 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  Plus,
-  Search,
-  MapPin,
-  MoreVertical,
-  Calendar,
-  Locate,
-} from "lucide-react";
+import { Plus, Search, MapPin, MoreVertical, Calendar } from "lucide-react";
 
 interface Location {
   id: number;
@@ -101,7 +94,7 @@ export default function LocationsPage() {
         {filteredLocations.map((location) => (
           <div
             key={location.id}
-            className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 group"
+            className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 "
           >
             {/* الهيدر */}
             <div className="flex items-start justify-between mb-4">

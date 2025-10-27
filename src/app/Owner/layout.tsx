@@ -34,7 +34,7 @@ import { signOut } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
 
 const links = [
-  { name: "Dashboard", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
+  { name: "الصفحة الرئيسية", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
   { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
   { name: "Slider", href: "ROUTES.SLIDER", Icon: Sliders },
   { name: "Admins", href: "ROUTES.ADMINS", Icon: Shield },
@@ -42,7 +42,7 @@ const links = [
   { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
-  { name: "Branches", href: "ROUTES.BRANCHES", Icon: LocateFixed },
+  { name: "الفروع", href: ROUTES_OWNER.BRANCHES, Icon: LocateFixed },
   { name: "المواقع", href: ROUTES_OWNER.LOCATIONS, Icon: MapPin },
   { name: "الملف الشخصي", href: "ROUTES.PROFILE", Icon: User },
   { name: "الإعدادات", href: "ROUTES.SETTINGS", Icon: Settings },

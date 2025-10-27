@@ -8,7 +8,8 @@ export const ROUTES_OWNER = {
   PRODUCTS: "/Owner/products",
   CATEGORIES: '/Owner/categories',
   BRANDS: '/Owner/brands',
-  LOCATIONS: '/Owner/locations'
+  LOCATIONS: '/Owner/locations',
+  BRANCHES: '/Owner/branches'
 };
 
 export const ROUTES_PHARMA = {
