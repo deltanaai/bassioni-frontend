@@ -293,49 +293,50 @@ export default function OrdersTodayPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <button className="cursor-pointer " onClick={() => {}}>
-                        <Trash size={18} className="text-red-700 " />
-                      </button>
-                      {renderStatusBadge(order.status)}
-                    </div>
-                    <button
-                      onClick={() => toggleOrderExpand(order.id)}
-                      className={`rounded-full p-1 ${
-                        expandedOrder === order.id
-                          ? "bg-gray-200 text-orange-500"
-                          : "text-gray-400 hover:bg-gray-100"
-                      }`}
-                    >
-                      {expandedOrder === order.id ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
+                  <div className="flex  w-[155px] justify-between  gap-2">
+                    <button className="self-start pt-1 ">
+                      <Trash size={18} className="text-red-700" />
                     </button>
+
+                    <div className="flex min-w-0 flex-1  flex-col items-end gap-2 px-2">
+                      {renderStatusBadge(order.status)}
+                      <button
+                        onClick={() => toggleOrderExpand(order.id)}
+                        className={`rounded-full p-1 ${
+                          expandedOrder === order.id
+                            ? "bg-gray-200 text-orange-500"
+                            : "text-gray-400 hover:bg-gray-100"
+                        }`}
+                      >
+                        {expandedOrder === order.id ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
 

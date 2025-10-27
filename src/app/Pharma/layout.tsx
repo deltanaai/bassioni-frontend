@@ -48,6 +48,7 @@ const links = [
   },
   { name: "المنتجات", href: ROUTES_PHARMA.PRODUCTS, Icon: Mail },
   { name: "الرواكد", href: ROUTES_PHARMA.STAGNANT_GOODS, Icon: Package },
+  { name: "الخصومات", href: ROUTES_PHARMA.DISCOUNT, Icon: Percent },
   { name: "سلة المحذوفات", href: ROUTES_PHARMA.TRASH, Icon: Trash2 },
   { name: "الملف الشخصي", href: ROUTES_PHARMA.PROFILE, Icon: User },
   { name: "الإعدادات", href: ROUTES_PHARMA.SETTINGS, Icon: Settings },
@@ -100,7 +101,7 @@ export default function DashboardLayout({
   // logger.info(`User Token: ${isLoggedIn ? session.token : "Not logged in"}`);
 
   const authLinks = isLoggedIn
-    ? { name: "تسجيل الخروج", href: "#", Icon: LogOut }
+    ? { name: "تسجيل الخروج", href: "", Icon: LogOut }
     : { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn };
 
   const sideLinks = [...links, authLinks];
@@ -154,6 +155,8 @@ export default function DashboardLayout({
                 <link.Icon className="h-5 w-5" />
                 {link.name}
               </Button>
+            ) : link.href === ROUTES_PHARMA.DISCOUNT ? (
+              <SidebarDropdown sidebarOpen={sidebarOpen} key={link.name} />
             ) : (
               <NavLink
                 href={link.href}
@@ -389,14 +392,14 @@ function SidebarDropdown({ sidebarOpen }: { sidebarOpen: boolean }) {
         >
           <div className="mt-2 space-y-1 rounded-xl border border-gray-700 bg-gray-800 px-2 py-2">
             <Link
-              href="/Pharma/offers"
+              href={ROUTES_PHARMA.OFFERS}
               className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition hover:bg-emerald-600/20"
             >
               <Tag className="h-4 w-4" />
               <span>العروض</span>
             </Link>
             <Link
-              href="/Pharma/coupons"
+              href={ROUTES_PHARMA.COUPONS}
               className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition hover:bg-emerald-600/20"
             >
               <TicketPercent className="h-4 w-4" />

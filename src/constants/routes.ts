@@ -20,6 +20,9 @@ export const ROUTES_PHARMA = {
   PROFILE: "/Pharma/profile",
   SETTINGS: "/Pharma/settings",
   TRASH: "/Pharma/trash",
+  OFFERS:"/Pharma/offers",
+  COUPONS:"/Pharma/coupons",
+  DISCOUNT:"/Pharma/discount",
 };
 
 export const ROUTES_COMPANY = {
