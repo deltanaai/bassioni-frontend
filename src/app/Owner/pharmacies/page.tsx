@@ -226,25 +226,6 @@ export default function PharmaciesPage() {
           </div>
         </div>
       </div>
-
-      {/* الباجينيشن */}
-      {/* <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-6 py-3">
-        <div className="text-sm text-gray-600">
-          عرض <strong>1-{filteredPharmacies.length}</strong> من <strong>{filteredPharmacies.length}</strong>
-        </div>
-        
-        <div className="flex gap-2">
-          <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-            السابق
-          </button>
-          <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-            1
-          </button>
-          <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-            التالي
-          </button>
-        </div>
-      </div> */}
     </div>
   );
 }

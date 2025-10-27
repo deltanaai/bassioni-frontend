@@ -18,8 +18,8 @@ import {
   Tags,
   MapPin,
   LogOut,
-  LocateIcon,
   Badge,
+  LocateFixed,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,8 +42,8 @@ const links = [
   { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
-  { name: "Branches", href: "ROUTES.BRANCHES", Icon: MapPin },
-  { name: "Locations", href: "ROUTES.LOCATIONS", Icon: LocateIcon },
+  { name: "Branches", href: "ROUTES.BRANCHES", Icon: LocateFixed },
+  { name: "المواقع", href: ROUTES_OWNER.LOCATIONS, Icon: MapPin },
   { name: "الملف الشخصي", href: "ROUTES.PROFILE", Icon: User },
   { name: "الإعدادات", href: "ROUTES.SETTINGS", Icon: Settings },
 ];
