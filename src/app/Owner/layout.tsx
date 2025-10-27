@@ -19,6 +19,7 @@ import {
   MapPin,
   LogOut,
   LocateIcon,
+  Badge,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,7 +40,7 @@ const links = [
   { name: "Admins", href: "ROUTES.ADMINS", Icon: Shield },
   { name: "Pharmacist", href: "ROUTES.PHARMACIST", Icon: Users },
   { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
-  { name: "Brands", href: ROUTES_OWNER.BRANDS, Icon: Building },
+  { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
   { name: "Branches", href: "ROUTES.BRANCHES", Icon: MapPin },
   { name: "Locations", href: "ROUTES.LOCATIONS", Icon: LocateIcon },
