@@ -1,4 +1,15 @@
 // global declarations
+
+interface Company {
+  id: number | null;
+  name: string | null;
+  address: string | null;
+  phone: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  deletedAt?: string | null;
+  deleted: boolean | null;
+}
 interface Employee {
   id: number;
   name: string;
@@ -6,7 +17,7 @@ interface Employee {
   phone: string;
   active: boolean;
   role: string; // role name is what api returns, not role id
-  warehouse_id?: number; // for update employee details 
+  warehouse_id?: number; // for update employee details
   address?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -57,5 +68,5 @@ interface TrashItem {
   type: "employee" | "warehouse" | "role";
   role?: string;
   code?: string;
-  originalData: string;  //anyyy
+  originalData: string; // any
 }
