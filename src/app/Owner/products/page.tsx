@@ -1,6 +1,15 @@
 "use client";
 import { useState } from "react";
-import { Plus, Search, Package, Star, Tag, Building, Home } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Package,
+  Star,
+  Tag,
+  Building,
+  Home,
+  Eye,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -284,16 +293,9 @@ export default function ProductsPage() {
                   href={`/Owner/products/${product.id}`}
                   className="flex-1 bg-blue-50 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium text-center"
                 >
+                  <Eye className="w-4 h-4 inline ml-1" />
                   عرض التفاصيل
                 </Link>
-
-                <button className="flex-1 bg-green-50 text-green-700 py-2 px-3 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium text-center">
-                  تعديل
-                </button>
-
-                <button className="flex-1 bg-red-50 text-red-700 py-2 px-3 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium text-center">
-                  حذف
-                </button>
               </div>
             </div>
           </div>

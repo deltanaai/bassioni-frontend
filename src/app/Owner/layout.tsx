@@ -38,7 +38,6 @@ const links = [
   { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
   { name: "Slider", href: "ROUTES.SLIDER", Icon: Sliders },
   { name: "Admins", href: "ROUTES.ADMINS", Icon: Shield },
-  { name: "الصيادلة", href: ROUTES_OWNER.PHARMACISTS, Icon: Users },
   { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
@@ -184,6 +183,12 @@ export default function OwnerDashboardLayout({
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
+            <HeaderNavLink
+              href={ROUTES_OWNER.PHARMACISTS}
+              icon={<Users className="h-5 w-5" />}
+            >
+              الصيادلة
+            </HeaderNavLink>
             <HeaderNavLink
               href={ROUTES_OWNER.PRODUCTS}
               icon={<Package className="h-5 w-5" />}

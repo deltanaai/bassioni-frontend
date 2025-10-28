@@ -3,8 +3,6 @@ import { useState } from "react";
 import {
   Plus,
   Search,
-  Edit,
-  Trash2,
   User,
   Phone,
   Mail,
@@ -177,17 +175,8 @@ export default function PharmacistsPage() {
               </div>
             </div>
 
-            {/* التقييم */}
+            {/* تاريخ الانشاء */}
             <div className="flex items-center justify-between mb-4">
-              {/* <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">
-                  {pharmacist.pharmacy.avg_rate}
-                </span>
-                <span className="text-gray-500 text-sm">
-                  ({pharmacist.pharmacy.total_rate})
-                </span>
-              </div> */}
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 انشئ في:
                 <Calendar className="w-4 h-4 text-gray-800" />
@@ -198,20 +187,12 @@ export default function PharmacistsPage() {
             {/* الإجراءات */}
             <div className="flex gap-2 pt-4 border-t border-gray-100">
               <Link
-                href={`/owner/pharmacists/${pharmacist.id}`}
+                href={`/Owner/pharmacists/${pharmacist.id}`}
                 className="flex-1 bg-blue-50 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium text-center"
               >
                 <Eye className="w-4 h-4 inline ml-1" />
-                عرض
+                عرض التفاصيل
               </Link>
-              <button className="flex-1 bg-green-50 text-green-700 py-2 px-3 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium text-center">
-                <Edit className="w-4 h-4 inline ml-1" />
-                تعديل
-              </button>
-              <button className="flex-1 bg-red-50 text-red-700 py-2 px-3 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium text-center">
-                <Trash2 className="w-4 h-4 inline ml-1" />
-                حذف
-              </button>
             </div>
           </div>
         ))}
