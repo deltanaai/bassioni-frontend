@@ -288,14 +288,7 @@ export default function LocationsManagementPage() {
       </div>
 
       {/* رسالة عندما لا توجد مواقع */}
-      {/* 
-        سبب الايرور: 
-        المتغير locations قد يكون نوعه PaginatedResponse<Location> وليس دائما مصفوفة. 
-        الـPaginatedResponse لا يملك خاصية length، 
-        لكن إذا كانت القيمة تأتي كـ[] (مصفوفة فارغة)، فسيكون هناك length. 
-        الافضل التأكد أن locations مصفوفة قبل استخدام length، 
-        أو التأكد مباشرة من نوع الاستجابة من API لجعل .data هو دائما مصفوفة. 
-      */}
+
       {Array.isArray(locations) && locations.length === 0 && (
         <div className="text-center py-12">
           <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />

@@ -24,7 +24,7 @@ import { roleCreateInput, UpdateRoleInput } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddNewRoleSchema, UpdateRoleSchema } from "@/schemas/company/role";
 import { toast } from "sonner";
-import ROUTES from "@/constants/routes";
+import { ROUTES_COMPANY } from "@/constants/routes";
 
 export default function RolesManagementPage() {
   const router = useRouter();
@@ -144,7 +144,7 @@ export default function RolesManagementPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push(ROUTES.SETTINGS)}
+            onClick={() => router.push(ROUTES_COMPANY.SETTINGS)}
             className="p-2 hover:bg-gray-200 rounded-lg transition"
           >
             <ArrowLeft className="w-5 h-5" />

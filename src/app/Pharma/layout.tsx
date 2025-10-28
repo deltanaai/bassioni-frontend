@@ -42,7 +42,7 @@ const links = [
   { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
   { name: "الفواتير", href: ROUTES_PHARMA.INVOICE, Icon: Archive },
   {
-    name: "الأصناف والبراندات",
+    name: "الفئات والبراندات",
     href: ROUTES_PHARMA.ATTRIBUTES,
     Icon: PlusCircle,
   },
@@ -290,21 +290,21 @@ export default function DashboardLayout({
               className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
               <Package className="h-5 w-5" />
-              <span>المخازن</span>
+              <span>الشركات</span>
             </Link>
             <Link
               href="/Pharma/add-pharmacy"
               className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
               <Store className="h-5 w-5" />
-              <span>إضافة صيدلية</span>
+              <span> الفروع</span>
             </Link>
             <Link
               href="/Pharma/add-employee"
               className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
               <Users className="h-5 w-5" />
-              <span>إضافة موظفين</span>
+              <span> الموظفين</span>
             </Link>
             <Link
               href="/Pharma/system"

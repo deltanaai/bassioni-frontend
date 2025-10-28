@@ -85,9 +85,7 @@ export default function PharmaciesPage() {
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-emerald-400">
-          الصيدليات والفروع
-        </h1>
+        <h1 className="text-3xl font-bold text-emerald-400">فروع الصيدليات</h1>
         <button
           onClick={openAddModal}
           className="flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-2 font-semibold text-white transition hover:bg-emerald-700"
@@ -107,7 +105,10 @@ export default function PharmaciesPage() {
               <h2 className="mb-3 text-xl font-semibold text-white">
                 {branch.name}
               </h2>
-              <button className="cursor-pointer " onClick={() => setShowDeleteModal(true)}>
+              <button
+                className="cursor-pointer "
+                onClick={() => setShowDeleteModal(true)}
+              >
                 <Trash size={18} className="text-red-700 " />
               </button>
             </div>
