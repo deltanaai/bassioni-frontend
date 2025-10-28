@@ -3,14 +3,140 @@
 import DashboardLayout from "../layout";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Users, Key, MapPin, Building } from "lucide-react";
-import ROUTES, { ROUTES_COMPANY } from "@/constants/routes";
+import { Users, MapPin, Building, Phone, Calendar } from "lucide-react";
+import { ROUTES_COMPANY } from "@/constants/routes";
+import { useQuery } from "@tanstack/react-query";
+import { getCompanyInfo } from "@/lib/actions/company/company.action";
 
 export default function SettingsPage() {
   const router = useRouter();
 
+  const {
+    data: CompanyData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["companyData"],
+    queryFn: getCompanyInfo,
+    placeholderData: {
+      success: true,
+      data: {
+        id: 1,
+        name: "شركة تجريبية",
+        address: "عنوان تجريبي",
+        phone: "0100000000",
+        createdAt: "1-10-2020",
+        updatedAt: "20-2-2025",
+        deleted: false,
+      },
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">جاري تحميل بيانات الشركة...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-600">
+          <p>حدث خطأ في تحميل بيانات الشركة</p>
+        </div>
+      </div>
+    );
+  }
+  const company = CompanyData?.success ? CompanyData.data : null;
+  console.log(company);
+
   return (
     <div className="p-6 space-y-8 bg-gray-50 text-gray-800 min-h-screen">
+      {/* معلومات الشركة  */}
+      <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-xl">
+              <Building className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                معلومات الشركة
+              </h2>
+              <p className="text-sm text-gray-500">تفاصيل الشركة الأساسية</p>
+            </div>
+          </div>
+          <div className="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm font-medium border border-green-200">
+            {company ? "نشطة" : "غير متاحة"}
+          </div>
+        </div>
+
+        {company ? (
+          <div className="grid lg:grid-cols-2 gap-4">
+            {/* الاسم */}
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 transition-colors duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Building className="w-4 h-4 text-blue-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  اسم الشركة
+                </label>
+              </div>
+              <p className="text-base text-gray-900">{company.name}</p>
+            </div>
+
+            {/* العنوان */}
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-green-50 transition-colors duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-green-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  العنوان
+                </label>
+              </div>
+              <p className="text-base text-gray-900">{company.address}</p>
+            </div>
+
+            {/* الهاتف */}
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-purple-50 transition-colors duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Phone className="w-4 h-4 text-purple-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  رقم الهاتف
+                </label>
+              </div>
+              <p className="text-base text-gray-900 direction-ltr text-right">
+                {company.phone}
+              </p>
+            </div>
+
+            {/* تاريخ الإنشاء */}
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-orange-50 transition-colors duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar className="w-4 h-4 text-orange-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  تاريخ الإنشاء
+                </label>
+              </div>
+              <p className="text-base text-gray-900">
+                {company.createdAt
+                  ? new Date(company.createdAt).toLocaleDateString("ar-EG")
+                  : "غير محدد"}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+              <Building className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500">لا توجد بيانات للشركة</p>
+          </div>
+        )}
+      </section>
       {/* إدارة الأدوار */}
       <section className="bg-white border border-gray-100 rounded-2xl shadow-md p-6 space-y-4">
         <h2 className="text-xl font-semibold text-indigo-600 border-b border-gray-200 pb-2">
@@ -18,32 +144,22 @@ export default function SettingsPage() {
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
           {/* كارد إدارة الأدوار */}
-          <div 
+          <div
             className="p-4 border-2 border-indigo-200 bg-indigo-50 rounded-xl cursor-pointer hover:bg-indigo-100 transition-all duration-200 hover:shadow-md"
             onClick={() => router.push(ROUTES_COMPANY.ROLES)}
           >
             <div className="flex items-center gap-3">
               <Users className="w-6 h-6 text-indigo-700" />
               <div className="flex-1">
-                <h3 className="font-semibold text-lg text-indigo-700">إدارة الأدوار</h3>
-                <p className="text-sm text-indigo-600">إضافة، تعديل أو حذف الأدوار مثل مدير، محاسب، مشرف وغيرها</p>
+                <h3 className="font-semibold text-lg text-indigo-700">
+                  إدارة الأدوار
+                </h3>
+                <p className="text-sm text-indigo-600">
+                  إضافة، تعديل أو حذف الأدوار مثل مدير، محاسب، مشرف وغيرها
+                </p>
               </div>
             </div>
           </div>
-
-          {/* كارد إدارة الصلاحيات */}
-          {/* <div 
-            className="p-4 border-2 border-purple-200 bg-purple-50 rounded-xl cursor-pointer hover:bg-purple-100 transition-all duration-200 hover:shadow-md"
-            onClick={() => router.push('/company/settings/permissions')}
-          >
-            <div className="flex items-center gap-3">
-              <Key className="w-6 h-6 text-purple-700" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg text-purple-700">إدارة الصلاحيات</h3>
-                <p className="text-sm text-purple-600">تحديد الصلاحيات الممنوحة لكل دور في النظام</p>
-              </div>
-            </div>
-          </div> */}
         </div>
       </section>
 
@@ -54,32 +170,22 @@ export default function SettingsPage() {
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
           {/* كارد إدارة المواقع */}
-          <div 
+          <div
             className="p-4 border-2 border-green-200 bg-green-50 rounded-xl cursor-pointer hover:bg-green-100 transition-all duration-200 hover:shadow-md"
             onClick={() => router.push(ROUTES_COMPANY.LOCATIONS)}
           >
             <div className="flex items-center gap-3">
               <MapPin className="w-6 h-6 text-green-700" />
               <div className="flex-1">
-                <h3 className="font-semibold text-lg text-green-700">إدارة المواقع</h3>
-                <p className="text-sm text-green-600">إضافة، تعديل أو حذف المواقع والفروع المختلفة</p>
+                <h3 className="font-semibold text-lg text-green-700">
+                  إدارة المواقع
+                </h3>
+                <p className="text-sm text-green-600">
+                  إضافة، تعديل أو حذف المواقع والفروع المختلفة
+                </p>
               </div>
             </div>
           </div>
-
-          {/* كارد إعدادات الفروع */}
-          {/* <div 
-            className="p-4 border-2 border-blue-200 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-all duration-200 hover:shadow-md"
-            onClick={() => router.push('/settings/branches')}
-          >
-            <div className="flex items-center gap-3">
-              <Building className="w-6 h-6 text-blue-700" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg text-blue-700">إعدادات الفروع</h3>
-                <p className="text-sm text-blue-600">تحديد إعدادات كل فرع ومعلومات الاتصال</p>
-              </div>
-            </div>
-          </div> */}
         </div>
       </section>
       {/* إعدادات الخصوصية */}

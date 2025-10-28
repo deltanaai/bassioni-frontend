@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { useState } from "react";
-import { MapPin, Plus, Edit } from "lucide-react";
+import { MapPin, Plus, Edit, Store } from "lucide-react";
 
 interface Branch {
   id: number;
@@ -14,8 +14,18 @@ export default function PharmaciesPage() {
   const pharmacies = ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"];
 
   const [branches, setBranches] = useState<Branch[]>([
-    { id: 1, name: "فرع مدينة نصر", location: "القاهرة - مدينة نصر", pharmacy: "صيدلية النور" },
-    { id: 2, name: "فرع سموحة", location: "الإسكندرية - سموحة", pharmacy: "صيدلية الشفاء" },
+    {
+      id: 1,
+      name: "فرع مدينة نصر",
+      location: "القاهرة - مدينة نصر",
+      pharmacy: "صيدلية النور",
+    },
+    {
+      id: 2,
+      name: "فرع سموحة",
+      location: "الإسكندرية - سموحة",
+      pharmacy: "صيدلية الشفاء",
+    },
   ]);
 
   const [showModal, setShowModal] = useState(false);
@@ -43,9 +53,11 @@ export default function PharmaciesPage() {
 
   const saveBranch = () => {
     if (editBranchId !== null) {
-      setBranches(branches.map(b =>
-        b.id === editBranchId ? { ...b, name, location, pharmacy } : b
-      ));
+      setBranches(
+        branches.map((b) =>
+          b.id === editBranchId ? { ...b, name, location, pharmacy } : b
+        )
+      );
     } else {
       const newBranch: Branch = {
         id: branches.length + 1,
@@ -60,11 +72,19 @@ export default function PharmaciesPage() {
 
   return (
     <div className="p-6 min-h-screen bg-white">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-emerald-600">الصيدليات والفروع</h1>
+      <div className="mb-8 flex items-center justify-between p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <Store className="w-8 h-8 text-emerald-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-emerald-600">
+              الصيدليات و الفروع
+            </h1>
+            <p className="text-gray-600">إدارة وتنظيم الصيدليات و فروعها</p>
+          </div>
+        </div>
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-white font-semibold transition"
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <Plus className="w-5 h-5" />
           إضافة فرع جديد
@@ -77,13 +97,17 @@ export default function PharmaciesPage() {
             key={branch.id}
             className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
           >
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">{branch.name}</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">
+              {branch.name}
+            </h2>
             <p className="flex items-center gap-2 text-gray-600">
               <MapPin className="w-5 h-5 text-emerald-500" />
-              الموقع: <span className="font-bold text-gray-800">{branch.location}</span>
+              الموقع:{" "}
+              <span className="font-bold text-gray-800">{branch.location}</span>
             </p>
             <p className="flex items-center gap-2 text-gray-600 mt-2">
-              الصيدلية الأساسية: <span className="font-bold text-gray-800">{branch.pharmacy}</span>
+              الصيدلية الأساسية:{" "}
+              <span className="font-bold text-gray-800">{branch.pharmacy}</span>
             </p>
             <div className="mt-4 flex justify-end">
               <button
@@ -126,7 +150,9 @@ export default function PharmaciesPage() {
                 className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
               >
                 {pharmacies.map((ph, idx) => (
-                  <option key={idx} value={ph}>{ph}</option>
+                  <option key={idx} value={ph}>
+                    {ph}
+                  </option>
                 ))}
               </select>
 

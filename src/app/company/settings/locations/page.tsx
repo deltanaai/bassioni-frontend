@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { LocationCreateInput, UpdateLocationInput } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import ROUTES, { ROUTES_COMPANY } from "@/constants/routes";
+import { ROUTES_COMPANY } from "@/constants/routes";
 import {
   addLocation,
   deleteLocations,
