@@ -9,7 +9,8 @@ export const ROUTES_OWNER = {
   CATEGORIES: '/Owner/categories',
   BRANDS: '/Owner/brands',
   LOCATIONS: '/Owner/locations',
-  BRANCHES: '/Owner/branches'
+  BRANCHES: '/Owner/branches',
+  PHARMACISTS: '/Owner/pharmacists',
 };
 
 export const ROUTES_PHARMA = {

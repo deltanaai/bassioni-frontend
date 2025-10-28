@@ -38,7 +38,7 @@ const links = [
   { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
   { name: "Slider", href: "ROUTES.SLIDER", Icon: Sliders },
   { name: "Admins", href: "ROUTES.ADMINS", Icon: Shield },
-  { name: "Pharmacist", href: "ROUTES.PHARMACIST", Icon: Users },
+  { name: "الصيادلة", href: ROUTES_OWNER.PHARMACISTS, Icon: Users },
   { name: "Auth Admin", href: "ROUTES.AUTH_ADMIN", Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
