@@ -26,7 +26,10 @@ import {
   getAllLocations,
   updateLocation,
 } from "@/lib/actions/company/locations.action";
-import { AddLocationSchema, UpdateLocationSchema } from "@/schemas/location";
+import {
+  AddLocationSchema,
+  UpdateLocationSchema,
+} from "@/schemas/company/location";
 
 export default function LocationsManagementPage() {
   const router = useRouter();
@@ -43,10 +46,15 @@ export default function LocationsManagementPage() {
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
 
-
   const { data: LocationsData } = useQuery({
     queryKey: ["locations", currentPage],
-    queryFn: () => getAllLocations({ page:currentPage , perPage: 6 , deleted:false, paginate:true }),
+    queryFn: () =>
+      getAllLocations({
+        page: currentPage,
+        perPage: 6,
+        deleted: false,
+        paginate: true,
+      }),
   });
   const locations = LocationsData?.data || [];
   console.log(locations);
@@ -220,61 +228,63 @@ export default function LocationsManagementPage() {
 
       {/* قائمة المواقع */}
       <div className="grid gap-4">
-        {(Array.isArray(locations) ? locations : []).map((location: Location) => (
-          <div
-            key={location.id}
-            className="bg-white border border-gray-200 rounded-2xl hover:shadow-md transition-shadow duration-300 p-6"
-          >
-            <div className="flex items-center justify-between p-4 bg-white rounded-lg  ">
-              <div className="flex items-center gap-4 flex-1">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <MapPin className="w-6 h-6 text-green-600" />
-                </div>
+        {(Array.isArray(locations) ? locations : []).map(
+          (location: Location) => (
+            <div
+              key={location.id}
+              className="bg-white border border-gray-200 rounded-2xl hover:shadow-md transition-shadow duration-300 p-6"
+            >
+              <div className="flex items-center justify-between p-4 bg-white rounded-lg  ">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <MapPin className="w-6 h-6 text-green-600" />
+                  </div>
 
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 capitalize mb-1">
-                    {location.name}
-                  </h3>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 capitalize mb-1">
+                      {location.name}
+                    </h3>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>أنشئ في: {location.createdAt}</span>
-                    </div>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>أنشئ في: {location.createdAt}</span>
+                      </div>
 
-                    <div className="flex items-center gap-1">
-                      <RefreshCw className="w-4 h-4" />
-                      <span>حدث في: {location.updatedAt}</span>
+                      <div className="flex items-center gap-1">
+                        <RefreshCw className="w-4 h-4" />
+                        <span>حدث في: {location.updatedAt}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => {
-                    setLocationToUpdate(location);
-                    setShowEditModal(true);
-                  }}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200"
-                  title="تعديل"
-                >
-                  <Edit className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => {
-                    setLocationToDelete(location);
-                    setShowDeleteModal(true);
-                  }}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200"
-                  title="حذف"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => {
+                      setLocationToUpdate(location);
+                      setShowEditModal(true);
+                    }}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200"
+                    title="تعديل"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLocationToDelete(location);
+                      setShowDeleteModal(true);
+                    }}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200"
+                    title="حذف"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
 
       {/* رسالة عندما لا توجد مواقع */}
@@ -298,45 +308,46 @@ export default function LocationsManagementPage() {
 
       {/* paginationnn */}
       {LocationsData?.meta && LocationsData.meta.last_page > 1 && (
-  <div className="flex justify-center items-center space-x-4 mt-6">
-    {/* السهم اليسار */}
-    <button
-      onClick={() => setCurrentPage((prev) => prev - 1)}
-      disabled={currentPage === 1}
-      className="w-8 h-8 flex items-center justify-center rounded-lg border border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-    >
-      <ChevronRight size={16} />
-    </button>
-
-    {/* أرقام الصفحات */}
-    <div className="flex space-x-1">
-      {Array.from({ length: LocationsData.meta.last_page }, (_, i) => i + 1).map(
-        (page) => (
+        <div className="flex justify-center items-center space-x-4 mt-6">
+          {/* السهم اليسار */}
           <button
-            key={page}
-            onClick={() => setCurrentPage(page)}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
-              currentPage === page
-                ? "bg-green-600 text-white shadow-md"
-                : "text-green-600 border border-green-600 hover:bg-green-100"
-            }`}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            disabled={currentPage === 1}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
-            {page}
+            <ChevronRight size={16} />
           </button>
-        )
-      )}
-    </div>
 
-    {/* السهم اليمين */}
-    <button
-      onClick={() => setCurrentPage((prev) => prev + 1)}
-      disabled={currentPage === LocationsData.meta.last_page}
-      className="w-8 h-8 flex items-center justify-center rounded-lg border border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-    >
-      <ChevronLeft size={16} />
-    </button>
-  </div>
-)}
+          {/* أرقام الصفحات */}
+          <div className="flex space-x-1">
+            {Array.from(
+              { length: LocationsData.meta.last_page },
+              (_, i) => i + 1
+            ).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                  currentPage === page
+                    ? "bg-green-600 text-white shadow-md"
+                    : "text-green-600 border border-green-600 hover:bg-green-100"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          {/* السهم اليمين */}
+          <button
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={currentPage === LocationsData.meta.last_page}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeft size={16} />
+          </button>
+        </div>
+      )}
 
       {/* مودال التعديل */}
       {showEditModal && LocationToUpdate && (

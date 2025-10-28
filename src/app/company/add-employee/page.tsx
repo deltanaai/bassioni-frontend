@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import { useForm } from "react-hook-form";
-import { CreateEmployeeSchema } from "@/schemas/employee";
+import { CreateEmployeeSchema } from "@/schemas/company/employee";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EmployeeCreateInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -106,35 +106,35 @@ export default function EmployeesPage() {
   return (
     <div className="p-6 min-h-screen bg-white">
       <div className="flex justify-between items-center mb-8 p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
-  <div className="flex items-center gap-3">
-    <Users className="w-8 h-8 text-emerald-600" />
-    <div>
-      <h1 className="text-3xl font-bold text-emerald-600">ادارة الموظفين</h1>
-      <p className="text-gray-600">إدارة وتنظيم فريق العمل</p>
-    </div>
-  </div>
-  
-  <div className="flex items-center gap-3">
-    <button
-      onClick={() => setIsBulkModalOpen(true)}
-      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-    >
-      <Settings className="w-5 h-5" />
-      تعيين جماعي
-    </button>
-    
-    <button
-      onClick={() => setShowModal(true)}
-      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-    >
-      <Plus className="w-5 h-5" />
-      إضافة موظف
-    </button>
-  </div>
-</div>
-      <div className="flex justify-between items-center mb-6">
-        
+        <div className="flex items-center gap-3">
+          <Users className="w-8 h-8 text-emerald-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-emerald-600">
+              ادارة الموظفين
+            </h1>
+            <p className="text-gray-600">إدارة وتنظيم فريق العمل</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsBulkModalOpen(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+          >
+            <Settings className="w-5 h-5" />
+            تعيين جماعي
+          </button>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+          >
+            <Plus className="w-5 h-5" />
+            إضافة موظف
+          </button>
+        </div>
       </div>
+      <div className="flex justify-between items-center mb-6"></div>
 
       <BulkAssignModal
         isOpen={isBulkModalOpen}
@@ -419,7 +419,7 @@ export default function EmployeesPage() {
                   {...register("active")}
                   className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
                 />
-                <label  htmlFor="activecheckbox" className="text-gray-700">
+                <label htmlFor="activecheckbox" className="text-gray-700">
                   موظف نشط
                 </label>
               </div>

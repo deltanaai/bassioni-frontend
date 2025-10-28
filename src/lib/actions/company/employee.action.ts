@@ -9,7 +9,7 @@ import {
   GetEmployeesSchema,
   RestoreEmployeesSchema,
   UpdateEmployeeSchema,
-} from "@/schemas/employee";
+} from "@/schemas/company/employee";
 
 import { api } from "../../api";
 import action from "../../handlers/action";

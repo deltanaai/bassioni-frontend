@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import  { ROUTES_COMPANY } from "@/constants/routes";
+import { ROUTES_COMPANY } from "@/constants/routes";
 import { signIn } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
-import { loginSchema } from "@/schemas/login";
+import { loginSchema } from "@/schemas/company/login";
 import { LoginFormData } from "@/types";
 
 export default function LoginPage() {

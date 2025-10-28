@@ -28,13 +28,12 @@ import {
 } from "@/lib/actions/company/employee.action";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateEmployeeSchema } from "@/schemas/employee";
+import { UpdateEmployeeSchema } from "@/schemas/company/employee";
 import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
 import { getAllRoles } from "@/lib/actions/company/role.action";
 
 export default function EmployeeDetailsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  
 
   const deleteMutation = useMutation({
     mutationFn: deleteEmployees,
@@ -60,7 +59,6 @@ export default function EmployeeDetailsPage() {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
-
 
   const employeeId = parseInt(params.id as string);
 
@@ -102,18 +100,23 @@ export default function EmployeeDetailsPage() {
   });
 
   useEffect(() => {
-    if ( showEditModal && editingEmployee && Array.isArray(roles) && roles.length > 0) {
-      
-      console.log("Role name:", editingEmployee.role); 
+    if (
+      showEditModal &&
+      editingEmployee &&
+      Array.isArray(roles) &&
+      roles.length > 0
+    ) {
+      console.log("Role name:", editingEmployee.role);
       console.log("All roles:", roles);
-      
+
       // البحث عن الـ role اللي اسمه matches
-      const foundRole = roles.find((role: { id: number; name: string }) => 
-        role.name === editingEmployee.role
+      const foundRole = roles.find(
+        (role: { id: number; name: string }) =>
+          role.name === editingEmployee.role
       );
-  
+
       console.log("Found role:", foundRole); //object
-  
+
       editForm.reset({
         name: editingEmployee.name,
         email: editingEmployee.email,
@@ -126,7 +129,7 @@ export default function EmployeeDetailsPage() {
         passwordConfirmation: "",
       });
     }
-  }, [showEditModal, editingEmployee, editForm, roles]); 
+  }, [showEditModal, editingEmployee, editForm, roles]);
 
   const editMutation = useMutation({
     mutationFn: updateEmployee,

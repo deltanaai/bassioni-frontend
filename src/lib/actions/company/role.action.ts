@@ -8,7 +8,7 @@ import {
   GetRoleByIdSchema,
   RestoreRoleSchema,
   UpdateRoleSchema,
-} from "@/schemas/role";
+} from "@/schemas/company/role";
 
 import { api } from "../../api";
 import action from "../../handlers/action";

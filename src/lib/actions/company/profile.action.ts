@@ -7,7 +7,7 @@ import {
   GetProfileSchema,
   UpdatePasswordSchema,
   UpdateProfileSchema,
-} from "@/schemas/profile";
+} from "@/schemas/company/profile";
 
 export async function getProfile(): Promise<ActionResponse<Employee>> {
   const validationResult = await action({

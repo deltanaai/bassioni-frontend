@@ -21,7 +21,7 @@ import {
   addNewWarehouse,
   getAllWarehouses,
 } from "@/lib/actions/company/warehouse.action";
-import { AddWarehouseSchema } from "@/schemas/warehouse";
+import { AddWarehouseSchema } from "@/schemas/company/warehouse";
 import { WarehouseFormData } from "@/types";
 import { getAllLocations } from "@/lib/actions/company/locations.action";
 

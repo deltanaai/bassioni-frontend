@@ -9,7 +9,7 @@ import {
   GetAllLocationsSchema,
   GetLocationSchema,
   UpdateLocationSchema,
-} from "@/schemas/location";
+} from "@/schemas/company/location";
 
 export async function getAllLocations(
   params?: PaginatedSearchParams

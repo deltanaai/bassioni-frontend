@@ -5,7 +5,7 @@ import {
   DeleteWarehouseProductSchema,
   GetWarehouseProductsSchema,
   WarehouseProductsIndexSchema,
-} from "@/schemas/warehouseProducts";
+} from "@/schemas/company/warehouseProducts";
 
 import { api } from "../../api";
 import action from "../../handlers/action";

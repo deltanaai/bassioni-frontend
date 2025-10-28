@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 // import { warehouseSchema } from "@/schemas/Warehouse";
-import { AddProductSchema } from "@/schemas/warehouseProducts";
+import { AddProductSchema } from "@/schemas/company/warehouseProducts";
 import { ProductInput, WarehouseFormData } from "@/types";
 // import { useQuery } from "@tanstack/react-query";
 
@@ -58,10 +58,7 @@ export default function WarehousesPage() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<WarehouseFormData>({
-    
-    
-  });
+  } = useForm<WarehouseFormData>({});
 
   //  نموذج المنتج
   const {

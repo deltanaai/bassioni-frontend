@@ -7,7 +7,7 @@ import {
   GetWarehouseSchema,
   RestoreWarehouseSchema,
   UpdateWarehouseSchema,
-} from "@/schemas/warehouse";
+} from "@/schemas/company/warehouse";
 
 import { api } from "../../api";
 import action from "../../handlers/action";

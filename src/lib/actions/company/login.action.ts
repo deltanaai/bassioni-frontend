@@ -1,6 +1,6 @@
 "use server";
 
-import { loginSchema } from "@/schemas/login";
+import { loginSchema } from "@/schemas/company/login";
 
 import { api } from "../../api";
 import action from "../../handlers/action";

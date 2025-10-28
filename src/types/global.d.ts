@@ -70,3 +70,70 @@ interface TrashItem {
   code?: string;
   originalData: string; // any
 }
+
+type ActionResponse<T = null> = {
+  success: boolean;
+  data?: T | null;
+  token?: string;
+  result?: "Success" | "Error";
+  message?: string;
+  links?: PaginationLinks;
+  meta?: PaginationMeta;
+  error?: {
+    message: string;
+    details?: Record<string, string[]>;
+  };
+  status?: number;
+};
+
+type IndexedActionResponse<T = null> = ActionResponse<PaginatedResponse<T>>;
+
+type SuccessResponse<T = null> = ActionResponse<T> & { success: true };
+
+type ErrorResponse = ActionResponse<undefined> & { success: false };
+
+type APIErrorResponse = NextResponse<ErrorResponse>;
+
+type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
+interface BaseApiResponse {
+  result: "Success" | "Error";
+  message: string;
+  status: number;
+}
+
+interface BackendErrorResponse {
+  message?: string;
+  error?: string;
+  errors?: Record<string, string[]>;
+}
+
+interface PaginatedSearchParams {
+  page?: number;
+  perPage?: number;
+  deleted?: boolean;
+  paginate?: boolean;
+  orderByDirection?: "asc" | "desc";
+  orderBy?: string;
+}
+
+interface PaginationLinks {
+  first: string;
+  last: string;
+  prev: string | null;
+  next: string | null;
+}
+
+interface PaginationMeta {
+  current_page: number;
+  from: number | null;
+  last_page: number;
+  per_page: number;
+  to: number | null;
+  total: number;
+}
+
+interface PaginatedResponse<T> {
+  data: T[];
+  links: PaginationLinks;
+  meta: PaginationMeta;
+}
