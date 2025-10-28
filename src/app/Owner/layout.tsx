@@ -11,7 +11,6 @@ import {
   Package,
   Users,
   Store,
-  Image as ImageIcon,
   Sliders,
   Shield,
   Building,
@@ -35,8 +34,8 @@ import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
-  { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
-  { name: "Slider", href: "ROUTES.SLIDER", Icon: Sliders },
+  // { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
+  { name: "السلايدر", href: ROUTES_OWNER.SLIDERS, Icon: Sliders },
   { name: "المشرفين", href: ROUTES_OWNER.ADMINS, Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },

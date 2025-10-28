@@ -8,7 +8,6 @@ import {
   TrendingUp,
   BarChart3,
   MapPin,
-  LocateIcon,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -19,7 +18,7 @@ export default function OwnerDashboard() {
     {
       title: "المواقع",
       value: "1,234",
-      icon: LocateIcon,
+      icon: MapPin,
       color: "text-purple-600",
     },
     {
@@ -51,10 +50,10 @@ export default function OwnerDashboard() {
       {/* العنوان */}
       <div>
         <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-          <span className="bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-blue-400 to-blue-700 bg-clip-text text-transparent">
             لوحة التحكم
           </span>
-          <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-900 rounded-full">
             الإصدار 3.0
           </span>
         </h1>
@@ -119,7 +118,7 @@ export default function OwnerDashboard() {
           </div>
           <div className="space-y-4">
             <Link
-              href={ROUTES_OWNER.MAIN_DASHBOARD}
+              href={ROUTES_OWNER.ADMINS}
               className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors block"
             >
               <div className="flex items-center gap-3">

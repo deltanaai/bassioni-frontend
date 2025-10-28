@@ -82,7 +82,7 @@ export default function BranchesPage() {
           <LocateFixed className="w-8 h-8 text-blue-600" />
           <div>
             <h1 className="text-3xl font-bold text-blue-600">الفروع</h1>
-            <p className="text-gray-600">إدارة وتنظيم الفروعع</p>
+            <p className="text-gray-600">إدارة وتنظيم الفروع</p>
           </div>
         </div>
         <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">

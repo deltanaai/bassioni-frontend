@@ -11,7 +11,8 @@ export const ROUTES_OWNER = {
   LOCATIONS: '/Owner/locations',
   BRANCHES: '/Owner/branches',
   PHARMACISTS: '/Owner/pharmacists',
-  ADMINS: 'Owner/admins',
+  ADMINS: '/Owner/admins',
+  SLIDERS: '/Owner/slider'
 };
 
 export const ROUTES_PHARMA = {
