@@ -1,8 +1,10 @@
 // pages/dashboard/invoice.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { FiSearch, FiEye } from 'react-icons/fi';
+import { useState } from "react";
+import { FiSearch, FiEye } from "react-icons/fi";
+
+import Invoice from "@/components/Invoice";
 
 interface Medicine {
   id: number;
@@ -39,36 +41,57 @@ interface Invoice {
 
 const sampleInvoices: Invoice[] = [
   {
-    id: '1',
-    invoiceNumber: 'INV-2023-001',
-    date: '15/10/2023',
+    id: "2325",
+    invoiceNumber: "NC966",
+    date: "25/02/2025",
     customer: {
-      name: 'أحمد محمد',
-      phone: '0123456789',
-      address: '123 شارع النخيل، الرياض',
+      name: "عمر حمدان",
+      phone: "0123456789",
+      address: "123 شارع النخيل، الرياض",
     },
     pharmacy: {
-      name: 'صيدلية النور',
-      type: 'صيدلية',
-      address: '456 شارع الملك فهد، الرياض',
+      name: "صيدلية النور",
+      type: "صيدلية",
+      address: "456 شارع الملك فهد، الرياض",
       discount: 10,
     },
     medicines: [
-      { id: 1, name: 'بانادول اكسترا', quantity: 5, unitPrice: 15, discount: 0, total: 75 },
-      { id: 2, name: 'فيتامين سي', quantity: 3, unitPrice: 30, discount: 5, total: 85.5 },
-      { id: 3, name: 'كريم هايدروكورتيزون', quantity: 2, unitPrice: 25, discount: 2, total: 49 },
+      {
+        id: 1,
+        name: "بانادول اكسترا",
+        quantity: 5,
+        unitPrice: 15,
+        discount: 0,
+        total: 75,
+      },
+      {
+        id: 2,
+        name: "فيتامين سي",
+        quantity: 3,
+        unitPrice: 30,
+        discount: 5,
+        total: 85.5,
+      },
+      {
+        id: 3,
+        name: "كريم هايدروكورتيزون",
+        quantity: 2,
+        unitPrice: 25,
+        discount: 2,
+        total: 49,
+      },
     ],
-    paymentMethod: 'نقدي',
+    paymentMethod: "نقدي",
     subtotal: 209.5,
     totalDiscount: 7.5,
     tax: 20.95,
-    total: 222.95,
-    notes: 'يجب استلام الدواء خلال أسبوع',
+    total:10609.13,
+    notes: "يجب استلام الدواء خلال أسبوع",
   },
 ];
 
 export default function InvoicePage() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
   const filteredInvoices = sampleInvoices.filter(
@@ -79,16 +102,16 @@ export default function InvoicePage() {
   );
 
   return (
-    <div className="p-8 bg-white min-h-screen">
+    <div className="min-h-screen bg-white p-8">
       {/* 🔹 العنوان وشريط البحث */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <h1 className="text-3xl font-bold text-emerald-700">🧾 الفواتير</h1>
         <div className="relative w-full md:w-1/3">
-          <FiSearch className="absolute right-3 top-3 text-gray-400" />
+          <FiSearch className="absolute top-3 right-3 text-gray-400" />
           <input
             type="text"
             placeholder="ابحث برقم الفاتورة أو اسم العميل..."
-            className="w-full pr-10 pl-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full rounded-xl border border-gray-200 py-2 pr-10 pl-4 outline-none focus:ring-2 focus:ring-emerald-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -96,9 +119,9 @@ export default function InvoicePage() {
       </div>
 
       {/* 🔹 جدول الفواتير */}
-      <div className="bg-white shadow-lg rounded-2xl border border-gray-100 overflow-hidden transition">
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition">
         <table className="min-w-full text-right text-gray-700">
-          <thead className="bg-emerald-50 text-emerald-700 text-sm uppercase">
+          <thead className="bg-emerald-50 text-sm text-emerald-700 uppercase">
             <tr>
               <th className="px-6 py-3">رقم الفاتورة</th>
               <th className="px-6 py-3">التاريخ</th>
@@ -120,11 +143,15 @@ export default function InvoicePage() {
                 <tr
                   key={invoice.id}
                   onClick={() => setSelectedInvoice(invoice)}
-                  className={`hover:bg-emerald-50 transition cursor-pointer ${
-                    selectedInvoice?.id === invoice.id ? 'bg-emerald-50' : 'bg-white'
+                  className={`cursor-pointer transition hover:bg-emerald-50 ${
+                    selectedInvoice?.id === invoice.id
+                      ? "bg-emerald-50"
+                      : "bg-white"
                   }`}
                 >
-                  <td className="px-6 py-4 font-semibold">{invoice.invoiceNumber}</td>
+                  <td className="px-6 py-4 font-semibold">
+                    {invoice.invoiceNumber}
+                  </td>
                   <td className="px-6 py-4">{invoice.date}</td>
                   <td className="px-6 py-4">{invoice.customer.name}</td>
                   <td className="px-6 py-4">{invoice.pharmacy.name}</td>
@@ -134,7 +161,7 @@ export default function InvoicePage() {
                   <td className="px-6 py-4">
                     <button
                       onClick={() => setSelectedInvoice(invoice)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-sm"
+                      className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-white shadow-sm transition-all hover:bg-emerald-700"
                     >
                       <FiEye />
                       عرض
@@ -148,80 +175,7 @@ export default function InvoicePage() {
       </div>
 
       {/* 🔹 تفاصيل الفاتورة */}
-      {selectedInvoice && (
-        <div className="mt-10 p-6 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm">
-          <div className="flex justify-between items-start mb-6 border-b pb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-emerald-700">تفاصيل الفاتورة</h2>
-              <p className="text-gray-500 text-sm">رقم: {selectedInvoice.invoiceNumber}</p>
-            </div>
-            <span className="text-gray-600">{selectedInvoice.date}</span>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-semibold mb-2 text-emerald-700">معلومات العميل</h3>
-              <p>{selectedInvoice.customer.name}</p>
-              <p>{selectedInvoice.customer.phone}</p>
-              <p>{selectedInvoice.customer.address}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-semibold mb-2 text-emerald-700">معلومات الصيدلية</h3>
-              <p>{selectedInvoice.pharmacy.name} ({selectedInvoice.pharmacy.type})</p>
-              <p>خصم: {selectedInvoice.pharmacy.discount}%</p>
-              <p>{selectedInvoice.pharmacy.address}</p>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
-              <thead className="bg-emerald-50 text-gray-700">
-                <tr>
-                  <th className="px-4 py-2">#</th>
-                  <th className="px-4 py-2">اسم الدواء</th>
-                  <th className="px-4 py-2">الكمية</th>
-                  <th className="px-4 py-2">سعر الوحدة</th>
-                  <th className="px-4 py-2">الخصم</th>
-                  <th className="px-4 py-2">الإجمالي</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedInvoice.medicines.map((m, i) => (
-                  <tr key={m.id} className="border-t hover:bg-gray-100 transition">
-                    <td className="px-4 py-2">{i + 1}</td>
-                    <td className="px-4 py-2">{m.name}</td>
-                    <td className="px-4 py-2">{m.quantity}</td>
-                    <td className="px-4 py-2">{m.unitPrice.toFixed(2)} ر.س</td>
-                    <td className="px-4 py-2">{m.discount}%</td>
-                    <td className="px-4 py-2 font-semibold">{m.total.toFixed(2)} ر.س</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <div className="w-full md:w-1/2 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <div className="flex justify-between border-b py-1">
-                <span>المجموع الفرعي:</span>
-                <span>{selectedInvoice.subtotal.toFixed(2)} ر.س</span>
-              </div>
-              <div className="flex justify-between border-b py-1 text-red-600">
-                <span>الخصومات:</span>
-                <span>-{selectedInvoice.totalDiscount.toFixed(2)} ر.س</span>
-              </div>
-              <div className="flex justify-between border-b py-1">
-                <span>الضريبة:</span>
-                <span>{selectedInvoice.tax.toFixed(2)} ر.س</span>
-              </div>
-              <div className="flex justify-between pt-2 font-bold text-emerald-700 text-lg">
-                <span>الإجمالي النهائي:</span>
-                <span>{selectedInvoice.total.toFixed(2)} ر.س</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {selectedInvoice && <Invoice />}
     </div>
   );
 }
