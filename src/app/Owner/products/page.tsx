@@ -9,9 +9,10 @@ import {
   Building,
   Home,
   Eye,
+  ImageOff,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 // نوع بيانات الـ Product
 interface Product {
@@ -67,7 +68,7 @@ export default function ProductsPage() {
       rating: 4.2,
       rating_count: 50,
       price: 10,
-      imageUrl: "",
+      imageUrl: "/",
       image: null,
       deleted: false,
       deletedAt: null,
@@ -211,19 +212,27 @@ export default function ProductsPage() {
             {/* صورة المنتج */}
             <div className="relative h-48 bg-gray-100 overflow-hidden">
               {product.imageUrl ? (
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={(e) => {
-                    // لو الصورة فشلت في التحميل نروح للايقونه
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
+                <Avatar className="w-full h-full rounded-none">
+                  <AvatarImage
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="rounded-none"
+                  />
+                  {/* فيه مشكله في لينك الصوره */}
+                  <AvatarFallback className="h-full rounded-none bg-gradient-to-br from-red-50 to-red-100 flex flex-col items-center justify-center gap-1">
+                    <div className="flex flex-col items-center  gap-1">
+                      <ImageOff className="w-6 h-6 text-red-400" />
+                      <span className="text-sm text-red-500">فشل التحميل</span>
+                    </div>
+                  </AvatarFallback>
+                </Avatar>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-                  <Package className="w-16 h-16 text-blue-400" />
+                // مفيش صورة أصلًا
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100  rounded-lg">
+                  <div className="flex flex-col items-center gap-2">
+                    <Package className="w-8 h-8 text-blue-400" />
+                    <span className="text-sm text-blue-600">لا توجد صورة</span>
+                  </div>
                 </div>
               )}
 

@@ -13,7 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema } from "@/schemas/company/warehouseProducts";
+// import { productSchema } from "@/schemas/company/warehouseProducts";
 import { ProductInput } from "@/types";
 
 interface Product {
