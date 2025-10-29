@@ -22,6 +22,7 @@ import {
   TicketPercent,
   Trash2,
   LogOut,
+  ShoppingBasketIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,6 +42,7 @@ const links = [
   { name: "عروض الشركات", href: ROUTES_PHARMA.SENT_ORDERS, Icon: Send },
   { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
   { name: "الفواتير", href: ROUTES_PHARMA.INVOICE, Icon: Archive },
+  { name: "السلة", href: ROUTES_PHARMA.CART, Icon: ShoppingBasketIcon },
   {
     name: "الفئات والبراندات",
     href: ROUTES_PHARMA.ATTRIBUTES,
