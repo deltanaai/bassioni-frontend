@@ -4,7 +4,7 @@ import { fetchHandler } from "@/lib/handlers/fetch";
 export const companyProductsEndpoints = {
   getCompanyProducts: (companyId: number) =>
     fetchHandler<AvailableProductsResponse>(
-      `${API_URL}pharma/company/${companyId}/products`,
+      `${API_URL}companies/${companyId}/available-products`,
       {
         method: "GET",
       }

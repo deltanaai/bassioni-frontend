@@ -28,10 +28,7 @@ export async function getCompanyProducts(
     }
     return {
       success: true,
-      data: {
-        company:response.data?.company || "",
-        products: response.data?.products || [],
-      },
+      data: response.data,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

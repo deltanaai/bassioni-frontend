@@ -4,7 +4,7 @@ interface GetCompanyProducts {
 
 interface AvailableProductsResponse {
   company: string;
-  products: CompanyProduct[];
+  products: CompanyProductPayload[];
 }
 
 interface AddToCartParams {
