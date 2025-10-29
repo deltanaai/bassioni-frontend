@@ -19,7 +19,7 @@ interface CompanyProduct {
   createdAt?: string;
 }
 
-interface CartItem {
+interface AddedCartItem {
   id: number;
   user_id: number | null;
   pharmacy_id: number;

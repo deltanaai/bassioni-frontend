@@ -24,3 +24,7 @@ interface AddToCartPayload {
   product_id: number;
   quantity: number;
 }
+
+interface GetCartPayload {
+  pharmacy_id: number;
+}

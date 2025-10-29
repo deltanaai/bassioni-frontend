@@ -3,11 +3,11 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { AddToCartSchema } from "@/schemas/pharma/cart";
+import { AddToCartSchema, GetCartSchema } from "@/schemas/pharma/cart";
 
 export async function addToCart(
   params: AddToCartParams
-): Promise<ActionResponse<{ message: string; item: CartItem }>> {
+): Promise<ActionResponse<{ message: string; item: AddedCartItem }>> {
   const validationResult = await action({
     params,
     schema: AddToCartSchema,
@@ -28,7 +28,7 @@ export async function addToCart(
   try {
     const response = (await api.pharma.cart.addToCart({
       payload,
-    })) as ActionResponse<{ message: string; item: CartItem }>;
+    })) as ActionResponse<{ message: string; item: AddedCartItem }>;
 
     if (!response) {
       throw new Error("فشل في إضافة المنتج إلى السلة");
@@ -37,10 +37,44 @@ export async function addToCart(
       success: true,
       data: {
         message: response.data?.message || "تمت إضافة المنتج إلى السلة بنجاح",
-        item: response.data?.item as CartItem,
+        item: response.data?.item as AddedCartItem,
       },
     };
   } catch (error) {
     return handleError(error as Error) as ErrorResponse;
+  }
+}
+
+export async function getCart(
+  params: GetCartParams
+): Promise<ActionResponse<CartResponse>> {
+  const validationResult = await action({
+    params,
+    schema: GetCartSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { pharmacyId } = validationResult.params!;
+
+  const payload: GetCartPayload = {
+    pharmacy_id: pharmacyId,
+  };
+
+  try {
+    const response = await api.pharma.cart.getCart({ payload });
+
+    if (!response) {
+      throw new Error("فشل في جلب محتويات السلة");
+    }
+
+    return {
+      success: true,
+      data: response.data as CartResponse,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 }

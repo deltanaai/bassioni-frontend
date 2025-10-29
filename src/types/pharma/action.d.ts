@@ -12,3 +12,19 @@ interface AddToCartParams {
   productId: number;
   quantity: number;
 }
+
+interface GetCartParams {
+  pharmacyId: number;
+}
+
+interface CartItem {
+  id: number;
+  quantity: number;
+  product: CompanyProductPayload;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface CartResponse {
+  data: CartItem[];
+}

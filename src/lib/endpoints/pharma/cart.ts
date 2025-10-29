@@ -7,4 +7,10 @@ export const cartEndpoints = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
+  getCart: ({ payload }: { payload: GetCartPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/cart`, {
+      method: "GET",
+      body: JSON.stringify(payload),
+    }),
 };
