@@ -19,4 +19,10 @@ export const cartEndpoints = {
       method: "DELETE",
       body: JSON.stringify(payload),
     }),
+
+  sendToOrder: ({ payload }: { payload: SendToOrderPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/orders`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 };

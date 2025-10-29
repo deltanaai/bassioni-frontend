@@ -37,3 +37,22 @@ interface DeleteCartItemParams {
 interface DeleteCartItemResponse {
   message: string;
 }
+
+interface SendToOrderParams {
+  pharmacyId: number;
+}
+
+interface SendToOrderResponse {
+  message: string;
+  order_id: number;
+  total_price: number;
+  status:
+    | "pending"
+    | "approved"
+    | "rejected"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "canceled"
+    | "returned";
+}

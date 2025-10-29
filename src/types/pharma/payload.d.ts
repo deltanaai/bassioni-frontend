@@ -33,3 +33,7 @@ interface DeleteCartItemPayload {
   pharmacy_id: number;
   product_id: number;
 }
+
+interface SendToOrderPayload {
+  pharmacy_id: number;
+}

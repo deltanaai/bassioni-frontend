@@ -7,6 +7,7 @@ import {
   AddToCartSchema,
   DeleteCartItemSchema,
   GetCartSchema,
+  SendToOrderSchema,
 } from "@/schemas/pharma/cart";
 
 export async function addToCart(
@@ -107,6 +108,36 @@ export async function deleteCartItem(
     return {
       success: true,
       data: response.data as DeleteCartItemResponse,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function sendToOrder(
+  params: SendToOrderParams
+): Promise<ActionResponse<SendToOrderResponse>> {
+  const validationResult = await action({
+    params,
+    schema: SendToOrderSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { pharmacyId } = validationResult.params!;
+  const payload: SendToOrderPayload = {
+    pharmacy_id: pharmacyId,
+  };
+
+  try {
+    const response = await api.pharma.cart.sendToOrder({ payload });
+    if (!response) {
+      throw new Error("فشل في إرسال السلة إلى الطلب");
+    }
+    return {
+      success: true,
+      data: response.data as SendToOrderResponse,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
