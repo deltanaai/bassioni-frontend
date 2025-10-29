@@ -9,3 +9,8 @@ export const AddToCartSchema = z.object({
 export const GetCartSchema = z.object({
   pharmacyId: z.number().min(1, "معرّف الصيدلية مطلوب"),
 });
+
+export const DeleteCartItemSchema = z.object({
+  pharmacyId: z.number().min(1, "معرّف الصيدلية مطلوب"),
+  productId: z.number().min(1, "معرّف المنتج مطلوب"),
+});

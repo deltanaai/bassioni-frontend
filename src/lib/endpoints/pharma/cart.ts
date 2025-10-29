@@ -13,4 +13,10 @@ export const cartEndpoints = {
       method: "GET",
       body: JSON.stringify(payload),
     }),
+
+  deleteCartItem: ({ payload }: { payload: DeleteCartItemPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/cart`, {
+      method: "DELETE",
+      body: JSON.stringify(payload),
+    }),
 };

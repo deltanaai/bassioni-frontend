@@ -28,3 +28,8 @@ interface AddToCartPayload {
 interface GetCartPayload {
   pharmacy_id: number;
 }
+
+interface DeleteCartItemPayload {
+  pharmacy_id: number;
+  product_id: number;
+}

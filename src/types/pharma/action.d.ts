@@ -28,3 +28,12 @@ interface CartItem {
 interface CartResponse {
   data: CartItem[];
 }
+
+interface DeleteCartItemParams {
+  pharmacyId: number;
+  productId: number;
+}
+
+interface DeleteCartItemResponse {
+  message: string;
+}

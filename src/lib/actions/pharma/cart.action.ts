@@ -3,7 +3,11 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { AddToCartSchema, GetCartSchema } from "@/schemas/pharma/cart";
+import {
+  AddToCartSchema,
+  DeleteCartItemSchema,
+  GetCartSchema,
+} from "@/schemas/pharma/cart";
 
 export async function addToCart(
   params: AddToCartParams
@@ -73,6 +77,36 @@ export async function getCart(
     return {
       success: true,
       data: response.data as CartResponse,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteCartItem(
+  params: DeleteCartItemParams
+): Promise<ActionResponse<DeleteCartItemResponse>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteCartItemSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { pharmacyId, productId } = validationResult.params!;
+  const payload: DeleteCartItemPayload = {
+    pharmacy_id: pharmacyId,
+    product_id: productId,
+  };
+  try {
+    const response = await api.pharma.cart.deleteCartItem({ payload });
+    if (!response) {
+      throw new Error("فشل في حذف المنتج من السلة");
+    }
+    return {
+      success: true,
+      data: response.data as DeleteCartItemResponse,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
