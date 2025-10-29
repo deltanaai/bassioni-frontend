@@ -46,13 +46,17 @@ interface SendToOrderResponse {
   message: string;
   order_id: number;
   total_price: number;
-  status:
-    | "pending"
-    | "approved"
-    | "rejected"
-    | "processing"
-    | "shipped"
-    | "delivered"
-    | "canceled"
-    | "returned";
+  status: "pending" | "approved" | "rejected";
+}
+
+interface UpdateOrderStatusParams {
+  orderId: number;
+  status: "approved" | "rejected";
+  reason?: string;
+}
+
+interface UpdateOrderStatusResponse {
+  result: "Success" | "Error";
+  message: string;
+  data: OrderDetails;
 }

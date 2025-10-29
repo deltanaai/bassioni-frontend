@@ -19,6 +19,23 @@ interface CompanyProductPayload {
   createdAt: string | null;
 }
 
+interface OrderDetails {
+  id: number;
+  user_id: number | null;
+  pharmacist_id: number | null;
+  address_id: number | null;
+  promo_code_id: number | null;
+  status: "pending" | "approved" | "rejected";
+  total_price: string;
+  delivery_fee: string;
+  payment_method: "cash" | "card" | string;
+  rating: number | null;
+  review: string | null;
+  created_at: string;
+  updated_at: string;
+  warehouse_id: number | null;
+}
+
 interface AddToCartPayload {
   pharmacy_id: number;
   product_id: number;
@@ -36,4 +53,9 @@ interface DeleteCartItemPayload {
 
 interface SendToOrderPayload {
   pharmacy_id: number;
+}
+
+interface UpdateOrderStatusPayload {
+  status: "approved" | "rejected";
+  reason?: string;
 }

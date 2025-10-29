@@ -8,6 +8,7 @@ import { rolesEndpoints } from "./endpoints/company/roles";
 import { warehousesEndpoints } from "./endpoints/company/warehouses";
 import { cartEndpoints } from "./endpoints/pharma/cart";
 import { companyProductsEndpoints } from "./endpoints/pharma/companyProducts";
+import { orderEndpoints } from "./endpoints/pharma/orders";
 
 // API_URL in development is http://127.0.0.1:8000/api/
 export const api = {
@@ -23,6 +24,7 @@ export const api = {
   },
   pharma: {
     companyProducts: companyProductsEndpoints,
-    cart: cartEndpoints
+    cart: cartEndpoints,
+    orders: orderEndpoints,
   },
 };
