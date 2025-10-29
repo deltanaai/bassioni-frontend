@@ -31,7 +31,7 @@ const Invoice = () => {
             <div className="grid grid-cols-1 gap-6 text-sm md:grid-cols-4">
               {[
                 { en: "Date", ar: "التاريخ", value: "25/02/2025" },
-                { en: "Inv. No.", ar: "رقم الفاتورة", value: "NC996" },
+                { en: ".Inv. No", ar: "رقم الفاتورة", value: "NC996" },
                 { en: "ID", ar: "الرقم التسلسلي", value: "2325" },
                 {
                   en: "Supplier",
@@ -39,7 +39,7 @@ const Invoice = () => {
                   value: "شركة عقيلة الطبية بالصحة",
                 },
                 {
-                  en: "Supplier VAT No.",
+                  en: ".Supplier VAT No",
                   ar: "الرقم الضريبي للمورد",
                   value: "3100775900003",
                 },
@@ -79,7 +79,7 @@ const Invoice = () => {
                       { en: "Item Name", ar: "اسم الصنف" },
                       { en: "Exp. Date", ar: "تاريخ الانتهاء" },
                       { en: "Price", ar: "السعر" },
-                      { en: "Qty.", ar: "الكمية" },
+                      { en: ".Qty", ar: "الكمية" },
                       { en: "Free Qty", ar: "كمية مجانية" },
                       { en: "Total", ar: "الإجمالي" },
                       { en: "Discount #1", ar: "خصم 1" },
@@ -112,7 +112,7 @@ const Invoice = () => {
                     <TableCell>20</TableCell>
                     <TableCell>0.00</TableCell>
                     <TableCell>5300.00</TableCell>
-                    <TableCell>0.00</TableCell>
+                    <TableCell>691.00</TableCell>
                     <TableCell>0.00</TableCell>
                     <TableCell>4609.00</TableCell>
                     <TableCell>0.00</TableCell>
@@ -129,7 +129,7 @@ const Invoice = () => {
                     <TableCell>20</TableCell>
                     <TableCell>5.00</TableCell>
                     <TableCell>6000.00</TableCell>
-                    <TableCell>0.00</TableCell>
+                    <TableCell>782.50</TableCell>
                     <TableCell>0.00</TableCell>
                     <TableCell>5217.50</TableCell>
                     <TableCell>782.63</TableCell>
@@ -142,7 +142,7 @@ const Invoice = () => {
                     <TableCell>40</TableCell>
                     <TableCell>5.00</TableCell>
                     <TableCell>11300.00</TableCell>
-                    <TableCell>0.00</TableCell>
+                    <TableCell>1473.50</TableCell>
                     <TableCell>0.00</TableCell>
                     <TableCell>9826.50</TableCell>
                     <TableCell>782.63</TableCell>

@@ -18,3 +18,9 @@ interface CompanyProductPayload {
   sentSince: string | null;
   createdAt: string | null;
 }
+
+interface AddToCartPayload {
+  pharmacy_id: number;
+  product_id: number;
+  quantity: number;
+}
