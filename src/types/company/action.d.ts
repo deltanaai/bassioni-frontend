@@ -162,3 +162,16 @@ interface UpdatePasswordParams {
   newPassword: string;
   newPasswordConfirmation: string;
 }
+
+interface AssignOrderToWarehouseParams {
+  orderId: number;
+  warehouseId: number;
+}
+
+interface AssignOrderToWarehouseResponse {
+  data: {
+    order_id: number;
+    warehouse: string;
+  };
+  message: string;
+}

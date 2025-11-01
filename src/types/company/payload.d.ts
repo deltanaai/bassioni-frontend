@@ -138,3 +138,7 @@ interface UpdatePasswordPayload {
   password: string;
   password_confirmation: string;
 }
+
+interface AssignOrderToWarehousePayload {
+  warehouse_id: number;
+}
