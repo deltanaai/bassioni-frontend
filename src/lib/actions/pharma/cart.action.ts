@@ -40,10 +40,7 @@ export async function addToCart(
     }
     return {
       success: true,
-      data: {
-        message: response.data?.message || "تمت إضافة المنتج إلى السلة بنجاح",
-        item: response.data?.item as AddedCartItem,
-      },
+      data: response.data
     };
   } catch (error) {
     return handleError(error as Error) as ErrorResponse;
