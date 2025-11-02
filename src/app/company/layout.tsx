@@ -37,12 +37,16 @@ import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_COMPANY.DASHBOARD, Icon: Home },
-  { name: "طلبات اليوم", href: ROUTES_COMPANY.DAY_ORDERS, Icon: ClipboardList },
+  { name: "طلبات الصيدليات", href: ROUTES_COMPANY.DAY_ORDERS, Icon: ClipboardList },
   { name: "عروض الشركات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Send },
-  { name: "طلباتي", href: ROUTES_COMPANY.MY_ORDERS, Icon: Send },
+  {
+    name: "طلبات الشركة من الصيدليات",
+    href: ROUTES_COMPANY.MY_ORDERS,
+    Icon: Send,
+  },
   { name: "الفواتير", href: ROUTES_COMPANY.INVOICE, Icon: Archive },
   {
-    name: "الأصناف والبراندات",
+    name: "الفئات والبراندات",
     href: ROUTES_COMPANY.ATTRIBUTES,
     Icon: PlusCircle,
   },
@@ -216,14 +220,14 @@ export default function DashboardLayout({
               href={ROUTES_COMPANY.ADD_PHARMACY}
               icon={<Store className="h-5 w-5" />}
             >
-              إضافة صيدلية
+              الصيدليات
             </CompanyHeaderNavLink>
 
             <CompanyHeaderNavLink
               href={ROUTES_COMPANY.ADD_EMPLOYEE}
               icon={<Users className="h-5 w-5" />}
             >
-              إضافة موظفين
+              الموظفين
             </CompanyHeaderNavLink>
 
             <CompanyHeaderNavLink

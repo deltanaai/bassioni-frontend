@@ -88,7 +88,7 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">
-          {activeTab === 'brands' ? 'البراندات' : 'الأصناف'}
+          {activeTab === 'brands' ? 'البراندات' : 'الفئات'}
         </h1>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -139,12 +139,12 @@ export default function ProductsPage() {
           }`}
           onClick={() => setActiveTab('products')}
         >
-          الأصناف
+          الفئات
         </button>
       </div>
 
       {/* Add Request Button */}
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <button
           onClick={() => {
             setRequestType(activeTab === 'brands' ? 'brand' : 'product');
@@ -154,7 +154,7 @@ export default function ProductsPage() {
         >
           <FiPlus /> طلب {activeTab === 'brands' ? 'براند جديد' : 'صنف جديد'}
         </button>
-      </div>
+      </div> */}
 
       {/* Brands Table */}
       {activeTab === 'brands' && (
