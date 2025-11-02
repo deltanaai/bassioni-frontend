@@ -20,7 +20,7 @@ import {
   updateRole,
 } from "@/lib/actions/company/role.action";
 import { useForm } from "react-hook-form";
-import { roleCreateInput, UpdateRoleInput } from "@/types";
+import { roleCreateInput, UpdateRoleInput } from "@/types/company/uiProps";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddNewRoleSchema, UpdateRoleSchema } from "@/schemas/company/role";
 import { toast } from "sonner";

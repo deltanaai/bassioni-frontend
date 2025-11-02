@@ -31,7 +31,7 @@ import {
   getProductsByWarehouse,
 } from "@/lib/actions/company/warehouseProducts.action";
 import { toast } from "sonner";
-import { ProductInput } from "@/types";
+import { ProductInput } from "@/types/company/uiProps";
 
 export default function WarehouseDetailsPage() {
   //warehouses

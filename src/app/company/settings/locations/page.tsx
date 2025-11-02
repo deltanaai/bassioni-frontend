@@ -16,7 +16,10 @@ import {
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { LocationCreateInput, UpdateLocationInput } from "@/types";
+import {
+  LocationCreateInput,
+  UpdateLocationInput,
+} from "@/types/company/uiProps";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ROUTES_COMPANY } from "@/constants/routes";

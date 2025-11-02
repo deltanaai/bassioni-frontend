@@ -17,8 +17,7 @@ import {
 import { toast } from "sonner";
 
 export default function CartPage({ pharmacyId }: GetCartParams) {
-  console.log(" Pharmacy ID from props:", pharmacyId);
-
+  console.log("iddd", pharmacyId);
   const queryClient = useQueryClient();
   const [quantityUpdates, setQuantityUpdates] = useState<{
     [key: string]: number;
@@ -32,8 +31,34 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
   } = useQuery({
     queryKey: ["cart", pharmacyId],
     queryFn: () => getCart({ pharmacyId }),
+    placeholderData: {
+      success: true,
+      data: [
+        {
+          id: 1,
+          quantity: 2,
+          createdAt: "2024-01-15T10:30:00.000Z",
+          updatedAt: "2024-01-20T14:45:00.000Z",
+          product: {
+            id: 101,
+            name: "باراسيتامول 500 مجم",
+            description: "مسكن للألم وخافض للحرارة - شركة الصحة العالمية",
+            price: "25.50",
+            stock: 150,
+            expiry_date: "2025-12-31",
+            batch_number: "BATCH-2024-001",
+            category: {
+              id: 1,
+              name: "مسكنات الألم",
+            },
+            brand: "فارماسيا",
+          },
+        },
+      ],
+    },
     enabled: !!pharmacyId,
   });
+  console.log("dataaa", cartData);
 
   //  بحتاجها عشان وانا بعمل + لمنتج عندي
   const addToCartMutation = useMutation({
@@ -225,7 +250,7 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
                       )}
                       {product.category && (
                         <span className="bg-purple-900 text-purple-300 px-2 py-1 rounded-full text-xs">
-                          {product.category}
+                          {product.category.name}
                         </span>
                       )}
                     </div>
@@ -236,19 +261,15 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
                       </p>
                     )}
 
+                    {/* معلومات إضافية */}
                     <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          product.active
-                            ? "bg-green-900 text-green-300"
-                            : "bg-red-900 text-red-300"
-                        }`}
-                      >
-                        {product.active ? "نشط" : "غير نشط"}
+                      <span>الدفعة: {product.batch_number}</span>
+                      <span>
+                        ينتهي:{" "}
+                        {new Date(product.expiry_date).toLocaleDateString(
+                          "ar-EG"
+                        )}
                       </span>
-                      {product.position && (
-                        <span>الترتيب: {product.position}</span>
-                      )}
                     </div>
                   </div>
 

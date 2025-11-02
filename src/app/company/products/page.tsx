@@ -1,13 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  FiSearch,
-  FiPlus,
-  FiEdit,
-  FiTrash2,
-  FiImage,
-  FiFilter,
-} from "react-icons/fi";
+import { FiSearch, FiPlus, FiFilter } from "react-icons/fi";
 
 import MasterProductCard from "@/components/cards/MasterProductCard";
 
@@ -218,74 +211,85 @@ export default function ProductsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 text-gray-900">
       {/* Header */}
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        <h1 className="text-2xl font-bold text-gray-800">المنتجات</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">إدارة المنتجات</h1>
+          <p className="mt-2 text-gray-600">تصفح وأدِر منتجاتك بسهولة</p>
+        </div>
         <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
           <div className="relative min-w-[250px] flex-1">
             <FiSearch className="absolute top-3 right-3 text-gray-400" />
             <input
               type="text"
               placeholder="ابحث باسم المنتج أو العميل..."
-              className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-10 pl-4 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full rounded-xl border border-gray-300 bg-white py-3 pr-10 pl-4 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white shadow hover:bg-blue-700"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300"
           >
-            <FiPlus /> إضافة منتج
+            <FiPlus className="text-lg" /> إضافة منتج جديد
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2 text-gray-600">
-          <FiFilter /> <span>تصفية:</span>
+      <div className="mb-8 rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 text-gray-600 font-medium">
+            <FiFilter className="text-blue-500" /> <span>تصفية النتائج:</span>
+          </div>
+          <select
+            className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="all">جميع الفئات</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          <select
+            className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
+            value={filterBrand}
+            onChange={(e) => setFilterBrand(e.target.value)}
+          >
+            <option value="all">جميع البراندات</option>
+            {brands.map((brand) => (
+              <option key={brand} value={brand}>
+                {brand}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="all">جميع الفئات</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        <select
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          value={filterBrand}
-          onChange={(e) => setFilterBrand(e.target.value)}
-        >
-          <option value="all">جميع البراندات</option>
-          {brands.map((brand) => (
-            <option key={brand} value={brand}>
-              {brand}
-            </option>
-          ))}
-        </select>
       </div>
 
-      {/* Table */}
+      {/* Products Grid */}
+      <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-800">قائمة المنتجات</h2>
+          <span className="text-gray-500">
+            عرض {sampleProducts.length} منتج
+          </span>
+        </div>
 
-      <Separator className="mt-10" />
+        <Separator className="mb-6" />
 
-      <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {sampleProducts.map((product) => (
-          <>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {sampleProducts.map((product) => (
             <div
+              key={product.id}
               onClick={() => setDetailsOpen(true)}
-              className="cursor-pointer"
+              className="cursor-pointer transform transition-transform duration-300 hover:-translate-y-1"
             >
               <MasterProductCard
-                key={product.id}
                 name={product.name}
                 imageUrl={product.image}
                 description=""
@@ -294,8 +298,8 @@ export default function ProductsPage() {
                 category={product.category}
               />
             </div>
-          </>
-        ))}
+          ))}
+        </div>
       </div>
 
       <ProductDetailsModal
