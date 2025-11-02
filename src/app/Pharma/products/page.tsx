@@ -351,7 +351,7 @@ export default function ProductsPage() {
                       <div className="text-center ms-20">
                         <button
                           onClick={() => openProductDetails(product)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
                         >
                           <FiEye className="w-4 h-4" />
                           التفاصيل
@@ -361,7 +361,7 @@ export default function ProductsPage() {
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => openCartModal(product)}
-                        className="flex items-center gap-2 px-3 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
                       >
                         <FiShoppingCart className="w-4 h-4" />
                         أضف للسلة
@@ -625,7 +625,6 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              {/* Actions */}
               {/* Actions */}
               <div className="flex gap-3">
                 <button

@@ -1,586 +1,649 @@
 "use client";
 import { useState } from "react";
-import { FiSearch, FiPlus, FiFilter } from "react-icons/fi";
-
-import MasterProductCard from "@/components/cards/MasterProductCard";
-
-// import { productFormSchema } from '@/schemas/AddProduts'
-import ProductDetailsModal from "@/components/modals/ProductDetailsModal";
-import { Separator } from "@/components/ui/separator";
-
-import { ProductFormData } from "@/types";
+import {
+  FiSearch,
+  FiFilter,
+  FiEye,
+  FiPackage,
+  FiDollarSign,
+  FiChevronRight,
+  FiShoppingCart,
+  FiPlus,
+  FiMinus,
+} from "react-icons/fi";
 
 interface Product {
   id: number;
   name: string;
-  customerName: string;
   category: string;
   brand: string;
   dosage: string;
   concentration: string;
   quantity: number;
   price: number;
-  image: string;
   warehouse: string;
 }
-
-const warehouses = [
-  {
-    id: 1,
-    name: "Main Warehouse",
-    batches: [
-      { id: 1, batchNumber: "B123", quantity: 25, expDate: "2026-01-30" },
-      { id: 2, batchNumber: "B124", quantity: 10, expDate: "2026-06-15" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Pharma East",
-    batches: [
-      { id: 1, batchNumber: "A991", quantity: 12, expDate: "2025-11-12" },
-    ],
-  },
-];
 
 const sampleProducts: Product[] = [
   {
     id: 1,
-    name: "بانادول اكسترا",
-    customerName: "أحمد محمد",
-    category: "مسكنات",
-    brand: "جلاكسو سميث كلاين",
+    name: "باراسيتامول 500 مجم",
+    category: "مسكنات الألم",
+    brand: "فارماسيا",
     dosage: "أقراص",
     concentration: "500 مجم",
-    quantity: 120,
-    price: 15,
-    image: "panadol1.jpg",
-    warehouse: "مخزن القاهرة",
+    quantity: 150,
+    price: 25.5,
+    warehouse: "مخزن القاهرة الرئيسي",
   },
   {
     id: 2,
     name: "فيتامين سي 1000 مجم",
-    customerName: "سارة علي",
-    category: "فيتامينات",
-    brand: "ناتورال",
+    category: "المكملات الغذائية",
+    brand: "ناتشرال",
     dosage: "أقراص فوارة",
     concentration: "1000 مجم",
-    quantity: 85,
-    price: 30,
-    image: "vitamin-c.jpg",
+    quantity: 5,
+    price: 45.0,
     warehouse: "مخزن الإسكندرية",
+  },
+  {
+    id: 3,
+    name: "أوميغا 3 كبسولات",
+    category: "المكملات الغذائية",
+    brand: "فيتاليف",
+    dosage: "كبسولات",
+    concentration: "1000 مجم",
+    quantity: 120,
+    price: 60.0,
+    warehouse: "مخزن الجيزة",
+  },
+  {
+    id: 4,
+    name: "كريم هيدروكورتيزون 1%",
+    category: "مستحضرات جلدية",
+    brand: "درماسيف",
+    dosage: "كريم",
+    concentration: "1%",
+    quantity: 60,
+    price: 35.75,
+    warehouse: "مخزن القاهرة الرئيسي",
   },
 ];
 
 const categories = [
-  "مسكنات",
-  "فيتامينات",
+  "مسكنات الألم",
+  "المكملات الغذائية",
   "مضادات حيوية",
-  "أدوية سكري",
+  "أدوية السكري",
   "مستحضرات جلدية",
 ];
-const brands = ["جلاكسو سميث كلاين", "نوفارتس", "فايزر", "سانوفي", "ناتورال"];
-const dosages = ["أقراص", "شراب", "حقن", "كريم", "مرهم", "أقراص فوارة"];
+const brands = ["فارماسيا", "ناتشرال", "فيتاليف", "درماسيف", "ميديكال"];
+
+const details = {
+  Productname: "كونجستال",
+  warehouses: [
+    {
+      warehouse1: [
+        { batchNumber: "3389", quantity: 24, expiryDate: "25/11/2020" },
+        { batchNumber: "6667", quantity: 12, expiryDate: "16/11/2020" },
+        { batchNumber: "345", quantity: 68, expiryDate: "14/8/2040" },
+      ],
+    },
+    {
+      warehouse2: [
+        { batchNumber: "212", quantity: 500, expiryDate: "25/11/2070" },
+        { batchNumber: "666217", quantity: 15, expiryDate: "16/11/2010" },
+        { batchNumber: "34115", quantity: 20, expiryDate: "14/8/2050" },
+      ],
+    },
+  ],
+};
 
 export default function ProductsPage() {
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>(sampleProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Form state
-  const [formData, setFormData] = useState({
-    name: "",
-    customerName: "",
-    category: "",
-    brand: "",
-    dosage: "",
-    concentration: "",
-    quantity: 0,
-    price: 0,
-    images: [] as string[],
-    warehouse: "",
-  });
+  //cart
+  const [cartModalOpen, setCartModalOpen] = useState(false);
+  const [selectedProductForCart, setSelectedProductForCart] =
+    useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
-  const [formErrors, setFormErrors] = useState<
-    Partial<Record<keyof ProductFormData, string>>
-  >({});
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setFormErrors((prev) => ({ ...prev, [name]: undefined }));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setFormData((prev) => ({ ...prev, images: [...prev.images, ...files] }));
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = productFormSchema.safeParse(formData);
-    if (!result.success) {
-      const fieldErrors: Partial<Record<keyof ProductFormData, string>> = {};
-      for (const issue of result.error.issues) {
-        const path = issue.path[0] as keyof ProductFormData;
-        if (path) fieldErrors[path] = issue.message;
-      }
-      setFormErrors(fieldErrors);
-      return;
-    }
-    if (editingProduct) {
-      setProducts(
-        products.map((p) =>
-          p.id === editingProduct.id
-            ? ({ ...result.data, id: editingProduct.id } as Product)
-            : p
-        )
-      );
-    } else {
-      const newProduct: Product = {
-        ...result.data,
-        id: Math.max(...products.map((p) => p.id), 0) + 1,
-      } as Product;
-      setProducts([...products, newProduct]);
-    }
-    setShowAddModal(false);
-    setEditingProduct(null);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      customerName: "",
-      category: "",
-      brand: "",
-      dosage: "",
-      concentration: "",
-      quantity: 0,
-      price: 0,
-      images: [],
-      warehouse: "",
-    });
-  };
-
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setFormData({
-      name: product.name,
-      customerName: product.customerName,
-      category: product.category,
-      brand: product.brand,
-      dosage: product.dosage,
-      concentration: product.concentration,
-      quantity: product.quantity,
-      price: product.price,
-      images: product.images,
-      warehouse: product.warehouse,
-    });
-    setShowAddModal(true);
-  };
-
-  const handleDelete = (id: number) => {
-    setProducts(products.filter((product) => product.id !== id));
-  };
-
+  //filter
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
-      product.name.includes(searchTerm) ||
-      product.customerName.includes(searchTerm);
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
       filterCategory === "all" || product.category === filterCategory;
     const matchesBrand = filterBrand === "all" || product.brand === filterBrand;
     return matchesSearch && matchesCategory && matchesBrand;
   });
 
+  // const queryClient = useQueryClient();
+
+  // const addCartmutation = useMutation({
+  //   mutationFn: addToCart,
+  //   onSuccess: async (res) => {
+  //     if (!res.success) {
+  //       toast.error(res.error?.message ?? "حدث خطأ أثناء اضافة المنتج للسلة");
+  //       return;
+  //     }
+  //     await queryClient.invalidateQueries({ queryKey: ["cart"] });
+
+  //     setCartModalOpen(false);
+
+  //     toast.success(`تم اضافة المنتج للسلة بنجاح`);
+  //   },
+  // });
+  // const handleAddToCart = () => {
+  //   if (selectedProductForCart) {
+  //     addCartmutation.mutate({
+  //       pharmacyId,
+  //       productId: selectedProductForCart.id,
+  //       quantity: quantity,
+  //     });
+  //   }
+  //   console.log("📦 Selected product:", selectedProductForCart);
+  // };
+
+  const openProductDetails = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const closeProductDetails = () => {
+    setSelectedProduct(null);
+  };
+
+  //عشان تابات المخزن في المودال تكون مقفوله
+  const [expandedWarehouses, setExpandedWarehouses] = useState<number[]>([]);
+
+  const toggleWarehouse = (index: number) => {
+    setExpandedWarehouses(
+      (prev) =>
+        prev.includes(index)
+          ? prev.filter((i) => i !== index) // إغلاق
+          : [...prev, index] // فتح
+    );
+  };
+
+  // functions cartt
+  const openCartModal = (product: Product) => {
+    setSelectedProductForCart(product);
+    setQuantity(1);
+    setCartModalOpen(true);
+  };
+
+  const closeCartModal = () => {
+    setCartModalOpen(false);
+    setSelectedProductForCart(null);
+    setQuantity(1);
+  };
+
+  const increaseQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 text-gray-900">
+    <div className="p-6 bg-gradient-to-br from-gray-50 to-white min-h-screen text-gray-800">
       {/* Header */}
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">إدارة المنتجات</h1>
-          <p className="mt-2 text-gray-600">تصفح وأدِر منتجاتك بسهولة</p>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+            <FiPackage className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              إدارة المنتجات
+            </h1>
+            <p className="text-gray-600 text-sm">
+              عرض وإدارة جميع المنتجات المتاحة
+            </p>
+          </div>
         </div>
-        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
-          <div className="relative min-w-[250px] flex-1">
-            <FiSearch className="absolute top-3 right-3 text-gray-400" />
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          <div className="relative flex-1 min-w-[300px]">
+            <FiSearch className="absolute right-3 top-3 text-gray-400" />
             <input
               type="text"
-              placeholder="ابحث باسم المنتج أو العميل..."
-              className="w-full rounded-xl border border-gray-300 bg-white py-3 pr-10 pl-4 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
+              placeholder="ابحث باسم المنتج أو البراند..."
+              className="w-full pr-10 pl-4 py-3 rounded-xl bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-800 placeholder-gray-500 shadow-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300"
-          >
-            <FiPlus className="text-lg" /> إضافة منتج جديد
-          </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="mb-8 rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-600 font-medium">
-            <FiFilter className="text-blue-500" /> <span>تصفية النتائج:</span>
-          </div>
-          <select
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="all">جميع الفئات</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <select
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
-            value={filterBrand}
-            onChange={(e) => setFilterBrand(e.target.value)}
-          >
-            <option value="all">جميع البراندات</option>
-            {brands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-800">قائمة المنتجات</h2>
-          <span className="text-gray-500">
-            عرض {sampleProducts.length} منتج
-          </span>
+      <div className="flex flex-wrap items-center gap-4 mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2">
+          <FiFilter className="text-emerald-600" />
+          <span className="text-gray-700 font-medium">تصفية النتائج:</span>
         </div>
 
-        <Separator className="mb-6" />
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {sampleProducts.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => setDetailsOpen(true)}
-              className="cursor-pointer transform transition-transform duration-300 hover:-translate-y-1"
-            >
-              <MasterProductCard
-                name={product.name}
-                imageUrl={product.image}
-                description=""
-                price={product.price}
-                brand={product.brand}
-                category={product.category}
-              />
-            </div>
+        <select
+          className="px-4 py-3 rounded-xl bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800 min-w-[180px] shadow-sm"
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+        >
+          <option value="all">جميع الفئات</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
           ))}
+        </select>
+
+        <select
+          className="px-4 py-3 rounded-xl bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800 min-w-[180px] shadow-sm"
+          value={filterBrand}
+          onChange={(e) => setFilterBrand(e.target.value)}
+        >
+          <option value="all">جميع البراندات</option>
+          {brands.map((brand) => (
+            <option key={brand} value={brand}>
+              {brand}
+            </option>
+          ))}
+        </select>
+
+        <div className="text-sm text-emerald-700 font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
+          {filteredProducts.length} منتج
         </div>
       </div>
 
-      <ProductDetailsModal
-        open={detailsOpen}
-        onOpenChange={setDetailsOpen}
-        warehouses={warehouses}
-      />
-
-      {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-100 text-gray-700">
-            <tr>
-              {['#','اسم المنتج','اسم العميل','الفئة','البراند','الجرعة','التركيز','الكمية','السعر','المخزن','الصور','إجراءات'].map(h => (
-                <th key={h} className="px-4 py-3 text-right text-sm font-semibold">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {filteredProducts.length === 0 ? (
+      {/* Products Table */}
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-lg">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
               <tr>
-                <td colSpan={12} className="text-center py-6 text-gray-500">لا توجد منتجات متطابقة مع بحثك</td>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
+                  #
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
+                  المنتج
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
+                  الفئة
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
+                  البراند
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
+                  <div className="flex items-center gap-1 justify-center">
+                    <FiDollarSign className="w-4 h-4" />
+                    السعر
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
+                  الإجراءات
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider">
+                  السلة
+                </th>
               </tr>
-            ) : (
-              filteredProducts.map((product, i) => (
-                <tr key={product.id} className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 text-sm">{i + 1}</td>
-                  <td className="px-4 py-3 font-medium">{product.name}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.customerName}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.category}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.brand}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.dosage}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.concentration}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.quantity}</td>
-                  <td className="px-4 py-3 text-gray-600">{product.price} ر.س</td>
-                  <td className="px-4 py-3 text-gray-600">{product.warehouse}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      {product.images.slice(0, 3).map((_, i) => (
-                        <div key={i} className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
-                          <FiImage className="text-gray-500" />
-                        </div>
-                      ))}
-                      {product.images.length > 3 && (
-                        <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
-                          +{product.images.length - 3}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => handleEdit(product)} className="text-blue-600 hover:text-blue-700 p-1" title="تعديل"><FiEdit /></button>
-                      <button onClick={() => handleDelete(product.id)} className="text-red-500 hover:text-red-600 p-1" title="حذف"><FiTrash2 /></button>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-16 text-center">
+                    <div className="flex flex-col items-center gap-4 text-gray-500">
+                      <div className="p-4 bg-gray-50 rounded-2xl">
+                        <FiPackage className="w-16 h-16 text-gray-400" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-xl text-gray-600">
+                          لا توجد منتجات
+                        </p>
+                        <p className="text-gray-500 mt-2">
+                          لم يتم العثور على منتجات متطابقة مع بحثك
+                        </p>
+                      </div>
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div> */}
-
-      {/* Add/Edit Product Modal */}
-      {showAddModal && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
-            <div className="p-6">
-              <h2 className="mb-4 text-xl font-bold text-gray-800">
-                {editingProduct ? "تعديل المنتج" : "إضافة منتج جديد"}
-              </h2>
-
-              <form
-                onSubmit={handleSubmit}
-                className="grid grid-cols-1 gap-4 md:grid-cols-2"
-              >
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="اسم المنتج"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  />
-                  {formErrors.name && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.name}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="text"
-                    name="customerName"
-                    placeholder="اسم العميل"
-                    value={formData.customerName}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  />
-                  {formErrors.customerName && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.customerName}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
+              ) : (
+                filteredProducts.map((product, index) => (
+                  <tr
+                    key={product.id}
+                    className="hover:bg-gray-50 transition-all duration-200 border-b border-gray-100"
                   >
-                    <option value="">اختر الفئة</option>
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.category && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.category}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <select
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  >
-                    <option value="">اختر البراند</option>
-                    {brands.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.brand && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.brand}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <select
-                    name="dosage"
-                    value={formData.dosage}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  >
-                    <option value="">اختر الجرعة</option>
-                    {dosages.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.dosage && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.dosage}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="text"
-                    name="concentration"
-                    placeholder="التركيز"
-                    value={formData.concentration}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  />
-                  {formErrors.concentration && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.concentration}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="number"
-                    name="quantity"
-                    placeholder="الكمية"
-                    value={formData.quantity}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  />
-                  {formErrors.quantity && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.quantity}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="number"
-                    name="price"
-                    placeholder="السعر"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  />
-                  {formErrors.price && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.price}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <select
-                    name="warehouse"
-                    value={formData.warehouse}
-                    onChange={handleInputChange}
-                    className="rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  >
-                    <option value="">اختر المخزن</option>
-                    {warehouses.map((w) => (
-                      <option key={w} value={w}>
-                        {w}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.warehouse && (
-                    <span className="text-sm text-red-600">
-                      {formErrors.warehouse}
-                    </span>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label className="mb-1 block text-gray-700">رفع صور</label>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="w-full rounded border border-gray-300 bg-white p-2 text-gray-900"
-                  />
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {formData.images.map((img, i) => (
-                      <div
-                        key={i}
-                        className="relative h-16 w-16 overflow-hidden rounded bg-gray-200"
-                      >
-                        <img
-                          src={img}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
+                    <td className="px-6 py-4 text-sm text-emerald-600 font-semibold text-center">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div>
+                        <div className="font-semibold text-gray-900 text-lg">
+                          {product.name}
+                        </div>
+                        <div className="text-gray-600 text-sm mt-1">
+                          {product.dosage}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border border-purple-200 shadow-sm">
+                        {product.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700 text-center font-medium">
+                      {product.brand}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center gap-1 justify-center">
+                        <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+                          {product.price.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-gray-500">ج.م</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center">
                         <button
-                          type="button"
-                          onClick={() => removeImage(i)}
-                          className="absolute top-0 right-0 h-5 w-5 rounded-full bg-red-500 text-xs text-white"
+                          onClick={() => openProductDetails(product)}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
                         >
-                          x
+                          <FiEye className="w-4 h-4" />
+                          التفاصيل
                         </button>
                       </div>
-                    ))}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => openCartModal(product)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                      >
+                        <FiShoppingCart className="w-4 h-4" />
+                        أضف للسلة
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Product Details Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {details.Productname}
+                  </h2>
+                  <p className="text-gray-600 mt-1">تفاصيل المخزون والدفعات</p>
+                </div>
+                <button
+                  onClick={closeProductDetails}
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-xl p-2"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Total Summary */}
+              <div className="mt-6 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-gray-600 text-sm">عدد المخازن</div>
+                    <div className="text-gray-900 font-bold text-lg">
+                      {details.warehouses.length}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-600 text-sm">إجمالي الدفعات</div>
+                    <div className="text-gray-900 font-bold text-lg">
+                      {details.warehouses.reduce((total, warehouse) => {
+                        const batches = Object.values(warehouse)[0];
+                        return total + batches.length;
+                      }, 0)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-600 text-sm">إجمالي المخزون</div>
+                    <div className="text-emerald-600 font-bold text-lg">
+                      {details.warehouses.reduce((total, warehouse) => {
+                        const batches = Object.values(warehouse)[0];
+                        return (
+                          total +
+                          batches.reduce(
+                            (sum, batch) => sum + batch.quantity,
+                            0
+                          )
+                        );
+                      }, 0)}{" "}
+                      وحدة
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="col-span-2 mt-4 flex justify-end gap-2">
+              {/* Warehouses Section */}
+              <div className="space-y-4 mt-6">
+                {details.warehouses.map((warehouseObj, warehouseIndex) => {
+                  const [warehouseName, batches] =
+                    Object.entries(warehouseObj)[0];
+                  const isExpanded =
+                    expandedWarehouses.includes(warehouseIndex);
+
+                  return (
+                    <div
+                      key={warehouseIndex}
+                      className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+                    >
+                      {/* Warehouse Header */}
+                      <button
+                        onClick={() => toggleWarehouse(warehouseIndex)}
+                        className="w-full bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-4 border-b border-gray-200 hover:from-gray-100 hover:to-gray-50 transition-colors flex justify-between items-center"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`transform transition-transform ${
+                              isExpanded ? "rotate-90" : "rotate-0"
+                            }`}
+                          >
+                            <FiChevronRight className="w-4 h-4 text-gray-500" />
+                          </div>
+                          <h3 className="font-semibold text-gray-900 text-lg text-right">
+                            {warehouseName.replace("warehouse", "مخزن ")}
+                          </h3>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span>{batches.length} دفعة</span>
+                          <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs border border-emerald-200">
+                            {batches.reduce(
+                              (total, batch) => total + batch.quantity,
+                              0
+                            )}{" "}
+                            وحدة
+                          </span>
+                        </div>
+                      </button>
+
+                      {/* Warehouses Collapsible */}
+                      {isExpanded && (
+                        <div className="animate-fadeIn">
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 border-l border-gray-200">
+                                    رقم الدفعة
+                                  </th>
+                                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 border-l border-gray-200">
+                                    الكمية المتاحة
+                                  </th>
+                                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">
+                                    تاريخ الانتهاء
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-100">
+                                {batches.map((batch, batchIndex) => (
+                                  <tr
+                                    key={batchIndex}
+                                    className="hover:bg-gray-50 transition-colors"
+                                  >
+                                    <td className="px-4 py-3 text-gray-900 border-l border-gray-200">
+                                      <div className="flex items-center gap-2 justify-end">
+                                        <span className="bg-blue-100 mx-auto text-blue-700 px-2 py-1 rounded text-xs border border-blue-200">
+                                          #{batch.batchNumber}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-3 text-center border-l border-gray-200">
+                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700 border border-green-200">
+                                        {batch.quantity} وحدة
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                      <span
+                                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                          new Date(
+                                            batch.expiryDate
+                                              .split("/")
+                                              .reverse()
+                                              .join("-")
+                                          ) < new Date()
+                                            ? "bg-red-100 text-red-700 border border-red-200"
+                                            : "bg-orange-100 text-orange-700 border border-orange-200"
+                                        }`}
+                                      >
+                                        {batch.expiryDate}
+                                        {new Date(
+                                          batch.expiryDate
+                                            .split("/")
+                                            .reverse()
+                                            .join("-")
+                                        ) < new Date() && (
+                                          <span className="mr-1 text-xs">
+                                            ⏰
+                                          </span>
+                                        )}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add to Cart Modal */}
+      {cartModalOpen && selectedProductForCart && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 max-w-md w-full shadow-2xl">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    إضافة إلى السلة
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    {selectedProductForCart.name}
+                  </p>
+                </div>
+                <button
+                  onClick={closeCartModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-xl p-2"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Product Info */}
+              <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-600">السعر:</span>
+                  <span className="text-emerald-600 font-bold">
+                    {selectedProductForCart.price.toFixed(2)} ج.م
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">المخزون المتاح:</span>
+                  <span className="text-gray-900 font-medium">
+                    {selectedProductForCart.quantity} وحدة
+                  </span>
+                </div>
+              </div>
+
+              {/* Quantity Selector */}
+              <div className="mb-6">
+                <label className="block text-gray-600 text-sm mb-3">
+                  الكمية:
+                </label>
+                <div className="flex items-center justify-center gap-4">
                   <button
-                    type="button"
-                    onClick={() => {
-                      setShowAddModal(false);
-                      setEditingProduct(null);
-                      resetForm();
-                    }}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={decreaseQuantity}
+                    disabled={quantity <= 1}
+                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 rounded-full flex items-center justify-center transition-colors border border-gray-300"
                   >
-                    إلغاء
+                    <FiMinus className="w-4 h-4 text-gray-600" />
                   </button>
+
+                  <span className="text-2xl font-bold text-gray-900 w-12 text-center">
+                    {quantity}
+                  </span>
+
                   <button
-                    type="submit"
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                    onClick={increaseQuantity}
+                    disabled={quantity >= selectedProductForCart.quantity}
+                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 rounded-full flex items-center justify-center transition-colors border border-gray-300"
                   >
-                    {editingProduct ? "حفظ التعديلات" : "إضافة المنتج"}
+                    <FiPlus className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
-              </form>
+              </div>
+
+              {/* Total Price */}
+              <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">الإجمالي:</span>
+                  <span className="text-2xl font-bold text-emerald-600">
+                    {(selectedProductForCart.price * quantity).toFixed(2)} ج.م
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={closeCartModal}
+                  className="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-colors"
+                >
+                  إلغاء
+                </button>
+                <button className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-semibold transition-colors shadow-md">
+                  إضافة
+                </button>
+              </div>
             </div>
           </div>
         </div>
