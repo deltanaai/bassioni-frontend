@@ -24,3 +24,7 @@ export const AssignOrderToWarehouseSchema = z.object({
   orderId: z.number("معرف الطلب يجب أن يكون رقمًا").int().positive(),
   warehouseId: z.number("معرف المستودع يجب أن يكون رقمًا").int().positive(),
 });
+
+export const ShowCompanyOrderSchema = z.object({
+  orderId: z.number("معرف الطلب يجب أن يكون رقمًا").int().positive(),
+});

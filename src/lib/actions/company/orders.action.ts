@@ -5,8 +5,38 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
   AssignOrderToWarehouseSchema,
+  ShowCompanyOrderSchema,
   UpdateOrderStatusSchema,
 } from "@/schemas/company/order";
+
+export async function showCompanyOrder(
+  params: ShowCompanyOrderParams
+): Promise<ActionResponse<CompanyOrder>> {
+  const validationResult = await action({
+    params,
+    schema: ShowCompanyOrderSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { orderId } = validationResult.params!;
+  try {
+    const response = await api.company.orders.showOrder({ orderId });
+
+    if (!response) {
+      throw new Error("فشل في جلب تفاصيل الطلب");
+    }
+
+    return {
+      success: true,
+      data: response.data as CompanyOrder,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
 
 export async function updateOrderStatus(
   params: UpdateOrderStatusParams

@@ -2,6 +2,12 @@ import { API_URL } from "@/constants";
 import { fetchHandler } from "@/lib/handlers/fetch";
 
 export const orderEndpoints = {
+  showOrder: ({ orderId }: { orderId: number }) =>
+    fetchHandler(`${API_URL}orders/${orderId}`, {
+      method: "GET",
+      auth: true,
+    }),
+
   updateOrderStatus: ({
     orderId,
     payload,

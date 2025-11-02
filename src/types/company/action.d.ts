@@ -175,3 +175,7 @@ interface AssignOrderToWarehouseResponse {
   };
   message: string;
 }
+
+interface ShowCompanyOrderParams {
+  orderId: number;
+}

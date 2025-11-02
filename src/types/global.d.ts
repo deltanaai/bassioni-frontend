@@ -71,6 +71,39 @@ interface TrashItem {
   originalData: string; // any
 }
 
+interface OrderProduct {
+  id: number;
+  name: string;
+  category: string | null;
+  brand: string | null;
+  rating: number;
+  rating_count: number | null;
+  price: number;
+  imageUrl: string;
+  image: string | null;
+}
+
+interface OrderItem {
+  id: number;
+  product: OrderProduct;
+  quantity: number;
+  price: string;
+  total: string | null;
+}
+
+interface CompanyOrder {
+  id: number;
+  user_id: number | null;
+  address_id: number | null;
+  promo_code_id: number | null;
+  payment_method: string;
+  status: string;
+  delivery_fee: string;
+  total_price: string;
+  created_at: string;
+  items: OrderItem[];
+}
+
 type ActionResponse<T = null> = {
   success: boolean;
   data?: T | null;
