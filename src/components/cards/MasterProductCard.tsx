@@ -35,7 +35,7 @@ const MasterProductCard = ({
           </AvatarFallback>
         </Avatar>
 
-        <CardTitle className="mt-3 text-center text-base font-semibold">
+        <CardTitle className="mt-3 truncate text-center text-base font-semibold">
           {name}
         </CardTitle>
 

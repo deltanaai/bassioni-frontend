@@ -12,6 +12,7 @@ import {
 import MasterProductCard from "@/components/cards/MasterProductCard";
 
 // import { productFormSchema } from '@/schemas/AddProduts'
+import ProductDetailsModal from "@/components/modals/ProductDetailsModal";
 import { Separator } from "@/components/ui/separator";
 
 import { ProductFormData } from "@/types";
@@ -29,6 +30,24 @@ interface Product {
   image: string;
   warehouse: string;
 }
+
+const warehouses = [
+  {
+    id: 1,
+    name: "Main Warehouse",
+    batches: [
+      { id: 1, batchNumber: "B123", quantity: 25, expDate: "2026-01-30" },
+      { id: 2, batchNumber: "B124", quantity: 10, expDate: "2026-06-15" },
+    ],
+  },
+  {
+    id: 2,
+    name: "Pharma East",
+    batches: [
+      { id: 1, batchNumber: "A991", quantity: 12, expDate: "2025-11-12" },
+    ],
+  },
+];
 
 const sampleProducts: Product[] = [
   {
@@ -68,9 +87,9 @@ const categories = [
 ];
 const brands = ["جلاكسو سميث كلاين", "نوفارتس", "فايزر", "سانوفي", "ناتورال"];
 const dosages = ["أقراص", "شراب", "حقن", "كريم", "مرهم", "أقراص فوارة"];
-const warehouses = ["مخزن القاهرة", "مخزن الإسكندرية", "مخزن أسيوط"];
 
 export default function ProductsPage() {
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>(sampleProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -258,19 +277,32 @@ export default function ProductsPage() {
 
       <Separator className="mt-10" />
 
-      <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+      <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {sampleProducts.map((product) => (
-          <MasterProductCard
-            key={product.id}
-            name={product.name}
-            imageUrl={product.image}
-            description=""
-            price={product.price}
-            brand={product.brand}
-            category={product.category}
-          />
+          <>
+            <div
+              onClick={() => setDetailsOpen(true)}
+              className="cursor-pointer"
+            >
+              <MasterProductCard
+                key={product.id}
+                name={product.name}
+                imageUrl={product.image}
+                description=""
+                price={product.price}
+                brand={product.brand}
+                category={product.category}
+              />
+            </div>
+          </>
         ))}
       </div>
+
+      <ProductDetailsModal
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        warehouses={warehouses}
+      />
 
       {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
