@@ -70,7 +70,7 @@ export async function updateOrderStatus(
       data: response.data!,
     };
   } catch (error) {
-    return handleError(error as Error) as ErrorResponse;
+    return handleError(error) as ErrorResponse;
   }
 }
 

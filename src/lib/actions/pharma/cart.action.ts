@@ -120,6 +120,7 @@ export async function sendToOrder(
   const validationResult = await action({
     params,
     schema: SendToOrderSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {

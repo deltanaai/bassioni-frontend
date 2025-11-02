@@ -24,5 +24,6 @@ export const cartEndpoints = {
     fetchHandler(`${API_URL}pharmacy/orders`, {
       method: "POST",
       body: JSON.stringify(payload),
+      auth: true,
     }),
 };
