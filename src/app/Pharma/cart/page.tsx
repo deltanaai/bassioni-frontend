@@ -133,7 +133,7 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
   // إرسال السلة كطلب
   const handleSendToOrder = () => {
     if (!cartData?.data?.length) {
-      alert("السلة فارغة");
+      toast.error("السلة فارغة");
       return;
     }
 
