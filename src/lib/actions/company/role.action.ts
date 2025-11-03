@@ -16,7 +16,7 @@ import handleError from "../../handlers/error";
 
 export async function getAllRoles(
   params?: PaginatedSearchParams
-): Promise<IndexedActionResponse<Role>> {
+): Promise<IndexedActionResponse<CompanyRole>> {
   const validationResult = await action({
     params,
     schema: GetAllRolesSchema,
@@ -45,7 +45,7 @@ export async function getAllRoles(
 
     return {
       success: true,
-      data: response.data as PaginatedResponse<Role>,
+      data: response.data as PaginatedResponse<CompanyRole>,
       links: response.links,
       meta: response.meta,
     };
@@ -56,7 +56,7 @@ export async function getAllRoles(
 
 export async function addNewRole(
   params: AddNewRole
-): Promise<ActionResponse<Role>> {
+): Promise<ActionResponse<CompanyRole>> {
   const validationResult = await action({
     params,
     schema: AddNewRoleSchema,
@@ -77,7 +77,7 @@ export async function addNewRole(
     }
     return {
       success: true,
-      data: response.data as Role,
+      data: response.data as CompanyRole,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -86,7 +86,7 @@ export async function addNewRole(
 
 export async function getRoleById(
   params: GetRoleById
-): Promise<ActionResponse<Role>> {
+): Promise<ActionResponse<CompanyRole>> {
   const validationResult = await action({
     params,
     schema: GetRoleByIdSchema,
@@ -103,7 +103,7 @@ export async function getRoleById(
     }
     return {
       success: true,
-      data: response.data as Role,
+      data: response.data as CompanyRole,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

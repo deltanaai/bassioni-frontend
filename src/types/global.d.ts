@@ -23,10 +23,17 @@ interface Employee {
   updatedAt: string;
 }
 
-interface Role {
+interface RolePermission {
   id: number;
   name: string;
-  guardName: string;
+  guard_name: string;
+}
+
+interface CompanyRole {
+  id: number;
+  name: string;
+  guard_name: string;
+  permissions: RolePermission[];
 }
 
 interface WarehouseProduct {
