@@ -23,7 +23,6 @@ import {
 } from "@/lib/actions/company/warehouse.action";
 import { AddWarehouseSchema } from "@/schemas/company/warehouse";
 import { WarehouseFormData } from "@/types/company/uiProps";
-import { getAllLocations } from "@/lib/actions/company/locations.action";
 
 export default function WarehousesPage() {
   const queryClient = useQueryClient();
@@ -43,12 +42,12 @@ export default function WarehousesPage() {
   console.log(data);
 
   //   للمواقع
-  const { data: locationsData } = useQuery({
-    queryKey: ["locations"],
-    queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
-  });
-  const locations = locationsData?.data || [];
-  console.log(locations);
+  // const { data: locationsData } = useQuery({
+  //   queryKey: ["locations"],
+  //   queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
+  // });
+  // const locations = locationsData?.data || [];
+  // console.log(locations);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -245,20 +244,11 @@ export default function WarehousesPage() {
               )}
 
               {/* الموقع */}
-              <select
-                {...register("locationId", { valueAsNumber: true })}
+              <input
+                {...register("locationId")}
+                placeholder="موقع المخزن"
                 className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  -- اختر الموقع --
-                </option>
-                {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.name}
-                  </option>
-                ))}
-              </select>
+              />
               {errors.locationId && (
                 <p className="text-sm text-red-500">
                   {errors.locationId.message}

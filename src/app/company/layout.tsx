@@ -19,8 +19,8 @@ import {
   Store,
   Tag,
   TicketPercent,
-  Trash2,
   LogOut,
+  Shield,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,16 +29,20 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import ROUTES, { ROUTES_COMPANY, ROUTES_OWNER } from "@/constants/routes";
+import { ROUTES_COMPANY, ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import { signOut } from "@/lib/actions/company/login.action";
-import logger from "@/lib/logger";
+// import logger from "@/lib/logger";
 import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_COMPANY.DASHBOARD, Icon: Home },
-  { name: "طلبات الصيدليات", href: ROUTES_COMPANY.DAY_ORDERS, Icon: ClipboardList },
-  { name: "عروض الشركات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Send },
+  {
+    name: "طلبات الصيدليات",
+    href: ROUTES_COMPANY.DAY_ORDERS,
+    Icon: ClipboardList,
+  },
+  { name: "عروض الصيدليات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Send },
   {
     name: "طلبات الشركة من الصيدليات",
     href: ROUTES_COMPANY.MY_ORDERS,
@@ -51,9 +55,14 @@ const links = [
     Icon: PlusCircle,
   },
   { name: "المنتجات", href: ROUTES_COMPANY.PRODUCTS, Icon: Mail },
-  { name: "سلة المحذوفات", href: ROUTES_COMPANY.TRASH, Icon: Trash2 },
+  // { name: "سلة المحذوفات", href: ROUTES_COMPANY.TRASH, Icon: Trash2 },
   { name: "الملف الشخصي", href: ROUTES_COMPANY.PROFILE, Icon: User },
   { name: "الإعدادات", href: ROUTES_COMPANY.SETTINGS, Icon: Settings },
+  {
+    name: "التواصل مع الادارة",
+    href: ROUTES_COMPANY.ADMINISTRATION,
+    Icon: Shield,
+  },
   // { name: "تسجيل الدخول", href: "/auth/login", Icon: LogIn },
 ];
 
