@@ -1,4 +1,8 @@
-import React from "react";
+"use client";
+
+import { Printer } from "lucide-react";
+import React, { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Separator } from "./ui/separator";
@@ -12,10 +16,20 @@ import {
 } from "./ui/table";
 
 const Invoice = () => {
+  const invoiceRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    contentRef: invoiceRef,
+    documentTitle: "Purchase Invoice",
+  });
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="mt-6  bg-gray-50 p-8" ref={invoiceRef}>
       <div className="mx-auto w-full">
-        <Card className="border bg-white shadow-sm">
+        <Card className="relative border bg-white shadow-sm">
+          <Printer
+            size={24}
+            className="absolute top-10 left-10 cursor-pointer"
+            onClick={handlePrint}
+          />
           {/* Header */}
           <CardHeader className="pb-2 text-center">
             <CardTitle className="text-xl font-semibold">
