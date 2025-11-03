@@ -42,7 +42,7 @@ const links = [
     href: ROUTES_COMPANY.DAY_ORDERS,
     Icon: ClipboardList,
   },
-  { name: "عروض الصيدليات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Send },
+  { name: "عروض الصيدليات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Tag },
   {
     name: "طلبات الشركة من الصيدليات",
     href: ROUTES_COMPANY.MY_ORDERS,
