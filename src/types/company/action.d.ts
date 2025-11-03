@@ -6,6 +6,10 @@ interface AuthCredentialsCo {
   rememberMe?: boolean;
 }
 
+interface ShowMasterProductParams {
+  id: number;
+}
+
 interface GetProductsParams {
   warehouseId: number;
   productId?: number;

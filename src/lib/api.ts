@@ -2,6 +2,7 @@ import { authEndpoints } from "./endpoints/company/auth";
 import { employeesEndpoints } from "./endpoints/company/employees";
 import { companyEndpoint } from "./endpoints/company/info";
 import { locationsEndpoints } from "./endpoints/company/locations";
+import { masterProductsEndpoints } from "./endpoints/company/masterProducts";
 import { orderEndpoints } from "./endpoints/company/order";
 import { productsEndpoints } from "./endpoints/company/products";
 import { profileEndpoints } from "./endpoints/company/profile";
@@ -17,6 +18,7 @@ export const api = {
     auth: authEndpoints,
     info: companyEndpoint,
     profile: profileEndpoints,
+    masterProducts: masterProductsEndpoints,
     products: productsEndpoints,
     employee: employeesEndpoints,
     roles: rolesEndpoints,
