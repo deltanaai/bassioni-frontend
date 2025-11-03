@@ -90,6 +90,7 @@ interface RestoreEmployeesParams {
 
 interface AddNewRole {
   name: string;
+  permissions: number[];
 }
 
 interface GetRoleById {
@@ -99,6 +100,7 @@ interface GetRoleById {
 interface UpdateRoleParams {
   roleId: number;
   name: string;
+  permissions: number[];
 }
 
 interface DeleteRoleParams {

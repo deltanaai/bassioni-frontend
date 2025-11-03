@@ -11,6 +11,9 @@ export const GetAllRolesSchema = z.object({
 
 export const AddNewRoleSchema = z.object({
   name: z.string().min(3, "اسم الدور مطلوب ويجب أن يحتوي على 3 أحرف على الأقل"),
+  permissions: z
+    .array(z.number("معرف الصلاحية غير صالح").int().positive())
+    .nonempty("يجب اختيار صلاحية واحدة على الأقل"),
 });
 
 export const GetRoleByIdSchema = z.object({
@@ -20,6 +23,9 @@ export const GetRoleByIdSchema = z.object({
 export const UpdateRoleSchema = z.object({
   roleId: z.number("معرف الدور مطلوب").int().positive(),
   name: z.string().min(1, "اسم الدور مطلوب"),
+  permissions: z
+    .array(z.number("معرف الصلاحية غير صالح").int().positive())
+    .nonempty("يجب اختيار صلاحية واحدة على الأقل"),
 });
 
 export const DeleteRoleSchema = z.object({

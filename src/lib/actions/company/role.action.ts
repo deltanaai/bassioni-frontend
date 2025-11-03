@@ -56,7 +56,7 @@ export async function getAllRoles(
 
 export async function addNewRole(
   params: AddNewRole
-): Promise<ActionResponse<CompanyRole>> {
+): Promise<ActionResponse<RolePermission>> {
   const validationResult = await action({
     params,
     schema: AddNewRoleSchema,
@@ -65,9 +65,10 @@ export async function addNewRole(
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  const { name } = validationResult.params!;
+  const { name, permissions } = validationResult.params!;
   const payload: AddNewRolePayload = {
     name,
+    permissions,
   };
 
   try {
@@ -77,7 +78,7 @@ export async function addNewRole(
     }
     return {
       success: true,
-      data: response.data as CompanyRole,
+      data: response.data as RolePermission,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -122,12 +123,16 @@ export async function updateRole(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { roleId, name } = validationResult.params!;
+  const { roleId, name, permissions } = validationResult.params!;
+
   const payload: AddNewRolePayload = {
     name,
+    permissions,
   };
+
   try {
     const response = await api.company.roles.update({ roleId, payload });
+
     if (!response) {
       throw new Error("فشل في تحديث بيانات الدور, لم يتم تلقي رد من الخادم");
     }

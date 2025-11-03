@@ -82,6 +82,7 @@ interface RolePayload {
 
 interface AddNewRolePayload {
   name: string;
+  permissions: number[];
 }
 
 interface UpdateRolePayload {
