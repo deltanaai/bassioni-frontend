@@ -1,3 +1,8 @@
+interface PharmacyLoginParams {
+  login: string;
+  password: string;
+}
+
 interface GetCompanyProducts {
   companyId: number;
 }

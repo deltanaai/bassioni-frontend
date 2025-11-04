@@ -1,3 +1,26 @@
+interface Pharmacy {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  license_number: string | null;
+  imageUrl: string;
+  image: string | null;
+  avg_rate: number;
+  total_rate: number | null;
+}
+
+interface Pharmacist {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  pharmacy: Pharmacy;
+  imageUrl: string;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
 interface CompanyProduct {
   id: number;
   name: string;

@@ -10,6 +10,7 @@ import { productsEndpoints } from "./endpoints/company/products";
 import { profileEndpoints } from "./endpoints/company/profile";
 import { rolesEndpoints } from "./endpoints/company/roles";
 import { warehousesEndpoints } from "./endpoints/company/warehouses";
+import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
 import { cartEndpoints } from "./endpoints/pharma/cart";
 import { companyProductsEndpoints } from "./endpoints/pharma/companyProducts";
 // import { orderEndpoints } from "./endpoints/pharma/orders";
@@ -28,9 +29,10 @@ export const api = {
     warehouses: warehousesEndpoints,
     locations: locationsEndpoints,
     orders: orderEndpoints,
-    offers: offersEndpoints
+    offers: offersEndpoints,
   },
   pharma: {
+    auth: pharmaAuthEndpoints,
     companyProducts: companyProductsEndpoints,
     cart: cartEndpoints,
     // orders: orderEndpoints,
