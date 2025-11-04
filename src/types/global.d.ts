@@ -162,6 +162,7 @@ interface CompanyOrder {
 type ActionResponse<T = null> = {
   success: boolean;
   data?: T | null;
+  pharmacist?: Pharmacist;
   token?: string;
   result?: "Success" | "Error";
   message?: string;

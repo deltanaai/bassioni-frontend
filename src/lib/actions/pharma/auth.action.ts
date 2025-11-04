@@ -1,6 +1,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
+import { setSession } from "@/lib/session";
 import { PharmacyLoginSchema } from "@/schemas/pharma/auth";
 
 export async function loginPharmacy(
@@ -20,13 +21,15 @@ export async function loginPharmacy(
       payload: validationResult.params!,
     });
 
-    if (!response || response.result === "Error") {
+    if (!response || response.result === "Error" || !response.token) {
       throw new Error("فشل تسجيل الدخول. يرجى التحقق من بياناتك.");
     }
 
+    await setSession(response.pharmacist as Pharmacist, response.token);
+
     return {
       success: true,
-      data: response.data as Pharmacist,
+      data: response.pharmacist as Pharmacist,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

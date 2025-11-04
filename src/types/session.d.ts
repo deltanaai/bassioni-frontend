@@ -14,6 +14,6 @@ interface SessionUser {
 }
 
 interface Session {
-  user: SessionUser;
+  user: SessionUser | Pharmacist;
   token: string;
 }
