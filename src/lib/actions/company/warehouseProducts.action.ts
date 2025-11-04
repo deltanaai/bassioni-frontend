@@ -114,7 +114,6 @@ export async function addProductToWarehouse(
   const {
     warehouseId,
     productId,
-    warehousePrice,
     stock,
     expiryDate,
     reservedStock,
@@ -133,7 +132,6 @@ export async function addProductToWarehouse(
 
   const payload: AddWarehouseProductPayload = {
     product_id: productId,
-    warehouse_price: Number(warehousePrice),
     stock,
     reserved_stock: reservedStock,
     expiry_date: normalizeExpiryDateMaybe(expiryDate),
@@ -168,7 +166,6 @@ export async function updateProductInWarehouse(
   const {
     warehouseId,
     productId,
-    warehousePrice,
     stock,
     reservedStock,
     expiryDate,
@@ -185,7 +182,6 @@ export async function updateProductInWarehouse(
 
   const payload: UpdateWarehouseProductPayload = {
     product_id: productId,
-    warehouse_price: Number(warehousePrice),
     stock,
     reserved_stock: reservedStock,
     expiry_date: normalizeExpiryDateMaybe(expiryDate),
