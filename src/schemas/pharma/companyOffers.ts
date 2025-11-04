@@ -14,3 +14,7 @@ export const GetCompanyOffersSchema = z.object({
   paginate: z.boolean().optional(),
   deleted: z.boolean().optional(),
 });
+
+export const ShowCompanyOfferDetailsSchema = z.object({
+  offerId: z.number().int().positive().min(1, "معرف العرض مطلوب"),
+});

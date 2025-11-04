@@ -3,7 +3,10 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { GetCompanyOffersSchema } from "@/schemas/pharma/companyOffers";
+import {
+  GetCompanyOffersSchema,
+  ShowCompanyOfferDetailsSchema,
+} from "@/schemas/pharma/companyOffers";
 
 export async function getCompanyOffers(
   params: PaginatedSearchParams
@@ -49,6 +52,34 @@ export async function getCompanyOffers(
       data: response.data as PaginatedResponse<CompanyOffer>,
       links: response.links,
       meta: response.meta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function showCompanyOfferDetails(
+  params: ShowCompanyOfferDetailsParams
+): Promise<ActionResponse<CompanyOffer>> {
+  const validationResult = await action({
+    params,
+    schema: ShowCompanyOfferDetailsSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { offerId } = validationResult.params!;
+
+  try {
+    const response = await api.pharma.companyOffers.showDetails({ offerId });
+
+    if (!response) {
+      throw new Error("فشل جلب تفاصيل عرض الشركة");
+    }
+    return {
+      success: true,
+      data: response.data as CompanyOffer,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

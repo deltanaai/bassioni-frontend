@@ -7,4 +7,10 @@ export const companyOffersEndpoints = {
       method: "POST",
       body: payload ? JSON.stringify(payload) : undefined,
     }),
+
+  showDetails: ({ offerId }: ShowCompanyOfferDetailsParams) =>
+    fetchHandler(`${API_URL}/pharmacy/dashboard/company-offers/${offerId}`, {
+      method: "GET",
+      auth: true,
+    }),
 };

@@ -73,3 +73,7 @@ interface ShowPharmaCompanyDetailsParams {
 interface ShowMasterProductDetailsParams {
   productId: number;
 }
+
+interface ShowCompanyOfferDetailsParams {
+  offerId: number;
+}
