@@ -69,3 +69,7 @@ interface UpdateOrderStatusResponse {
 interface ShowPharmaCompanyDetailsParams {
   id: number;
 }
+
+interface ShowMasterProductDetailsParams {
+  productId: number;
+}
