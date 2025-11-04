@@ -208,3 +208,7 @@ interface UpdateOfferParams {
   startDate?: string;
   endDate?: string;
 }
+
+interface DeleteOffersParams {
+  offerIds: number[];
+}

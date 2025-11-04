@@ -3,6 +3,7 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
   CreateOfferSchema,
+  DeleteOfferSchema,
   GetOffersSchema,
   UpdateOfferSchema,
 } from "@/schemas/company/offers";
@@ -142,6 +143,37 @@ export async function updateOffer(
     return {
       success: true,
       data: { message: response.message ?? "تم تحديث بيانات العرض بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteOffers(
+  params: DeleteOffersParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteOfferSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { offerIds } = validationResult.params!;
+
+  const payload: DeleteOffersPayload = {
+    items: offerIds,
+  };
+
+  try {
+    const response = await api.company.offers.delete({ payload });
+    if (!response || response.result !== "Success") {
+      throw new Error("فشل حذف العروض");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم حذف العروض بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

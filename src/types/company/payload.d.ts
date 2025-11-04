@@ -166,3 +166,7 @@ interface UpdateOfferPayload {
   start_date?: string;
   end_date?: string;
 }
+
+interface DeleteOffersPayload {
+  items: number[];
+}

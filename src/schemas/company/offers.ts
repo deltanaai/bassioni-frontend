@@ -75,3 +75,9 @@ export const UpdateOfferSchema = z.object({
       "تاريخ الانتهاء غير صالح"
     ),
 });
+
+export const DeleteOfferSchema = z.object({
+  offerIds: z
+    .array(z.number().int().positive(), "يجب أن تكون معرفات العروض أرقام صحيحة")
+    .min(1, "يجب تحديد معرف عرض واحد على الأقل"),
+});
