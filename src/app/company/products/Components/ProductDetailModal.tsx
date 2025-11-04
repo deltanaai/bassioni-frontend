@@ -1,5 +1,8 @@
 import { FiChevronRight } from "react-icons/fi";
-import { ProductDetailsModalProps } from "../types/product.types";
+import { Batch, ProductDetailsModalProps } from "../types/product.types";
+import { Plus } from "lucide-react";
+import AddBatchModal from "./AddBatchModal";
+import { useState } from "react";
 
 export default function ProductDetailsModal({
   isOpen,
@@ -10,6 +13,12 @@ export default function ProductDetailsModal({
   onToggleWarehouse,
 }: ProductDetailsModalProps) {
   if (!isOpen) return null;
+  const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
+  const [batches, setBatches] = useState<Batch[]>([]);
+
+  const handleAddBatch = (newBatch: Batch) => {
+    setBatches((prev) => [...prev, newBatch]);
+  };
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
@@ -161,7 +170,9 @@ export default function ProductDetailsModal({
                                         .reverse()
                                         .join("-")
                                     ) < new Date() && (
-                                      <span className="mr-1 text-xs">⏰</span>
+                                      <span className="mr-1 text-xs">
+                                        EXPIRE
+                                      </span>
                                     )}
                                   </span>
                                 </td>
@@ -169,6 +180,15 @@ export default function ProductDetailsModal({
                             ))}
                           </tbody>
                         </table>
+                        <div className="flex justify-end my-2 ml-5  ">
+                          <button
+                            onClick={() => setIsAddBatchOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                          >
+                            <Plus className="w-4 h-4" />
+                            اضافة دفعة
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -178,6 +198,13 @@ export default function ProductDetailsModal({
           </div>
         </div>
       </div>
+
+      {/* مودال إضافة الدفعة */}
+      <AddBatchModal
+        isOpen={isAddBatchOpen}
+        onClose={() => setIsAddBatchOpen(false)}
+        onAddBatch={handleAddBatch}
+      />
     </div>
   );
 }

@@ -11,6 +11,7 @@ export interface Product {
 }
 
 export interface Batch {
+  id?: number;
   batchNumber: string;
   quantity: number;
   expiryDate: string;
@@ -40,6 +41,13 @@ export interface AddToCartModalProps {
   onAddToCart: () => void;
   isLoading?: boolean; 
 
+}
+
+export interface AddBatchModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddBatch: (batch: Batch) => void;
+  productName?: string;
 }
 
 export interface ProductFiltersProps {
