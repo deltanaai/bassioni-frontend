@@ -8,4 +8,11 @@ export const offersEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  getAll: ({ payload }: { payload?: PaginatedSearchPayload }) =>
+    fetchHandler(`${API_URL}company/dashboard/offers/index`, {
+      method: "POST",
+      auth: true,
+      body: payload ? JSON.stringify(payload) : undefined,
+    }),
 };
