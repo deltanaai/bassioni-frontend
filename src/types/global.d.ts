@@ -33,6 +33,21 @@ interface MasterProduct {
   createdAt: string;
 }
 
+interface Offer {
+  id: number;
+  warehouse_product_id: number;
+  discount: number;
+  active: boolean;
+  min_quantity: number;
+  total_quantity: number;
+  description: string;
+  start_date: string;
+  end_date: string;
+  company_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
 interface Company {
   id: number | null;
   name: string | null;

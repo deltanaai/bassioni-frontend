@@ -185,3 +185,14 @@ interface AssignOrderToWarehouseResponse {
 interface ShowCompanyOrderParams {
   orderId: number;
 }
+
+interface CreateOfferParams {
+  warehouseProductId: number;
+  discount: number;
+  active: boolean;
+  minQuantity: number;
+  totalQuantity: number;
+  description: string;
+  startDate: string;
+  endDate: string;
+}

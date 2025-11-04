@@ -144,3 +144,14 @@ interface UpdatePasswordPayload {
 interface AssignOrderToWarehousePayload {
   warehouse_id: number;
 }
+
+interface CreateOfferPayload {
+  warehouse_product_id: number;
+  discount: number;
+  active: boolean;
+  min_quantity: number;
+  total_quantity: number;
+  description?: string;
+  start_date: string;
+  end_date: string;
+}

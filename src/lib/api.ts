@@ -3,6 +3,7 @@ import { employeesEndpoints } from "./endpoints/company/employees";
 import { companyEndpoint } from "./endpoints/company/info";
 import { locationsEndpoints } from "./endpoints/company/locations";
 import { masterProductsEndpoints } from "./endpoints/company/masterProducts";
+import { offersEndpoints } from "./endpoints/company/offers";
 import { orderEndpoints } from "./endpoints/company/order";
 import { permissionsEndpoints } from "./endpoints/company/permissions";
 import { productsEndpoints } from "./endpoints/company/products";
@@ -27,6 +28,7 @@ export const api = {
     warehouses: warehousesEndpoints,
     locations: locationsEndpoints,
     orders: orderEndpoints,
+    offers: offersEndpoints
   },
   pharma: {
     companyProducts: companyProductsEndpoints,
