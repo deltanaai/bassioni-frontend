@@ -23,7 +23,6 @@ interface WarehouseProductsIndexParams extends PaginatedSearchParams {
 interface AddWarehouseProductParams {
   warehouseId: number;
   productId: number;
-  warehousePrice: number | string;
   stock: number;
   reservedStock: number;
   expiryDate: string;

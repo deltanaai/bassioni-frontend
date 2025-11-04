@@ -36,19 +36,15 @@ export const AddProductSchema = z.object({
     .int()
     .positive()
     .min(1, "معرف المنتج مطلوب"),
-  warehousePrice: z
-    .union([z.string(), z.number()])
-    .refine(
-      (val) => !Number.isNaN(Number(val)) && Number(val) >= 0,
-      "سعر المستودع مطلوب. يجب أن يكون سعر المستودع رقمًا غير سالب"
-    ),
   stock: z.number("الكمية مطلوبة").int().nonnegative().min(0, "الكمية مطلوبة"),
   reservedStock: z
     .number(" الكمية المحجوزة مطلوبة ")
     .int()
     .nonnegative()
     .min(0, "الكمية المحجوزة مطلوبة"),
-  expiryDate: z.string(),
+  expiryDate: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), "تاريخ انتهاء الصلاحية غير صالح"),
   batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
 });
 

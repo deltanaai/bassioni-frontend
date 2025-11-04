@@ -12,7 +12,6 @@ interface PaginatedSearchPayload {
 
 interface AddWarehouseProductPayload {
   product_id: number;
-  warehouse_price: number;
   stock: number;
   reserved_stock: number;
   expiry_date: string;
@@ -21,7 +20,6 @@ interface AddWarehouseProductPayload {
 
 interface UpdateWarehouseProductPayload {
   product_id: number;
-  warehouse_price: number;
   stock: number;
   reserved_stock: number;
   expiry_date?: string;
