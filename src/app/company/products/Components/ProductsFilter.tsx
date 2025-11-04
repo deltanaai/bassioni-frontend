@@ -1,15 +1,7 @@
 import { FiSearch, FiFilter } from "react-icons/fi";
 import { ProductFiltersProps } from "../types/product.types";
-
-const categories = [
-  "مسكنات الألم",
-  "المكملات الغذائية",
-  "مضادات حيوية",
-  "أدوية السكري",
-  "مستحضرات جلدية",
-];
-
-const brands = ["فارماسيا", "ناتشرال", "فيتاليف", "درماسيف", "ميديكال"];
+import { useQuery } from "@tanstack/react-query";
+import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
 export default function ProductFilters({
   searchTerm,
@@ -20,6 +12,38 @@ export default function ProductFilters({
   onBrandChange,
   productCount,
 }: ProductFiltersProps) {
+
+  const { data: productsData } = useQuery({
+    queryKey: ["masterProducts"],
+    queryFn: () => getMasterProducts({}),
+  });
+  // دعم شكلين للاستجابة: مصفوفة مباشرة أو paginate عشان لو عملته بردوو
+  const products: MasterProduct[] = Array.isArray(productsData?.data)
+    ? (productsData?.data as MasterProduct[])
+    : ((productsData?.data as unknown as PaginatedResponse<MasterProduct>)?.data || []);
+
+  // استخراج الفئات الفريدة   
+  const categories: string[] = Array.from(
+    new Set<string>(
+      products
+        .map((product: MasterProduct) =>
+          typeof product.category === "string"
+            ? (product.category as string)
+            : product.category?.name
+        )
+        .filter((v): v is string => Boolean(v))
+    )
+  );
+
+  // استخراج البراندات    
+  const brands: string[] = Array.from(
+    new Set<string>(
+      products
+        .map((product: MasterProduct) => product.brand)
+        .filter((v): v is string => Boolean(v))
+    )
+  );
+
   return (
     <div className="flex flex-wrap items-center gap-4 mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
       <div className="flex items-center gap-2">
@@ -44,8 +68,8 @@ export default function ProductFilters({
         onChange={(e) => onCategoryChange(e.target.value)}
       >
         <option value="all">جميع الفئات</option>
-        {categories.map((category) => (
-          <option key={category} value={category}>
+        {categories.map((category: string) => (
+          <option key={category as string} value={category as string}>
             {category}
           </option>
         ))}
@@ -57,8 +81,8 @@ export default function ProductFilters({
         onChange={(e) => onBrandChange(e.target.value)}
       >
         <option value="all">جميع البراندات</option>
-        {brands.map((brand) => (
-          <option key={brand} value={brand}>
+        {brands.map((brand: string) => (
+          <option key={brand as string} value={brand as string}>
             {brand}
           </option>
         ))}

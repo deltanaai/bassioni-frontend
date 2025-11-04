@@ -6,83 +6,41 @@ import ProductTable from "./Components/ProductsTable";
 import ProductDetailsModal from "./Components/ProductDetailModal";
 import AddToCartModal from "./Components/AddToCartModal";
 import { Product } from "./types/product.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addToCart } from "@/lib/actions/pharma/cart.action";
 import { toast } from "sonner";
-
-const sampleProducts: Product[] = [
-  {
-    id: 1,
-    name: "باراسيتامول 500 مجم",
-    category: "مسكنات الألم",
-    brand: "فارماسيا",
-    dosage: "أقراص",
-    concentration: "500 مجم",
-    quantity: 150,
-    price: 25.5,
-    warehouse: "مخزن القاهرة الرئيسي",
-  },
-  {
-    id: 2,
-    name: "فيتامين سي 1000 مجم",
-    category: "المكملات الغذائية",
-    brand: "ناتشرال",
-    dosage: "أقراص فوارة",
-    concentration: "1000 مجم",
-    quantity: 5,
-    price: 45.0,
-    warehouse: "مخزن الإسكندرية",
-  },
-  {
-    id: 3,
-    name: "أوميغا 3 كبسولات",
-    category: "المكملات الغذائية",
-    brand: "فيتاليف",
-    dosage: "كبسولات",
-    concentration: "1000 مجم",
-    quantity: 120,
-    price: 60.0,
-    warehouse: "مخزن الجيزة",
-  },
-  {
-    id: 4,
-    name: "كريم هيدروكورتيزون 1%",
-    category: "مستحضرات جلدية",
-    brand: "درماسيف",
-    dosage: "كريم",
-    concentration: "1%",
-    quantity: 60,
-    price: 35.75,
-    warehouse: "مخزن القاهرة الرئيسي",
-  },
-];
-
-const details = {
-  Productname: "كونجستال",
-  warehouses: [
-    {
-      warehouse1: [
-        { batchNumber: "3389", quantity: 24, expiryDate: "25/11/2020" },
-        { batchNumber: "6667", quantity: 12, expiryDate: "16/11/2020" },
-        { batchNumber: "345", quantity: 68, expiryDate: "14/8/2040" },
-      ],
-    },
-    {
-      warehouse2: [
-        { batchNumber: "212", quantity: 500, expiryDate: "25/11/2070" },
-        { batchNumber: "666217", quantity: 15, expiryDate: "16/11/2010" },
-        { batchNumber: "34115", quantity: 20, expiryDate: "14/8/2050" },
-      ],
-    },
-  ],
-};
+import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
 export default function ProductsPage() {
-  const [products] = useState<Product[]>(sampleProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
   const queryClient = useQueryClient();
+
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ["masterProducts"],
+    queryFn: () => getMasterProducts({}),
+  });
+
+  const apiData = Array.isArray(productsData?.data)
+    ? (productsData?.data as MasterProduct[])
+    : (productsData?.data as unknown as PaginatedResponse<MasterProduct>)
+        ?.data || [];
+
+  const products: Product[] = apiData.map((p: MasterProduct) => ({
+    id: p.id,
+    name: p.name,
+    category: p.category,
+    brand: p.brand,
+    description: p.description,
+    price: p.price,
+    imageUrl: p.imageUrl,
+    active: p.active,
+    rating: p.rating,
+    rating_count: p.rating_count,
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+  }));
 
   // Modal states
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -91,7 +49,6 @@ export default function ProductsPage() {
   const [quantity, setQuantity] = useState(1);
   const [expandedWarehouses, setExpandedWarehouses] = useState<number[]>([]);
 
-  //مؤقتتت
   const pharmacyId = 1;
 
   // للسلة
@@ -122,19 +79,36 @@ export default function ProductsPage() {
     }
   };
 
-  // Filter logic
-  const filteredProducts = products.filter((product) => {
+  // 3. فلترة حسب البحث والفئة والبراند
+  const filteredProducts = products.filter((product: Product) => {
+    const searchLower = searchTerm.trim().toLowerCase();
+
+    const nameMatch = product.name?.toLowerCase().includes(searchLower);
+    const brandMatch = product.brand?.toLowerCase().includes(searchLower);
+    const descMatch = product.description?.toLowerCase().includes(searchLower);
     const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchTerm.toLowerCase());
+      searchLower === "" ? true : Boolean(nameMatch || brandMatch || descMatch);
+
+    const categoryName =
+      typeof product.category === "string"
+        ? product.category
+        : product.category?.name;
     const matchesCategory =
-      filterCategory === "all" || product.category === filterCategory;
-    const matchesBrand = filterBrand === "all" || product.brand === filterBrand;
+      filterCategory === "all" ||
+      categoryName?.toLowerCase() === filterCategory.toLowerCase();
+
+    const matchesBrand =
+      filterBrand === "all" ||
+      product.brand?.toLowerCase() === filterBrand.toLowerCase();
+
     return matchesSearch && matchesCategory && matchesBrand;
   });
 
   // Modal functions
-  const openProductDetails = (product: Product) => setSelectedProduct(product);
+  const openProductDetails = (product: Product) => {
+    console.log("فتح تفاصيل المنتج:", product);
+    setSelectedProduct(product);
+  };
 
   const closeProductDetails = () => {
     setSelectedProduct(null);
@@ -157,17 +131,22 @@ export default function ProductsPage() {
     );
   };
 
-  const increaseQuantity = () => {
-    if (selectedProductForCart && quantity < selectedProductForCart.quantity) {
-      setQuantity((prev) => prev + 1);
-    }
-  };
+  const increaseQuantity = () => setQuantity((prev) => prev + 1);
+  const decreaseQuantity = () =>
+    quantity > 1 && setQuantity((prev) => prev - 1);
 
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="p-6 bg-gradient-to-br from-gray-50 to-white min-h-screen text-gray-800">
+        <div className="flex justify-center items-center min-h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+            <p>جاري تحميل المنتجات...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 to-white min-h-screen text-gray-800">
@@ -188,7 +167,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* 4. الفلترات - مؤقتاً بدون فلترة بالفئات والبراندات */}
       <ProductFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -199,19 +178,19 @@ export default function ProductsPage() {
         productCount={filteredProducts.length}
       />
 
-      {/* Table */}
+      {/* 5. الجدول - هيشتغل مع البيانات الحقيقية */}
       <ProductTable
         products={filteredProducts}
         onViewDetails={openProductDetails}
         onAddToCart={openCartModal}
       />
 
-      {/* Modals */}
+      {/* 6. المودالات - هتشتغل لما نفتحها */}
       <ProductDetailsModal
         isOpen={!!selectedProduct}
         onClose={closeProductDetails}
-        productName={details.Productname}
-        warehouses={details.warehouses}
+        productId={selectedProduct?.id?.toString() || ""}
+        productName={selectedProduct?.name || ""}
         expandedWarehouses={expandedWarehouses}
         onToggleWarehouse={toggleWarehouse}
       />

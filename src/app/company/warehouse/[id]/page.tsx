@@ -32,6 +32,7 @@ import {
 } from "@/lib/actions/company/warehouseProducts.action";
 import { toast } from "sonner";
 import { ProductInput } from "@/types/company/uiProps";
+import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
 export default function WarehouseDetailsPage() {
   //warehouses
@@ -60,6 +61,16 @@ export default function WarehouseDetailsPage() {
   });
   const warehouse = data?.data?.warehouse;
   console.log("Warehouse data:", warehouse);
+
+  //المنتجات الرئيسية
+  const { data: masterData } = useQuery({
+    queryKey: ["masters"],
+    queryFn: () => getMasterProducts({}),
+  });
+  const masterproducts = masterData?.data || [];
+  console.log("Master products:", masterproducts);
+
+
 
   //   للمواقع
   const { data: locationsData } = useQuery({
@@ -624,13 +635,21 @@ export default function WarehouseDetailsPage() {
 
               <div className="grid grid-cols-2 gap-5">
                 <div className="flex flex-col">
-                  <label className="mb-1">معرف المنتج</label>
-                  <input
-                    type="number"
+                  <label className="mb-1"> المنتج</label>
+                  <select
                     {...register("productId", { valueAsNumber: true })}
-                    placeholder="ID"
-                    className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
-                  />
+                    className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      -- اختر المنتج --
+                    </option>
+                    {(Array.isArray(masterproducts) ? masterproducts : []).map((product: MasterProduct) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
+                  </select>
                   {errors.productId && (
                     <p className="text-red-500 text-sm">
                       {errors.productId.message as string}

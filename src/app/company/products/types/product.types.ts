@@ -1,15 +1,28 @@
+// types/product.types.ts
 export interface Product {
   id: number;
   name: string;
-  category: string;
+  category: {
+    id: number;
+    name: string;
+    position: number;
+    active: boolean;
+    show_home: boolean;
+  } | string; // يمكن أن يكون كائن أو نص
   brand: string;
-  dosage: string;
-  concentration: string;
-  quantity: number;
+  description: string;
   price: number;
-  warehouse: string;
+  imageUrl: string | null;
+  active: boolean;
+  rating: number;
+  rating_count: number;
+  createdAt: string;
+  updatedAt: string;
+  // الحقول الإضافية من الـ API
+  concentration?: string;
+  quantity?: number;
+  warehouse?: string;
 }
-
 export interface Batch {
   id?: number;
   batchNumber: string;
@@ -17,18 +30,39 @@ export interface Batch {
   expiryDate: string;
 }
 
-export interface Warehouse {
-  warehouse1?: Batch[];
-  warehouse2?: Batch[];
+export interface WarehouseProduct {
+  id: number;
+  warehouseId: number;
+  warehouseName: string;
+  productId: number;
+  batches: Batch[];
+  totalQuantity: number;
+}
+
+export interface MasterProduct {
+  id: number;
+  name: string;
+  description: string;
+  brand: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  price: number;
+  imageUrl: string | null;
+  active: boolean;
+  rating: number;
+  rating_count: number;
 }
 
 export interface ProductDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  productId: string; 
   productName: string;
-  warehouses: Warehouse[];
   expandedWarehouses: number[];
   onToggleWarehouse: (index: number) => void;
+  // تم إزالة warehouses تماماً
 }
 
 export interface AddToCartModalProps {
@@ -40,13 +74,13 @@ export interface AddToCartModalProps {
   onDecreaseQuantity: () => void;
   onAddToCart: () => void;
   isLoading?: boolean; 
-
 }
 
 export interface AddBatchModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddBatch: (batch: Batch) => void;
+  productId?: string;
   productName?: string;
 }
 
