@@ -181,6 +181,7 @@ interface BackendErrorResponse {
 }
 
 interface PaginatedSearchParams {
+  filters?: Record<string, string | number | boolean | null> | undefined;
   page?: number;
   perPage?: number;
   deleted?: boolean;

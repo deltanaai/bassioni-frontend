@@ -1,6 +1,7 @@
 // request/response payloads.
 
 interface PaginatedSearchPayload {
+  filters?: Record<string, string | number | boolean | null> | undefined;
   page?: number;
   per_page?: number;
   deleted?: boolean;
