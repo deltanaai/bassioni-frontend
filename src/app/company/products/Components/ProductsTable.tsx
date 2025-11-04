@@ -1,12 +1,22 @@
 import { FiEye, FiShoppingCart, FiDollarSign, FiPackage } from "react-icons/fi";
 import { ProductTableProps } from "../types/product.types";
+import { useQuery } from "@tanstack/react-query";
+import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
 export default function ProductTable({
-  products,
   onViewDetails,
   onAddToCart,
 }: ProductTableProps) {
-  if (products.length === 0) {
+  const { data: masterData } = useQuery({
+    queryKey: ["masters"],
+    queryFn: () => getMasterProducts({}),
+  });
+
+  console.log("البيانات الكاملة:", masterData);
+  console.log("مصفوفة المنتجات:", masterData?.data);
+
+  // إذا لم توجد بيانات أو كانت المصفوفة فارغة
+  if (!masterData?.data || !Array.isArray(masterData.data) || masterData.data.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-lg">
         <div className="px-6 py-16 text-center">
@@ -61,7 +71,7 @@ export default function ProductTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {products.map((product, index) => (
+            {(Array.isArray(masterData.data) ? masterData.data : []).map((product: MasterProduct, index: number) => (
               <tr
                 key={product.id}
                 className="hover:bg-gray-50 transition-all duration-200 border-b border-gray-100"
@@ -70,27 +80,29 @@ export default function ProductTable({
                   {index + 1}
                 </td>
                 <td className="px-6 py-4 text-center">
-                  <div>
-                    <div className="font-semibold text-gray-900 text-lg">
-                      {product.name}
-                    </div>
-                    <div className="text-gray-600 text-sm mt-1">
-                      {product.dosage}
+                  <div className=" items-center gap-3">
+                    <div className="text-center">
+                      <div className="font-semibold text-gray-900 text-lg">
+                        {product.name}
+                      </div>
+                      <div className="text-gray-600 text-sm mt-1">
+                        {product.description}
+                      </div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border border-purple-200 shadow-sm">
-                    {product.category}
+                    {product.category?.name || "لا توجد"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700 text-center font-medium">
-                  {product.brand}
+                  {product.brand || "لا يوجد"}
                 </td>
                 <td className="px-6 py-4 text-center">
                   <div className="flex items-center gap-1 justify-center">
                     <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
-                      {product.price.toFixed(2)}
+                      {product.price?.toFixed(2) || "0.00"}
                     </span>
                     <span className="text-xs text-gray-500">ج.م</span>
                   </div>
