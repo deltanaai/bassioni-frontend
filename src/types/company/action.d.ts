@@ -196,3 +196,15 @@ interface CreateOfferParams {
   startDate: string;
   endDate: string;
 }
+
+interface UpdateOfferParams {
+  offerId: number;
+  warehouseProductId: number;
+  discount: number;
+  active: boolean;
+  minQuantity: number;
+  totalQuantity: number;
+  description?: string | null;
+  startDate?: string;
+  endDate?: string;
+}

@@ -1,7 +1,11 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { CreateOfferSchema, GetOffersSchema } from "@/schemas/company/offers";
+import {
+  CreateOfferSchema,
+  GetOffersSchema,
+  UpdateOfferSchema,
+} from "@/schemas/company/offers";
 
 export async function createOffer(
   params: CreateOfferParams
@@ -89,6 +93,55 @@ export async function getOffers(
       data: response.data as PaginatedResponse<Offer>,
       links: response.links,
       meta: response.meta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateOffer(
+  params: UpdateOfferParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateOfferSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const {
+    offerId,
+    warehouseProductId,
+    discount,
+    description,
+    active,
+    minQuantity,
+    totalQuantity,
+    startDate,
+    endDate,
+  } = validationResult.params!;
+
+  const payload: UpdateOfferPayload = {
+    warehouse_product_id: warehouseProductId,
+    discount,
+    description,
+    active,
+    min_quantity: minQuantity,
+    total_quantity: totalQuantity,
+    start_date: startDate,
+    end_date: endDate,
+  };
+
+  try {
+    const response = await api.company.offers.update({ offerId, payload });
+    if (!response || response.result !== "Success") {
+      throw new Error("فشل تحديث بيانات العرض");
+    }
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تحديث بيانات العرض بنجاح" },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
