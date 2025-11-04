@@ -25,18 +25,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AddNewRoleSchema, UpdateRoleSchema } from "@/schemas/company/role";
 import { toast } from "sonner";
 import { ROUTES_COMPANY } from "@/constants/routes";
+import { getPermissions } from "@/lib/actions/company/permissions.action";
+import PermissionsSelector from "./components/PermissionsSelector";
 
 export default function RolesManagementPage() {
   const router = useRouter();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
-  const [roleToUpdate, setRoleToUpdate] = useState<Role | null>(null);
+  const [roleToDelete, setRoleToDelete] = useState<CompanyRole | null>(null);
+  const [roleToUpdate, setRoleToUpdate] = useState<CompanyRole | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const queryClient = useQueryClient();
 
+  //roles
   const { data: rolesData } = useQuery({
     queryKey: ["roles", currentPage],
     queryFn: () =>
@@ -50,6 +53,14 @@ export default function RolesManagementPage() {
   const roles = rolesData?.data || [];
   console.log(roles);
 
+  //permissions
+  const { data: permissionsData } = useQuery({
+    queryKey: ["permissions"],
+    queryFn: getPermissions,
+  });
+  const permissions = permissionsData?.data || [];
+  console.log(permissions);
+
   const {
     register,
     handleSubmit,
@@ -57,7 +68,12 @@ export default function RolesManagementPage() {
     reset,
   } = useForm<roleCreateInput>({
     resolver: zodResolver(AddNewRoleSchema),
+    defaultValues: {
+      name: "",
+      permissions: []
+    }
   });
+
 
   //   الاضافه
   const mutation = useMutation({
@@ -190,6 +206,12 @@ export default function RolesManagementPage() {
                 )}
               </div>
 
+              <PermissionsSelector 
+                permissions={permissions}
+                register={register}
+                errors={errors}
+               />
+
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => {
@@ -215,7 +237,7 @@ export default function RolesManagementPage() {
 
       {/* قائمة الأدوار */}
       <div className="grid gap-4">
-        {(Array.isArray(roles) ? roles : []).map((role: Role) => (
+        {(Array.isArray(roles) ? roles : []).map((role: CompanyRole) => (
           <div
             key={role.id}
             className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6"
@@ -231,7 +253,7 @@ export default function RolesManagementPage() {
                     {role.name}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Guard: {role.guardName}
+                    Guard: {role.guard_name}
                   </p>
                 </div>
               </div>
