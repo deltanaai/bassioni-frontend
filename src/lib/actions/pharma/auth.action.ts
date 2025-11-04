@@ -35,3 +35,24 @@ export async function loginPharmacy(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function logoutPharmacy(): Promise<
+  ActionResponse<{ message: string }>
+> {
+  const validationResult = await action({
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  try {
+    const response = await api.pharma.auth.logout();
+
+    return {
+      success: true,
+      data: { message: response.message ?? "تم تسجيل الخروج بنجاح" },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

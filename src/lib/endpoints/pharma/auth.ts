@@ -7,4 +7,10 @@ export const pharmaAuthEndpoints = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
+  logout: () =>
+    fetchHandler(`${API_URL}pharmacist/logout`, {
+      method: "POST",
+      auth: true,
+    }),
 };
