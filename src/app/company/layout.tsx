@@ -37,6 +37,7 @@ import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_COMPANY.DASHBOARD, Icon: Home },
+  { name: "عروضي", href: ROUTES_COMPANY.OFFERS, Icon: Percent },
   {
     name: "طلبات الصيدليات",
     href: ROUTES_COMPANY.DAY_ORDERS,

@@ -50,5 +50,6 @@ export const ROUTES_COMPANY = {
   ADD_PHARMACY: "/company/add-pharmacy",
   SYSTEM: "/company/system",
   WAREHOUSES: "/company/warehouse",
-  ADMINISTRATION: '/company/administration'
+  ADMINISTRATION: '/company/administration',
+  OFFERS: '/company/offers'
 };
