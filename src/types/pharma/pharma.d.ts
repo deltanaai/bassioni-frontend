@@ -21,6 +21,18 @@ interface Pharmacist {
   createdAt: string;
   updatedAt: string;
 }
+
+interface PharmacyCompany {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  deleted: boolean;
+}
+
 interface CompanyProduct {
   id: number;
   name: string;

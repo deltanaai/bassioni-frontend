@@ -1,10 +1,6 @@
 import z from "zod";
 
-export const ShowMasterProductDetailsSchema = z.object({
-  id: z.number("معرف المنتج مطلوب").int().positive(),
-});
-
-export const GetMasterProductsSchema = z.object({
+export const GetPharmaCompaniesSchema = z.object({
   filters: z
     .record(
       z.string(),

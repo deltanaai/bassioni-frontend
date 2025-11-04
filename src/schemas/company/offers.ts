@@ -37,6 +37,7 @@ export const GetOffersSchema = z.object({
     .optional(),
   orderBy: z.string().optional(),
   orderByDirection: z.enum(["asc", "desc"]).optional(),
+  page: z.number().optional(),
   perPage: z.number().optional(),
   paginate: z.boolean().optional(),
   deleted: z.boolean().optional(),

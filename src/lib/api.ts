@@ -12,6 +12,7 @@ import { rolesEndpoints } from "./endpoints/company/roles";
 import { warehousesEndpoints } from "./endpoints/company/warehouses";
 import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
 import { cartEndpoints } from "./endpoints/pharma/cart";
+import { pharmaCompaniesEndpoints } from "./endpoints/pharma/companies";
 import { companyProductsEndpoints } from "./endpoints/pharma/companyProducts";
 // import { orderEndpoints } from "./endpoints/pharma/orders";
 
@@ -35,6 +36,7 @@ export const api = {
     auth: pharmaAuthEndpoints,
     companyProducts: companyProductsEndpoints,
     cart: cartEndpoints,
+    pharmaCompanies: pharmaCompaniesEndpoints,
     // orders: orderEndpoints,
   },
 };
