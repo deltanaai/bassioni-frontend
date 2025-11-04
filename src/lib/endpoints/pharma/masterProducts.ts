@@ -7,4 +7,11 @@ export const pharmaMasterProductsEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  getAll: ({ payload }: { payload?: PaginatedSearchPayload }) =>
+    fetchHandler(`${API_URL}company/dashboard/master-products/index`, {
+      method: "POST",
+      auth: true,
+      body: payload ? JSON.stringify(payload) : undefined,
+    }),
 };
