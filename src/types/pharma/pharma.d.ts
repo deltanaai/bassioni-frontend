@@ -54,6 +54,22 @@ interface CompanyProduct {
   createdAt?: string;
 }
 
+interface CompanyOffer {
+  id: number;
+  company_id: number;
+  warehouse_product_id: number;
+  discount: string;
+  min_quantity: number;
+  total_quantity: number;
+  description: string | null;
+  start_date: string;
+  end_date: string;
+  active: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 interface AddedCartItem {
   id: number;
   user_id: number | null;
