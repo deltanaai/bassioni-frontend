@@ -65,3 +65,7 @@ interface UpdateOrderStatusResponse {
   message: string;
   data: OrderDetails;
 }
+
+interface ShowPharmaCompanyDetailsParams {
+  id: number;
+}

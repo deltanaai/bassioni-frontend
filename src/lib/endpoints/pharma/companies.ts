@@ -8,4 +8,10 @@ export const pharmaCompaniesEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  getCompanyDetails: ({ id }: ShowPharmaCompanyDetailsParams) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/companies/${id}`, {
+      method: "GET",
+      auth: true,
+    }),
 };

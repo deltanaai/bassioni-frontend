@@ -14,3 +14,7 @@ export const GetPharmaCompaniesSchema = z.object({
   paginate: z.boolean().optional(),
   deleted: z.boolean().optional(),
 });
+
+export const ShowPharmaCompanyDetailsSchema = z.object({
+  id: z.number("معرف الشركة مطلوب").int().positive(),
+});

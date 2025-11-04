@@ -54,3 +54,28 @@ export async function getPharmaCompanies(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function showPharmaCompanyDetails(
+  params: ShowPharmaCompanyDetailsParams
+): Promise<ActionResponse<PharmacyCompany>> {
+  const validationResult = await action({
+    params,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { id } = validationResult.params!;
+  try {
+    const response = await api.pharma.pharmaCompanies.getCompanyDetails({ id });
+    if (!response || response.result !== "Success") {
+      throw new Error("فشل جلب بيانات شركة الصيدلة");
+    }
+    return {
+      success: true,
+      data: response.data as PharmacyCompany,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
