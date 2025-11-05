@@ -15,9 +15,23 @@ export const companyOffersEndpoints = {
     }),
 
   requestToOffer: ({ payload }: { payload: RequestToCompanyOfferPayload }) =>
-    fetchHandler(`${API_URL}pharmacy/dashboard/response-company-offer`, {
+    fetchHandler(`${API_URL}pharmacy/dashboard/response-company-offers`, {
       method: "POST",
       body: JSON.stringify(payload),
       auth: true,
     }),
+
+  showRequestCompanyOffers: ({
+    payload,
+  }: {
+    payload?: PaginatedSearchPayload;
+  }) =>
+    fetchHandler(
+      `${API_URL}/pharmacy/dashboard/response-company-offers/index`,
+      {
+        method: "POST",
+        body: payload ? JSON.stringify(payload) : undefined,
+        auth: true,
+      }
+    ),
 };

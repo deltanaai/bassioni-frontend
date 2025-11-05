@@ -28,3 +28,18 @@ export const RequestToCompanyOfferSchema = z.object({
     .positive()
     .min(1, "الكمية المطلوبة يجب أن تكون على الأقل 1"),
 });
+
+export const ShowRequestedCompanyOffersSchema = z.object({
+  filters: z
+    .record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean(), z.null()])
+    )
+    .optional(),
+  orderBy: z.string().optional(),
+  orderByDirection: z.enum(["asc", "desc"]).optional(),
+  perPage: z.number().optional(),
+  page: z.number().optional(),
+  paginate: z.boolean().optional(),
+  deleted: z.boolean().optional(),
+});

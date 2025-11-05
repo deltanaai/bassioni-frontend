@@ -7,6 +7,7 @@ import {
   GetCompanyOffersSchema,
   RequestToCompanyOfferSchema,
   ShowCompanyOfferDetailsSchema,
+  ShowRequestedCompanyOffersSchema,
 } from "@/schemas/pharma/companyOffers";
 
 export async function getCompanyOffers(
@@ -115,6 +116,57 @@ export async function requestCompanyOffer(
       success: true,
       data: response.data as CompanyOfferResponse,
       message: "تم طلب العرض بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function showRequestedCompanyOffers(
+  params: PaginatedSearchParams
+): Promise<ActionResponse<PaginatedResponse<CompanyOfferResponse>>> {
+  const validationResult = await action({
+    params,
+    schema: ShowRequestedCompanyOffersSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const {
+    filters,
+    orderBy,
+    orderByDirection,
+    perPage,
+    paginate,
+    deleted,
+    page,
+  } = validationResult.params!;
+
+  const payload: PaginatedSearchPayload = {
+    filters,
+    page,
+    order_by: orderBy,
+    order_by_direction: orderByDirection,
+    per_page: perPage,
+    paginate,
+    deleted,
+  };
+
+  try {
+    const response = await api.pharma.companyOffers.showRequestCompanyOffers({
+      payload,
+    });
+    if (!response) {
+      throw new Error("فشل جلب بيانات طلبات عروض الشركات");
+    }
+    return {
+      success: true,
+      data: response.data as PaginatedResponse<CompanyOfferResponse>,
+      links: response.links,
+      meta: response.meta,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

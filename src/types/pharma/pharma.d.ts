@@ -70,6 +70,20 @@ interface CompanyOffer {
   updated_at: string;
 }
 
+interface ResponseCompanyOffer {
+  id: number;
+  company_offer_id: number;
+  pharmacy_id: number;
+  total_price: string;
+  item_price: string;
+  quantity: number;
+  status: string;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  offer: OfferDetails;
+}
+
 interface AddedCartItem {
   id: number;
   user_id: number | null;
