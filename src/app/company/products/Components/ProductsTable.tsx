@@ -1,10 +1,9 @@
-import { FiEye, FiShoppingCart, FiDollarSign, FiPackage } from "react-icons/fi";
+import { FiEye, FiDollarSign, FiPackage } from "react-icons/fi";
 import { ProductTableProps, Product } from "../types/product.types";
 
 export default function ProductTable({
   products,
   onViewDetails,
-  onAddToCart,
 }: ProductTableProps) {
   // إذا لم توجد بيانات أو كانت المصفوفة فارغة
   if (!products || !Array.isArray(products) || products.length === 0) {
@@ -55,9 +54,6 @@ export default function ProductTable({
               </th>
               <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider border-l border-gray-200">
                 الإجراءات
-              </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-emerald-700 uppercase tracking-wider">
-                السلة
               </th>
             </tr>
           </thead>
@@ -113,15 +109,6 @@ export default function ProductTable({
                       التفاصيل
                     </button>
                   </div>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <button
-                    onClick={() => onAddToCart(product)}
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
-                  >
-                    <FiShoppingCart className="w-4 h-4" />
-                    أضف للسلة
-                  </button>
                 </td>
               </tr>
             ))}

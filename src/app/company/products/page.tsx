@@ -4,18 +4,14 @@ import { FiPackage } from "react-icons/fi";
 import ProductFilters from "./Components/ProductsFilter";
 import ProductTable from "./Components/ProductsTable";
 import ProductDetailsModal from "./Components/ProductDetailModal";
-import AddToCartModal from "./Components/AddToCartModal";
 import { Product } from "./types/product.types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addToCart } from "@/lib/actions/pharma/cart.action";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
-  const queryClient = useQueryClient();
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ["masterProducts"],
@@ -44,40 +40,8 @@ export default function ProductsPage() {
 
   // Modal states
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedProductForCart, setSelectedProductForCart] =
-    useState<Product | null>(null);
-  const [quantity, setQuantity] = useState(1);
+
   const [expandedWarehouses, setExpandedWarehouses] = useState<number[]>([]);
-
-  const pharmacyId = 1;
-
-  // للسلة
-  const addCartMutation = useMutation({
-    mutationFn: addToCart,
-    onSuccess: async (res) => {
-      if (!res.success) {
-        toast.error(res.error?.message ?? "حدث خطأ أثناء اضافة المنتج للسلة");
-        return;
-      }
-      await queryClient.invalidateQueries({ queryKey: ["cart"] });
-      toast.success("تمت الإضافة إلى السلة بنجاح");
-      handleCloseCartModal();
-    },
-    onError: () => {
-      toast.error("حدث خطأ أثناء الإضافة");
-    },
-  });
-
-  // دالة الإضافة إلى السلة
-  const handleAddToCart = () => {
-    if (selectedProductForCart) {
-      addCartMutation.mutate({
-        pharmacyId: pharmacyId,
-        productId: selectedProductForCart.id,
-        quantity: quantity,
-      });
-    }
-  };
 
   // 3. فلترة حسب البحث والفئة والبراند
   const filteredProducts = products.filter((product: Product) => {
@@ -115,25 +79,11 @@ export default function ProductsPage() {
     setExpandedWarehouses([]);
   };
 
-  const openCartModal = (product: Product) => {
-    setSelectedProductForCart(product);
-    setQuantity(1);
-  };
-
-  const handleCloseCartModal = () => {
-    setSelectedProductForCart(null);
-    setQuantity(1);
-  };
-
   const toggleWarehouse = (index: number) => {
     setExpandedWarehouses((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
-
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
-  const decreaseQuantity = () =>
-    quantity > 1 && setQuantity((prev) => prev - 1);
 
   if (isLoading) {
     return (
@@ -182,7 +132,6 @@ export default function ProductsPage() {
       <ProductTable
         products={filteredProducts}
         onViewDetails={openProductDetails}
-        onAddToCart={openCartModal}
       />
 
       {/* 6. المودالات - هتشتغل لما نفتحها */}
@@ -193,17 +142,6 @@ export default function ProductsPage() {
         productName={selectedProduct?.name || ""}
         expandedWarehouses={expandedWarehouses}
         onToggleWarehouse={toggleWarehouse}
-      />
-
-      <AddToCartModal
-        isOpen={!!selectedProductForCart}
-        onClose={handleCloseCartModal}
-        product={selectedProductForCart}
-        quantity={quantity}
-        onIncreaseQuantity={increaseQuantity}
-        onDecreaseQuantity={decreaseQuantity}
-        onAddToCart={handleAddToCart}
-        isLoading={addCartMutation.isPending}
       />
     </div>
   );

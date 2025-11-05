@@ -1,4 +1,3 @@
-// types/product.types.ts
 export interface Product {
   id: number;
   name: string;
@@ -39,22 +38,6 @@ export interface WarehouseProduct {
   totalQuantity: number;
 }
 
-export interface MasterProduct {
-  id: number;
-  name: string;
-  description: string;
-  brand: string;
-  category: {
-    id: number;
-    name: string;
-  };
-  price: number;
-  imageUrl: string | null;
-  active: boolean;
-  rating: number;
-  rating_count: number;
-}
-
 export interface ProductDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -62,7 +45,6 @@ export interface ProductDetailsModalProps {
   productName: string;
   expandedWarehouses: number[];
   onToggleWarehouse: (index: number) => void;
-  // تم إزالة warehouses تماماً
 }
 
 export interface AddToCartModalProps {
@@ -97,5 +79,4 @@ export interface ProductFiltersProps {
 export interface ProductTableProps {
   products: Product[];
   onViewDetails: (product: Product) => void;
-  onAddToCart: (product: Product) => void;
 }
