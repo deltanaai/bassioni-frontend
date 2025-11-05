@@ -13,4 +13,11 @@ export const companyOffersEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  requestToOffer: ({ payload }: { payload: RequestToCompanyOfferPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/response-company-offer`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      auth: true,
+    }),
 };

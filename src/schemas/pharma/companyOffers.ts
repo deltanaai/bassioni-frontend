@@ -18,3 +18,13 @@ export const GetCompanyOffersSchema = z.object({
 export const ShowCompanyOfferDetailsSchema = z.object({
   offerId: z.number().int().positive().min(1, "معرف العرض مطلوب"),
 });
+
+export const RequestToCompanyOfferSchema = z.object({
+  companyOfferId: z.number().int().positive().min(1, "معرف العرض مطلوب"),
+  pharmacyId: z.number().int().positive().min(1, "معرف الصيدلية مطلوب"),
+  quantity: z
+    .number()
+    .int()
+    .positive()
+    .min(1, "الكمية المطلوبة يجب أن تكون على الأقل 1"),
+});

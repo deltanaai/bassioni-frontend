@@ -59,3 +59,9 @@ interface UpdateOrderStatusPayload {
   status: "approved" | "rejected";
   reason?: string;
 }
+
+interface RequestToCompanyOfferPayload {
+  company_offer_id: number;
+  pharmacy_id: number;
+  quantity: number;
+}

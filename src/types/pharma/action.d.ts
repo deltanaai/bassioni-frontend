@@ -78,3 +78,21 @@ interface ShowMasterProductDetailsParams {
 interface ShowCompanyOfferDetailsParams {
   offerId: number;
 }
+
+interface RequestToCompanyOfferParams {
+  companyOfferId: number;
+  pharmacyId: number;
+  quantity: number;
+}
+
+interface CompanyOfferResponse {
+  id: number;
+  company_offer_id: number;
+  pharmacy_id: number;
+  quantity: string;
+  item_price: string;
+  total_price: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
