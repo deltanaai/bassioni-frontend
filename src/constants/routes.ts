@@ -30,7 +30,7 @@ export const ROUTES_PHARMA = {
   OFFERS:"/Pharma/offers",
   COUPONS:"/Pharma/coupons",
   DISCOUNT:"/Pharma/discount",
-  CART: "/Pharma/cart"
+  CART: "/Pharma/cart",
 };
 
 export const ROUTES_COMPANY = {

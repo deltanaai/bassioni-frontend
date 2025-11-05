@@ -226,12 +226,12 @@ export default function DashboardLayout({
               المخازن
             </CompanyHeaderNavLink>
 
-            <CompanyHeaderNavLink
+            {/* <CompanyHeaderNavLink
               href={ROUTES_COMPANY.ADD_PHARMACY}
               icon={<Store className="h-5 w-5" />}
             >
               الصيدليات
-            </CompanyHeaderNavLink>
+            </CompanyHeaderNavLink> */}
 
             <CompanyHeaderNavLink
               href={ROUTES_COMPANY.ADD_EMPLOYEE}

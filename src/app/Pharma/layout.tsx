@@ -39,7 +39,7 @@ import { queryClient } from "@/lib/queryClient";
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_PHARMA.DASHBOARD, Icon: Home },
   { name: "طلبات اليوم", href: ROUTES_PHARMA.DAY_ORDERS, Icon: ClipboardList },
-  { name: "عروض الشركات", href: ROUTES_PHARMA.SENT_ORDERS, Icon: Send },
+  { name: "عروض الشركات", href: ROUTES_PHARMA.OFFERS, Icon: Tag },
   { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
   { name: "الفواتير", href: ROUTES_PHARMA.INVOICE, Icon: Archive },
   { name: "السلة", href: ROUTES_PHARMA.CART, Icon: ShoppingBasketIcon },
