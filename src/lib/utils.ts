@@ -31,3 +31,11 @@ export function normalizeExpiryDateMaybe(date: string): string {
   // If parsing fails, return original (backend may handle it)
   return trimmed;
 }
+
+// converts to d-m-Y format
+export function formatDateForBackend(date: Date): string {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}

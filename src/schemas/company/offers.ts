@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { formatDateForBackend } from "@/lib/utils";
+
 export const CreateOfferSchema = z.object({
   warehouseProductId: z.number("معرف منتج المستودع مطلوب").int().positive(),
   discount: z
@@ -21,11 +23,11 @@ export const CreateOfferSchema = z.object({
     .max(500, "الوصف لا يمكن أن يتجاوز 500 حرف")
     .optional(),
   startDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)), "تاريخ البدء غير صالح"),
+    .date("تاريخ البدء مطلوب")
+    .transform((date) => formatDateForBackend(date)),
   endDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)), "تاريخ الانتهاء غير صالح"),
+    .date("تاريخ الانتهاء مطلوب")
+    .transform((date) => formatDateForBackend(date)),
 });
 
 export const GetOffersSchema = z.object({
@@ -65,16 +67,11 @@ export const UpdateOfferSchema = z.object({
     .max(500, "الوصف لا يمكن أن يتجاوز 500 حرف")
     .optional(),
   startDate: z
-    .string()
-    .optional()
-    .refine((val) => !val || !isNaN(Date.parse(val)), "تاريخ البدء غير صالح"),
+    .date("تاريخ البدء مطلوب")
+    .transform((date) => formatDateForBackend(date)),
   endDate: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || !isNaN(Date.parse(val)),
-      "تاريخ الانتهاء غير صالح"
-    ),
+    .date("تاريخ الانتهاء مطلوب")
+    .transform((date) => formatDateForBackend(date)),
 });
 
 export const DeleteOfferSchema = z.object({
