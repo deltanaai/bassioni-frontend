@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
+import logger from "@/lib/logger";
 import { GetPharmaCompaniesSchema } from "@/schemas/pharma/companies";
 
 export async function getPharmaCompanies(
@@ -40,6 +41,9 @@ export async function getPharmaCompanies(
 
   try {
     const response = await api.pharma.pharmaCompanies.getCompanies({ payload });
+    logger.info( `companies data: ${response.data}` );
+    logger.info( `companies payload: ${payload}` );
+    console.log(payload);
 
     if (!response) {
       throw new Error("فشل جلب بيانات شركات الصيدلة");
