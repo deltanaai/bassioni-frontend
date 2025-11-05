@@ -7,10 +7,10 @@ import { setSession } from "@/lib/session";
 import { PharmacyLoginSchema } from "@/schemas/pharma/auth";
 
 export async function loginPharmacy(
-  params: PharmacyLoginParams
+  credintials: PharmacyLoginParams
 ): Promise<ActionResponse<Pharmacist>> {
   const validationResult = await action({
-    params,
+    params: credintials,
     schema: PharmacyLoginSchema,
   });
 

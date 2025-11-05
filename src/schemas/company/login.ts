@@ -16,8 +16,6 @@ export const loginSchema = z.object({
   password: z.string().trim().nonempty(messages.requiredPassword),
 });
 
-export type LoginSchema = z.infer<typeof loginSchema>;
-
 export const userSchema = z.object({
   id: z.number().int(),
   name: z.string().trim(),
