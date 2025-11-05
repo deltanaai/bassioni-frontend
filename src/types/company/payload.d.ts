@@ -94,8 +94,8 @@ interface DeleteRolePayload {
 
 interface AddWarehousePayload {
   name: string;
-  code: string;
-  location_id: number;
+  // code: string;
+  location: string;
   active: boolean;
 }
 

@@ -112,8 +112,8 @@ interface DeleteRoleParams {
 
 interface AddWarehouseParams {
   name: string;
-  code: string;
-  locationId: number;
+  // code: string;
+  location: string;
   active: boolean;
 }
 

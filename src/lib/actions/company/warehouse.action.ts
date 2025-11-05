@@ -67,11 +67,11 @@ export async function addNewWarehouse(
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  const { name, code, locationId, active } = validationResult.params!;
+  const { name, location, active } = validationResult.params!;
   const payload: AddWarehousePayload = {
     name,
-    code,
-    location_id: locationId,
+    // code,
+    location,
     active,
   };
   try {

@@ -14,17 +14,14 @@ export const AddWarehouseSchema = z.object({
     .string()
     .min(1, "الرجاء ادخال اسم المخزن")
     .max(255, "اسم المخزن طويل جدا"),
-  code: z
-    .string()
-    .min(1, "الرجاء ادخال كود المخزن")
-    .max(100, "كود المخزن طويل جدا"),
-  locationId: z
-    .number("الرجاء اختيار الموقع")
-    .int()
-    .positive()
-    .refine((val) => val > 0, {
-      message: "الرجاء اختيار الموقع",
-    }),
+  // code: z
+  //   .string()
+  //   .min(1, "الرجاء ادخال كود المخزن")
+  //   .max(100, "كود المخزن طويل جدا"),
+  location: z
+    .string("الرجاء ادخال موقع المخزن")
+    .min(1, "الرجاء ادخال موقع المخزن")
+    .max(255, "موقع المخزن طويل جدا"),
   active: z.boolean(),
 });
 
