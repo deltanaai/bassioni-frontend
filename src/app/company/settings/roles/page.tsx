@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Users,
   Plus,
@@ -12,20 +12,22 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { ROUTES_COMPANY } from "@/constants/routes";
+import { getPermissions } from "@/lib/actions/company/permissions.action";
 import {
   addNewRole,
   deleteRoles,
   getAllRoles,
   updateRole,
 } from "@/lib/actions/company/role.action";
-import { useForm } from "react-hook-form";
-import { roleCreateInput, UpdateRoleInput } from "@/types/company/uiProps";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AddNewRoleSchema, UpdateRoleSchema } from "@/schemas/company/role";
-import { toast } from "sonner";
-import { ROUTES_COMPANY } from "@/constants/routes";
-import { getPermissions } from "@/lib/actions/company/permissions.action";
+import { roleCreateInput, UpdateRoleInput } from "@/types/company/uiProps";
+
 import PermissionsSelector from "./components/PermissionsSelector";
 
 export default function RolesManagementPage() {
@@ -39,7 +41,7 @@ export default function RolesManagementPage() {
 
   const queryClient = useQueryClient();
 
-  //roles
+  // roles
   const { data: rolesData } = useQuery({
     queryKey: ["roles", currentPage],
     queryFn: () =>
@@ -51,29 +53,29 @@ export default function RolesManagementPage() {
       }),
   });
   const roles = rolesData?.data || [];
-  console.log(roles);
+  // console.log(roles);
 
-  //permissions
+  // permissions
   const { data: permissionsData } = useQuery({
     queryKey: ["permissions"],
     queryFn: getPermissions,
   });
   const permissions = permissionsData?.data || [];
-  console.log(permissions);
+  // console.log("PERMISSIONS",permissions);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    getValues
   } = useForm<roleCreateInput>({
     resolver: zodResolver(AddNewRoleSchema),
     defaultValues: {
       name: "",
-      permissions: []
-    }
+      permissions: [],
+    },
   });
-
 
   //   الاضافه
   const mutation = useMutation({
@@ -93,6 +95,8 @@ export default function RolesManagementPage() {
   });
 
   const onSubmit = (data: roleCreateInput) => {
+    console.log("DATA: ", data);
+
     mutation.mutate(data);
   };
 
@@ -117,7 +121,7 @@ export default function RolesManagementPage() {
     });
   };
 
-  //التعديل
+  // التعديل
   const {
     register: registerEdit,
     handleSubmit: handleEditSubmit,
@@ -136,7 +140,7 @@ export default function RolesManagementPage() {
     }
   }, [showEditModal, roleToUpdate, resetEdit]);
 
-  //التعديل
+  // التعديل
   const editMutation = useMutation({
     mutationFn: updateRole,
     onSuccess: async (res) => {
@@ -154,16 +158,22 @@ export default function RolesManagementPage() {
     editMutation.mutate(data);
   };
 
+  useEffect(() => {
+    console.log("ERRRROOORRS",errors);
+    console.log("VALUES", getValues());
+    
+  }, [errors, getValues]);
+
   return (
-    <div className="p-6 space-y-6 bg-gray-50 text-gray-800 min-h-screen">
+    <div className="min-h-screen space-y-6 bg-gray-50 p-6 text-gray-800">
       {/* الهيدر */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(ROUTES_COMPANY.SETTINGS)}
-            className="p-2 hover:bg-gray-200 rounded-lg transition"
+            className="rounded-lg p-2 transition hover:bg-gray-200"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">إدارة الأدوار</h1>
@@ -173,51 +183,49 @@ export default function RolesManagementPage() {
 
         <button
           onClick={() => setShowAddForm(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="h-5 w-5" />
           إضافة دور جديد
         </button>
       </div>
 
       {/* نموذج إضافة دور جديد */}
       {showAddForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-indigo-600 mb-4">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
+          <h3 className="mb-4 text-lg font-semibold text-indigo-600">
             إضافة دور جديد
           </h3>
 
           <div className="space-y-4">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   اسم الدور
                 </label>
                 <input
                   type="text"
                   placeholder="أدخل اسم الدور"
                   {...register("name")}
-                  className="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 transition focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                 />
                 {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {errors.name.message}
                   </p>
                 )}
               </div>
 
-              <PermissionsSelector 
+              <PermissionsSelector
                 permissions={permissions}
                 register={register}
                 errors={errors}
-               />
+              />
 
               <div className="flex gap-2 pt-2">
                 <button
-                  onClick={() => {
-                    setShowAddForm(true);
-                  }}
-                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition"
+                  type="submit"
+                  className="rounded-lg bg-indigo-600 px-6 py-2 text-white transition hover:bg-indigo-700 disabled:bg-gray-400"
                 >
                   {mutation.isPending ? "جار الاضافه" : "اضافه "}
                 </button>
@@ -225,7 +233,7 @@ export default function RolesManagementPage() {
                   onClick={() => {
                     setShowAddForm(false);
                   }}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition"
+                  className="rounded-lg bg-gray-500 px-6 py-2 text-white transition hover:bg-gray-600"
                 >
                   إلغاء
                 </button>
@@ -240,12 +248,12 @@ export default function RolesManagementPage() {
         {(Array.isArray(roles) ? roles : []).map((role: CompanyRole) => (
           <div
             key={role.id}
-            className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6"
+            className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-100 rounded-lg">
-                  <Users className="w-6 h-6 text-indigo-600" />
+                <div className="rounded-lg bg-indigo-100 p-3">
+                  <Users className="h-6 w-6 text-indigo-600" />
                 </div>
 
                 <div>
@@ -259,13 +267,13 @@ export default function RolesManagementPage() {
               </div>
 
               <div className="flex">
-                <button className=" p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                <button className=" rounded-lg p-2 text-blue-600 transition hover:bg-blue-50">
                   <Edit
                     onClick={() => {
                       setRoleToUpdate(role);
                       setShowEditModal(true);
                     }}
-                    className="w-5 h-5"
+                    className="h-5 w-5"
                   />
                 </button>
                 <button
@@ -273,9 +281,9 @@ export default function RolesManagementPage() {
                     setRoleToDelete(role);
                     setShowDeleteModal(true);
                   }}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                  className="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
                 >
-                  <Trash2 className="w-5 h-5" />
+                  <Trash2 className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -285,23 +293,23 @@ export default function RolesManagementPage() {
 
       {/* رسالة عندما لا توجد أدوار */}
       {Array.isArray(roles) && roles.length === 0 && (
-        <div className="text-center py-12">
-          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="py-12 text-center">
+          <Users className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+          <h3 className="mb-2 text-lg font-medium text-gray-900">
             لا توجد أدوار
           </h3>
-          <p className="text-gray-600 mb-4">ابدأ بإضافة أول دور في النظام</p>
+          <p className="mb-4 text-gray-600">ابدأ بإضافة أول دور في النظام</p>
         </div>
       )}
 
       {/* Pagination بس لما يكون فيه اكتر من صفحة */}
       {rolesData?.meta && rolesData.meta.last_page > 1 && (
-        <div className="flex justify-center items-center space-x-4 mt-6">
+        <div className="mt-6 flex items-center justify-center space-x-4">
           {/* السهم اليسار */}
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
             disabled={currentPage === 1}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 transition-all hover:bg-indigo-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronRight size={16} />
           </button>
@@ -315,10 +323,10 @@ export default function RolesManagementPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-all ${
                   currentPage === page
                     ? "bg-indigo-600 text-white shadow-md"
-                    : "text-indigo-600 border border-indigo-600 hover:bg-indigo-100"
+                    : "border border-indigo-600 text-indigo-600 hover:bg-indigo-100"
                 }`}
               >
                 {page}
@@ -330,7 +338,7 @@ export default function RolesManagementPage() {
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === rolesData.meta.last_page}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 transition-all hover:bg-indigo-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronLeft size={16} />
           </button>
@@ -339,17 +347,17 @@ export default function RolesManagementPage() {
 
       {/* مودال التعديل */}
       {showEditModal && roleToUpdate && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-blue-600">
                 تعديل الدور
               </h3>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="p-1 hover:bg-gray-100 rounded-lg transition"
+                className="rounded-lg p-1 transition hover:bg-gray-100"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
             <form
@@ -357,18 +365,18 @@ export default function RolesManagementPage() {
               className="space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   اسم الدور
                 </label>
                 <input type="hidden" {...registerEdit("roleId")} />
                 <input
                   type="text"
                   {...registerEdit("name")}
-                  className="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 transition focus:ring-2 focus:ring-blue-400 focus:outline-none"
                   placeholder="أدخل اسم الدور"
                 />
                 {editErrors.name && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {editErrors.name.message}
                   </p>
                 )}
@@ -377,14 +385,14 @@ export default function RolesManagementPage() {
                 <button
                   type="submit"
                   disabled={editMutation.isPending}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition"
+                  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:bg-gray-400"
                 >
                   {editMutation.isPending ? "جاري التعديل..." : "حفظ التعديلات"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition"
+                  className="flex-1 rounded-lg bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600"
                 >
                   إلغاء
                 </button>
@@ -396,10 +404,10 @@ export default function RolesManagementPage() {
 
       {/* مودال تأكيد الحذف */}
       {showDeleteModal && roleToDelete && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
             {/* الهيدر */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900">
                 تأكيد الحذف
               </h3>
@@ -408,9 +416,9 @@ export default function RolesManagementPage() {
                   setRoleToDelete(null);
                   setShowDeleteModal(false);
                 }}
-                className="p-1 hover:bg-gray-100 rounded-lg transition"
+                className="rounded-lg p-1 transition hover:bg-gray-100"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
@@ -432,13 +440,13 @@ export default function RolesManagementPage() {
                 <button
                   onClick={handleDelete}
                   disabled={deleteMutation.isPending}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700"
                 >
                   {deleteMutation.isPending ? "جاري الحذف..." : "احذف الدور"}
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition"
+                  className="flex-1 rounded-lg bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600"
                 >
                   إلغاء
                 </button>

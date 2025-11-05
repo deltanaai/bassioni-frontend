@@ -13,9 +13,7 @@ import { api } from "../../api";
 import action from "../../handlers/action";
 import handleError from "../../handlers/error";
 
-export async function getAllWarehouses(
-  params: PaginatedSearchParams = {}
-): Promise<IndexedActionResponse<Warehouse>> {
+export async function getAllWarehouses(params: PaginatedSearchParams = {}) {
   const validationResult = await action({
     params,
     schema: GetAllWarehousesSchema,
@@ -47,9 +45,9 @@ export async function getAllWarehouses(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<Warehouse>,
-      links: response.links,
-      meta: response.meta,
+      data: response.data.data as Warehouse[],
+      links: response.data.links as PaginationLinks,
+      meta: response.data.meta as PaginationMeta,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

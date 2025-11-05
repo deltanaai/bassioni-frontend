@@ -26,26 +26,27 @@ export async function getPharmaCompanies(
     orderBy,
     orderByDirection,
     deleted,
-    filters,
+    filters = {},
   } = validationResult.params!;
 
-  const payload: PaginatedSearchPayload = {
+  const payload: PaginatedSearchParams = {
     paginate,
-    per_page: perPage,
+    perPage,
     page,
-    order_by: orderBy,
-    order_by_direction: orderByDirection,
+    orderBy,
+    orderByDirection,
     deleted,
     filters,
   };
 
   try {
     const response = await api.pharma.pharmaCompanies.getCompanies({ payload });
-    logger.info( `companies data: ${response.data}` );
-    logger.info( `companies payload: ${payload}` );
+    logger.info(`companies data: ${response.data}`);
+    logger.info(`companies payload: ${payload}`);
     console.log(payload);
+    console.log(response.data);
 
-    if (!response) {
+    if (!response || response.result !== "Success") {
       throw new Error("فشل جلب بيانات شركات الصيدلة");
     }
     return {

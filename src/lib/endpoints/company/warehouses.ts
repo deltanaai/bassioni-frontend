@@ -3,14 +3,17 @@ import { fetchHandler } from "@/lib/handlers/fetch";
 
 export const warehousesEndpoints = {
   getAll: ({ payload }: { payload: PaginatedSearchPayload }) =>
-    fetchHandler(`${API_URL}company/dashboard/warehouses/index`, {
-      method: "POST",
-      auth: true,
-      body:
-        payload && Object.keys(payload).length
-          ? JSON.stringify(payload)
-          : undefined,
-    }),
+    fetchHandler<PaginatedResponse<Warehouse[]>>(
+      `${API_URL}company/dashboard/warehouses/index`,
+      {
+        method: "POST",
+        auth: true,
+        body:
+          payload && Object.keys(payload).length
+            ? JSON.stringify(payload)
+            : undefined,
+      }
+    ),
 
   addWarehouse: ({ payload }: { payload: AddWarehousePayload }) =>
     fetchHandler(`${API_URL}company/dashboard/warehouses`, {

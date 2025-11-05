@@ -54,6 +54,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
     return labels[permissionName] || permissionName;
   };
 
+  // console.log("PERMISSIONS",permissions);
+  
+
   return (
     <div className="mb-6">
   <label className="block text-sm font-medium text-gray-700 my-4">
