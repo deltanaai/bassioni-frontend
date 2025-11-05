@@ -96,3 +96,7 @@ interface CompanyOfferResponse {
   created_at: string;
   updated_at: string;
 }
+
+interface RequestedOfferDetailsParams {
+  requestId: number;
+}

@@ -43,3 +43,7 @@ export const ShowRequestedCompanyOffersSchema = z.object({
   paginate: z.boolean().optional(),
   deleted: z.boolean().optional(),
 });
+
+export const RequestedOfferDetailsSchema = z.object({
+  requestId: z.number().int().positive().min(1, "معرف طلب العرض مطلوب"),
+});

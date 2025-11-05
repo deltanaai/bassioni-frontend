@@ -34,4 +34,15 @@ export const companyOffersEndpoints = {
         auth: true,
       }
     ),
+
+  getRequestedOfferDetails: ({
+    requestId,
+  }: RequestedOfferDetailsParams) =>
+    fetchHandler(
+      `${API_URL}/pharmacy/dashboard/response-company-offers/${requestId}`,
+      {
+        method: "GET",
+        auth: true,
+      }
+    ),
 };

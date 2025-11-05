@@ -5,6 +5,7 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
   GetCompanyOffersSchema,
+  RequestedOfferDetailsSchema,
   RequestToCompanyOfferSchema,
   ShowCompanyOfferDetailsSchema,
   ShowRequestedCompanyOffersSchema,
@@ -167,6 +168,36 @@ export async function showRequestedCompanyOffers(
       data: response.data as PaginatedResponse<CompanyOfferResponse>,
       links: response.links,
       meta: response.meta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getRequestedOfferDetails(
+  params: RequestedOfferDetailsParams
+): Promise<ActionResponse<CompanyOfferResponse>> {
+  const validationResult = await action({
+    params,
+    schema: RequestedOfferDetailsSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { requestId } = validationResult.params!;
+
+  try {
+    const response = await api.pharma.companyOffers.getRequestedOfferDetails({
+      requestId,
+    });
+    if (!response) {
+      throw new Error("فشل جلب تفاصيل طلب عرض الشركة");
+    }
+    return {
+      success: true,
+      data: response.data as CompanyOfferResponse,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
