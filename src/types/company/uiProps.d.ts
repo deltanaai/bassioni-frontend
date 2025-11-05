@@ -1,3 +1,4 @@
+import { loginSchema } from "@/schemas/company/login";
 import { AddWarehouseSchema } from "@/schemas/company/warehouse";
 import z from "zod";
 
@@ -15,4 +16,6 @@ export type WarehouseFormData = z.infer<typeof AddWarehouseSchema>
 
 
 export type ProductInput = z.infer<typeof AddProductSchema>
+
+
 

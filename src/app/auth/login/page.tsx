@@ -8,16 +8,20 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { ROUTES_COMPANY } from "@/constants/routes";
+import { ROUTES_COMPANY, ROUTES_PHARMA } from "@/constants/routes";
 import { signIn } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
-import { loginSchema } from "@/schemas/company/login";
-import { LoginFormData } from "@/types";
+import { LoginSchema, loginSchema } from "@/schemas/company/login";
+import { loginPharmacy } from "@/lib/actions/pharma/auth.action";
+import { PharmacyLoginSchema } from "@/schemas/pharma/auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isRememberMeChecked, setIsRememberMeChecked] = useState(false);
+  const [role, setRole] = useState<"company" | "pharmacy">("company");
+
+  const currentSchema = role === "company" ? loginSchema : PharmacyLoginSchema;
 
   const {
     register,
@@ -46,26 +50,35 @@ export default function LoginPage() {
   }, [setValue]);
 
   const mutation = useMutation({
-    mutationFn: signIn,
+    mutationFn: async (data) => {
+      if (role === "company") {
+        return await signIn(data);
+      } else if (role === "pharmacy") {
+        return await loginPharmacy(data);
+      }
+    },
     onSuccess: async (result) => {
       if (result.success && result.data) {
-        const email = getValues().email;
-        const password = getValues().password;
-        const rememberMeChecked = getValues().rememberMe;
+        //  حفظ remember me فقط لو شركة
+        if (role === "company") {
+          const email = getValues().email;
+          const password = getValues().password;
+          const rememberMeChecked = getValues().rememberMe;
 
-        if (rememberMeChecked && email) {
-          localStorage.setItem("rememberedEmail", email.toString());
-
-          if (password) {
-            localStorage.setItem("rememberedPassword", password.toString());
+          if (rememberMeChecked && email) {
+            localStorage.setItem("rememberedEmail", email.toString());
+            if (password)
+              localStorage.setItem("rememberedPassword", password.toString());
+          } else {
+            localStorage.removeItem("rememberedEmail");
+            localStorage.removeItem("rememberedPassword");
           }
-        } else {
-          localStorage.removeItem("rememberedEmail");
-          localStorage.removeItem("rememberedPassword");
         }
         toast.success("تم تسجيل الدخول بنجاح ✅");
         await queryClient.invalidateQueries({ queryKey: ["session"] });
-        router.push(ROUTES_COMPANY.DASHBOARD);
+        if (role === "company") router.push(ROUTES_COMPANY.DASHBOARD);
+        else if (role === "pharmacy") router.push(ROUTES_PHARMA.DASHBOARD);
+
         router.refresh();
       } else {
         toast.error(result.message || "بيانات الدخول غير صحيحة");
@@ -76,7 +89,7 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: LoginSchema) => {
     try {
       await mutation.mutateAsync(data);
     } catch (error) {
@@ -103,6 +116,33 @@ export default function LoginPage() {
             className="space-y-6"
             onSubmit={handleSubmit(onSubmit)}
           >
+            {/* بنختار نوع المستخدم */}
+            <div className="mb-6">
+              <p className="text-gray-300 mb-2 text-md text-center">
+                اختر نوع الحساب
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { type: "company", label: "شركة", icon: "🏢" },
+                  { type: "pharmacy", label: "صيدلية", icon: "💊" },
+                ].map(({ type, label, icon }) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setRole(type)}
+                    className={`flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                      role === type
+                        ? "bg-gradient-to-r from-blue-600 to-green-600 text-white border-transparent scale-105 shadow-lg"
+                        : "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600"
+                    }`}
+                  >
+                    <span className="text-lg">{icon}</span>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* البريد الإلكتروني */}
             <div>
               <label
@@ -156,22 +196,24 @@ export default function LoginPage() {
 
             {/* تذكرني */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  type="checkbox"
-                  {...register("rememberMe")}
-                  className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
-                  checked={isRememberMeChecked}
-                  onChange={(e) => setIsRememberMeChecked(e.target.checked)}
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="mr-2 block text-sm text-gray-300"
-                >
-                  تذكرني
-                </label>
-              </div>
+              {role === "company" && (
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    type="checkbox"
+                    {...register("rememberMe")}
+                    className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                    checked={isRememberMeChecked}
+                    onChange={(e) => setIsRememberMeChecked(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="remember-me"
+                    className="mr-2 block text-sm text-gray-300"
+                  >
+                    تذكرني
+                  </label>
+                </div>
+              )}
               <Link
                 href="/auth/Verify-email"
                 className="text-sm text-blue-400 transition-colors hover:text-blue-300"
