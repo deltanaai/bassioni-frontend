@@ -15,3 +15,6 @@ export const GetAllDemandedOffersSchema = z.object({
   deleted: z.boolean().optional(),
 });
 
+export const ShowDemandedOfferDetailsSchema = z.object({
+  offerId: z.number("معرف خاطئ للعرض").int().positive(),
+});

@@ -225,3 +225,7 @@ interface CompanyResponseOffers {
   updated_at: string;
   offer: Offer;
 }
+
+interface ShowDemandedOfferDetailsParams {
+  offerId: number;
+}
