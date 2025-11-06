@@ -177,3 +177,6 @@ interface UpdateDemandedOfferPayload {
 interface DeleteDemandedOffersPayload {
   items: number[];
 }
+interface RestoreDemandedOffersPayload {
+  items: number[];
+}

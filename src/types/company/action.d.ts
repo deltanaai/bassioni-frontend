@@ -243,3 +243,6 @@ interface UpdateDemandedOfferStatusParams {
 interface DeleteDemandedOffersParams {
   offerIds: number[];
 }
+interface RestoreDemandedOffersParams {
+  offerIds: number[];
+}

@@ -33,3 +33,12 @@ export const DeleteDemandedOffersSchema = z.object({
     )
     .nonempty("يجب تقديم معرف عرض واحد على الأقل"),
 });
+
+export const RestoreDemandedOffersSchema = z.object({
+  offerIds: z
+    .array(
+      z.number("معرف خاطئ للعرض").int().positive(),
+      "يجب أن تكون معرفات العروض مصفوفة من الأعداد"
+    )
+    .nonempty("يجب تقديم معرف عرض واحد على الأقل"),
+});

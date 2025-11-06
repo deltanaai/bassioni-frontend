@@ -6,6 +6,7 @@ import handleError from "@/lib/handlers/error";
 import {
   DeleteDemandedOffersSchema,
   GetAllDemandedOffersSchema,
+  RestoreDemandedOffersSchema,
   ShowDemandedOfferDetailsSchema,
   UpdateDemandedOfferStatusSchema,
 } from "@/schemas/company/responseOffers";
@@ -157,6 +158,38 @@ export async function deleteDemandedOffers(
     return {
       success: true,
       message: response.message ?? "تم حذف العروض بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function restoreDemandedOffers(
+  params: RestoreDemandedOffersParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: RestoreDemandedOffersSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { offerIds } = validationResult.params!;
+
+  const payload: RestoreDemandedOffersPayload = {
+    items: offerIds,
+  };
+  try {
+    const response = await api.company.responseToOffers.restoreDemandedOffers({
+      payload,
+    });
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم استعادة العروض بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
