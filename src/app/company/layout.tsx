@@ -40,7 +40,7 @@ const links = [
   { name: "عروضي", href: ROUTES_COMPANY.OFFERS, Icon: Percent },
   {
     name: "طلبات الصيدليات",
-    href: ROUTES_COMPANY.DAY_ORDERS,
+    href: ROUTES_COMPANY.PHARMACIES_ORDERS,
     Icon: ClipboardList,
   },
   { name: "عروض الصيدليات", href: ROUTES_COMPANY.SENT_ORDERS, Icon: Tag },

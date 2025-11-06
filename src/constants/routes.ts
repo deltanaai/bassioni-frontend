@@ -31,7 +31,7 @@ export const ROUTES_PHARMA = {
   COUPONS:"/Pharma/coupons",
   DISCOUNT:"/Pharma/discount",
   CART: "/Pharma/cart",
-  COMPANIESPRODUCTS: '/Pharma/companies-products'
+  COMPANIESPRODUCTS: '/Pharma/companies-products',
 };
 
 export const ROUTES_COMPANY = {
@@ -52,5 +52,7 @@ export const ROUTES_COMPANY = {
   SYSTEM: "/company/system",
   WAREHOUSES: "/company/warehouse",
   ADMINISTRATION: '/company/administration',
-  OFFERS: '/company/offers'
+  OFFERS: '/company/offers',
+  PHARMACIES_ORDERS: '/company/pharmacies-orders',
+
 };
