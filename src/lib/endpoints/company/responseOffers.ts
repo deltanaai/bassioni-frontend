@@ -30,4 +30,15 @@ export const responseOffersEndpoints = {
         body: JSON.stringify(payload),
       }
     ),
+
+  deleteDemandedOffers: ({
+    payload,
+  }: {
+    payload: DeleteDemandedOffersPayload;
+  }) =>
+    fetchHandler(`${API_URL}company/dashboard/response-offers/delete`, {
+      method: "DELETE",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };

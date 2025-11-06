@@ -24,3 +24,12 @@ export const UpdateDemandedOfferStatusSchema = z.object({
   status: z.enum(["pending", "approved", "rejected"], "حالة غير صالحة للعرض"),
   warehouseId: z.number("معرف خاطئ للمستودع").int().positive(),
 });
+
+export const DeleteDemandedOffersSchema = z.object({
+  offerIds: z
+    .array(
+      z.number("معرف خاطئ للعرض").int().positive(),
+      "يجب أن تكون معرفات العروض مصفوفة من الأعداد"
+    )
+    .nonempty("يجب تقديم معرف عرض واحد على الأقل"),
+});
