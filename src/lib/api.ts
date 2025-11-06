@@ -6,6 +6,7 @@ import { masterProductsEndpoints } from "./endpoints/company/masterProducts";
 import { offersEndpoints } from "./endpoints/company/offers";
 import { orderEndpoints } from "./endpoints/company/order";
 import { permissionsEndpoints } from "./endpoints/company/permissions";
+import { pharmacyOrdersEndpoints } from "./endpoints/company/pharmacyOrders";
 import { productsEndpoints } from "./endpoints/company/products";
 import { profileEndpoints } from "./endpoints/company/profile";
 import { responseOffersEndpoints } from "./endpoints/company/responseOffers";
@@ -35,6 +36,7 @@ export const api = {
     orders: orderEndpoints,
     offers: offersEndpoints,
     responseToOffers: responseOffersEndpoints,
+    pharmacyOrders: pharmacyOrdersEndpoints,
   },
   pharma: {
     auth: pharmaAuthEndpoints,

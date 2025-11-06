@@ -160,6 +160,35 @@ interface CompanyOrder {
   items: OrderItem[];
 }
 
+interface PharmacyOrderItem {
+  id: number;
+  product: OrderProduct;
+  quantity: number;
+  price: string;
+  total: string | null;
+}
+
+interface PharmacyOrder {
+  order_id: number;
+  status: string;
+  payment_method: string;
+  total_price: string;
+  delivery_fee: string;
+  created_at: string;
+  user: unknown | null;
+  pharmacist: {
+    id: number;
+    name: string;
+    phone: string;
+  };
+  pharmacy: {
+    id: number;
+    name: string;
+    address: string;
+  };
+  items: PharmacyOrderItem[];
+}
+
 type ActionResponse<T = null> = {
   success: boolean;
   data?: T | null;

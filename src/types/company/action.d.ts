@@ -229,3 +229,7 @@ interface CompanyResponseOffers {
 interface ShowDemandedOfferDetailsParams {
   offerId: number;
 }
+
+interface ShowPharmacyOrderParams{
+  pharmacyId: number;
+}
