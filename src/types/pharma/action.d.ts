@@ -100,3 +100,9 @@ interface CompanyOfferResponse {
 interface RequestedOfferDetailsParams {
   requestId: number;
 }
+
+interface StoreBranchProductParams {
+  branchId: number;
+  productId: number;
+  reservedStock: number;
+}

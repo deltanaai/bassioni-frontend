@@ -65,3 +65,8 @@ interface RequestToCompanyOfferPayload {
   pharmacy_id: number;
   quantity: number;
 }
+
+interface StoreBranchProductPayload {
+  product_id: number;
+  reserved_stock: number;
+}

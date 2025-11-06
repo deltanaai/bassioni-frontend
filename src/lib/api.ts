@@ -13,6 +13,7 @@ import { responseOffersEndpoints } from "./endpoints/company/responseOffers";
 import { rolesEndpoints } from "./endpoints/company/roles";
 import { warehousesEndpoints } from "./endpoints/company/warehouses";
 import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
+import { branchProductsEndpoints } from "./endpoints/pharma/branchProduct";
 import { cartEndpoints } from "./endpoints/pharma/cart";
 import { pharmaCompaniesEndpoints } from "./endpoints/pharma/companies";
 import { companyOffersEndpoints } from "./endpoints/pharma/companyOffers";
@@ -45,6 +46,7 @@ export const api = {
     pharmaCompanies: pharmaCompaniesEndpoints,
     masterProducts: pharmaMasterProductsEndpoints,
     companyOffers: companyOffersEndpoints,
+    branchProducts: branchProductsEndpoints,
     // orders: orderEndpoints,
   },
 };
