@@ -4,8 +4,11 @@ import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
+  DeleteDemandedOffersSchema,
   GetAllDemandedOffersSchema,
+  RestoreDemandedOffersSchema,
   ShowDemandedOfferDetailsSchema,
+  UpdateDemandedOfferStatusSchema,
 } from "@/schemas/company/responseOffers";
 
 export async function getAllDemandedOffers(
@@ -87,6 +90,106 @@ export async function showDemandedOfferDetails(
     return {
       success: true,
       data: response.data as CompanyResponseOffers,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateDemandedOfferStatus(
+  params: UpdateDemandedOfferStatusParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateDemandedOfferStatusSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { offerId, warehouseId, status } = validationResult.params!;
+
+  const payload: UpdateDemandedOfferPayload = {
+    warehouse_id: warehouseId,
+    status,
+  };
+  try {
+    const response =
+      await api.company.responseToOffers.updateDemandedOfferStatus({
+        offerId,
+        payload,
+      });
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم تحديث حالة العرض بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteDemandedOffers(
+  params: DeleteDemandedOffersParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteDemandedOffersSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { offerIds } = validationResult.params!;
+
+  const payload: DeleteDemandedOffersPayload = {
+    items: offerIds,
+  };
+  try {
+    const response = await api.company.responseToOffers.deleteDemandedOffers({
+      payload,
+    });
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم حذف العروض بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function restoreDemandedOffers(
+  params: RestoreDemandedOffersParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: RestoreDemandedOffersSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { offerIds } = validationResult.params!;
+
+  const payload: RestoreDemandedOffersPayload = {
+    items: offerIds,
+  };
+  try {
+    const response = await api.company.responseToOffers.restoreDemandedOffers({
+      payload,
+    });
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم استعادة العروض بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

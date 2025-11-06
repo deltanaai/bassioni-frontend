@@ -18,3 +18,27 @@ export const GetAllDemandedOffersSchema = z.object({
 export const ShowDemandedOfferDetailsSchema = z.object({
   offerId: z.number("معرف خاطئ للعرض").int().positive(),
 });
+
+export const UpdateDemandedOfferStatusSchema = z.object({
+  offerId: z.number("معرف خاطئ للعرض").int().positive(),
+  status: z.enum(["pending", "approved", "rejected"], "حالة غير صالحة للعرض"),
+  warehouseId: z.number("معرف خاطئ للمستودع").int().positive(),
+});
+
+export const DeleteDemandedOffersSchema = z.object({
+  offerIds: z
+    .array(
+      z.number("معرف خاطئ للعرض").int().positive(),
+      "يجب أن تكون معرفات العروض مصفوفة من الأعداد"
+    )
+    .nonempty("يجب تقديم معرف عرض واحد على الأقل"),
+});
+
+export const RestoreDemandedOffersSchema = z.object({
+  offerIds: z
+    .array(
+      z.number("معرف خاطئ للعرض").int().positive(),
+      "يجب أن تكون معرفات العروض مصفوفة من الأعداد"
+    )
+    .nonempty("يجب تقديم معرف عرض واحد على الأقل"),
+});

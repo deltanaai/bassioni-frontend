@@ -168,3 +168,15 @@ interface UpdateOfferPayload {
 interface DeleteOffersPayload {
   items: number[];
 }
+
+interface UpdateDemandedOfferPayload {
+  warehouse_id: number;
+  status: "pending" | "approved" | "rejected";
+}
+
+interface DeleteDemandedOffersPayload {
+  items: number[];
+}
+interface RestoreDemandedOffersPayload {
+  items: number[];
+}
