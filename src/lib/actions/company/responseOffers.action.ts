@@ -6,6 +6,7 @@ import handleError from "@/lib/handlers/error";
 import {
   GetAllDemandedOffersSchema,
   ShowDemandedOfferDetailsSchema,
+  UpdateDemandedOfferStatusSchema,
 } from "@/schemas/company/responseOffers";
 
 export async function getAllDemandedOffers(
@@ -87,6 +88,42 @@ export async function showDemandedOfferDetails(
     return {
       success: true,
       data: response.data as CompanyResponseOffers,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateDemandedOfferStatus(
+  params: UpdateDemandedOfferStatusParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateDemandedOfferStatusSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { offerId, warehouseId, status } = validationResult.params!;
+
+  const payload: UpdateDemandedOfferPayload = {
+    warehouse_id: warehouseId,
+    status,
+  };
+  try {
+    const response =
+      await api.company.responseToOffers.updateDemandedOfferStatus({
+        offerId,
+        payload,
+      });
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم تحديث حالة العرض بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

@@ -233,3 +233,9 @@ interface ShowDemandedOfferDetailsParams {
 interface ShowPharmacyOrderParams{
   pharmacyId: number;
 }
+
+interface UpdateDemandedOfferStatusParams {
+  offerId: number;
+  status: "pending" | "approved" | "rejected";
+  warehouseId: number;
+}

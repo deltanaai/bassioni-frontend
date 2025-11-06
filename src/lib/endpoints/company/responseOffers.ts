@@ -14,4 +14,20 @@ export const responseOffersEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  updateDemandedOfferStatus: ({
+    offerId,
+    payload,
+  }: {
+    offerId: number;
+    payload: UpdateDemandedOfferPayload;
+  }) =>
+    fetchHandler(
+      `${API_URL}company/dashboard/response-offers/update/${offerId}`,
+      {
+        method: "PUT",
+        auth: true,
+        body: JSON.stringify(payload),
+      }
+    ),
 };
