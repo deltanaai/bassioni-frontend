@@ -8,6 +8,7 @@ import { orderEndpoints } from "./endpoints/company/order";
 import { permissionsEndpoints } from "./endpoints/company/permissions";
 import { productsEndpoints } from "./endpoints/company/products";
 import { profileEndpoints } from "./endpoints/company/profile";
+import { responseOffersEndpoints } from "./endpoints/company/responseOffers";
 import { rolesEndpoints } from "./endpoints/company/roles";
 import { warehousesEndpoints } from "./endpoints/company/warehouses";
 import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
@@ -33,6 +34,7 @@ export const api = {
     locations: locationsEndpoints,
     orders: orderEndpoints,
     offers: offersEndpoints,
+    responseToOffers: responseOffersEndpoints,
   },
   pharma: {
     auth: pharmaAuthEndpoints,

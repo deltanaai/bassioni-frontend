@@ -211,3 +211,17 @@ interface UpdateOfferParams {
 interface DeleteOffersParams {
   offerIds: number[];
 }
+
+interface CompanyResponseOffers {
+  id: number;
+  company_offer_id: number;
+  pharmacy_id: number;
+  total_price: string;
+  item_price: string;
+  quantity: number;
+  status: string;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  offer: Offer;
+}
