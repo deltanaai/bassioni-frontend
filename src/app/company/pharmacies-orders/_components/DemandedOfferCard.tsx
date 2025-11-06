@@ -33,7 +33,6 @@ export default function DemandedOfferCard({ offer, activeTab }: DemandedOfferCar
     <>
       <div className="p-6 hover:bg-gray-50 transition-colors">
         <div className="flex items-start justify-between">
-          {/* المعلومات الأساسية */}
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-3">
               <h3 className="text-lg font-semibold text-gray-900">
@@ -92,7 +91,7 @@ export default function DemandedOfferCard({ offer, activeTab }: DemandedOfferCar
       <OfferDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        offer={offer}
+        offerId={offer.id}
       />
     </>
   );
