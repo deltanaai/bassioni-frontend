@@ -38,6 +38,7 @@ import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_PHARMA.DASHBOARD, Icon: Home },
+  { name: " منتجات الشركات", href: ROUTES_PHARMA.COMPANIESPRODUCTS, Icon: Package },
   { name: "طلبات اليوم", href: ROUTES_PHARMA.DAY_ORDERS, Icon: ClipboardList },
   { name: "عروض الشركات", href: ROUTES_PHARMA.OFFERS, Icon: Tag },
   { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
@@ -280,41 +281,40 @@ export default function DashboardLayout({
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            <Link
-              href="/Pharma/"
-              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
+            <PharmaHeaderNavLink
+              icon={<Package className="h-5 w-5" />}
+              href={ROUTES_PHARMA.DASHBOARD}
             >
-              <Package className="h-5 w-5" />
               <span>تقارير</span>
-            </Link>
-            <Link
+            </PharmaHeaderNavLink>
+
+            <PharmaHeaderNavLink
+              icon={<Package className="h-5 w-5" />}
               href="/Pharma/warehouse"
-              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Package className="h-5 w-5" />
               <span>الشركات</span>
-            </Link>
-            <Link
+            </PharmaHeaderNavLink>
+
+            <PharmaHeaderNavLink
+              icon={<Store className="h-5 w-5" />}
               href="/Pharma/add-pharmacy"
-              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Store className="h-5 w-5" />
               <span> الفروع</span>
-            </Link>
-            <Link
+            </PharmaHeaderNavLink>
+
+            <PharmaHeaderNavLink
+              icon={<Users className="h-5 w-5" />}
               href="/Pharma/add-employee"
-              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Users className="h-5 w-5" />
               <span> الموظفين</span>
-            </Link>
-            <Link
+            </PharmaHeaderNavLink>
+
+            <PharmaHeaderNavLink
+              icon={<Store className="h-5 w-5" />}
               href="/Pharma/system"
-              className="flex items-center gap-2 text-gray-300 transition hover:text-emerald-400"
             >
-              <Store className="h-5 w-5" />
               <span>النظام </span>
-            </Link>
+            </PharmaHeaderNavLink>
           </nav>
 
           {/* الإشعارات */}
@@ -327,6 +327,34 @@ export default function DashboardLayout({
         <div className="flex-1 bg-gray-950 p-6 text-white">{children}</div>
       </main>
     </div>
+  );
+}
+
+// active link in nav
+function PharmaHeaderNavLink({
+  href,
+  icon,
+  children,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
+  return (
+    <Link
+      href={href}
+      className={`flex items-center justify-start gap-2 rounded-md px-3 py-2 transition-all ${
+        isActive
+          ? " font-semibold text-emerald-500"
+          : "text-white-700  hover:text-emerald-600"
+      }`}
+    >
+      <span>{icon}</span>
+      <span>{children}</span>
+    </Link>
   );
 }
 

@@ -1,43 +1,3 @@
-export interface Product {
-  id: number;
-  name: string;
-  category: {
-    id: number;
-    name: string;
-    position: number;
-    active: boolean;
-    show_home: boolean;
-  } | string; // يمكن أن يكون كائن أو نص
-  brand: string;
-  description: string;
-  price: number;
-  imageUrl: string | null;
-  active: boolean;
-  rating: number;
-  rating_count: number;
-  createdAt: string;
-  updatedAt: string;
-  // الحقول الإضافية من الـ API
-  concentration?: string;
-  quantity?: number;
-  warehouse?: string;
-}
-export interface Batch {
-  id?: number;
-  batchNumber: string;
-  quantity: number;
-  expiryDate: string;
-}
-
-export interface WarehouseProduct {
-  id: number;
-  warehouseId: number;
-  warehouseName: string;
-  productId: number;
-  batches: Batch[];
-  totalQuantity: number;
-}
-
 export interface ProductDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -47,21 +7,10 @@ export interface ProductDetailsModalProps {
   onToggleWarehouse: (index: number) => void;
 }
 
-export interface AddToCartModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  product: Product | null;
-  quantity: number;
-  onIncreaseQuantity: () => void;
-  onDecreaseQuantity: () => void;
-  onAddToCart: () => void;
-  isLoading?: boolean; 
-}
-
 export interface AddBatchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddBatch: (batch: Batch) => void;
+  onAddBatch: (batch: Pick<WarehouseProduct, "batch_number"|"stock"| "expiry_date">) => void;
   productId?: string;
   productName?: string;
 }
@@ -77,6 +26,6 @@ export interface ProductFiltersProps {
 }
 
 export interface ProductTableProps {
-  products: Product[];
-  onViewDetails: (product: Product) => void;
+  products: MasterProduct[];
+  onViewDetails: (product: MasterProduct) => void;
 }

@@ -218,9 +218,7 @@ export default function PharmaCompaniesPage() {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-center text-sm text-gray-400">
-                        {new Date(company.createdAt).toLocaleDateString(
-                          "ar-EG"
-                        )}
+                        {company.createdAt}
                       </td>
                       <td className="px-4 py-4 text-center">
                         <span
@@ -355,18 +353,14 @@ export default function PharmaCompaniesPage() {
                     </div>
                     <div className="flex items-center gap-2 text-white">
                       <FiCalendar className="h-4 w-4 text-gray-400" />
-                      {new Date(selectedCompany.createdAt).toLocaleDateString(
-                        "ar-EG"
-                      )}
+                      {selectedCompany.createdAt}
                     </div>
                   </div>
                   <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
                     <div className="mb-2 text-sm text-gray-400">آخر تحديث</div>
                     <div className="flex items-center gap-2 text-white">
                       <FiCalendar className="h-4 w-4 text-gray-400" />
-                      {new Date(selectedCompany.updatedAt).toLocaleDateString(
-                        "ar-EG"
-                      )}
+                      {selectedCompany.updatedAt}
                     </div>
                   </div>
                 </div>
