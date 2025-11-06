@@ -1,5 +1,6 @@
 "use client";
 import QuantityCounter from '@/components/QuantityCounter';
+import { usePharmacySession } from '@/hooks/usePharmacySession';
 import { addToCart } from '@/lib/actions/pharma/cart.action';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,14 +11,13 @@ interface ProductCardProps {
     //مفيش استوك احدد منو كميه المنتج كام؟؟
   product: CompanyProductPayload;
 }
-
 export default function ProductCard({ product }: ProductCardProps) {
   const queryClient = useQueryClient();
+  const{pharmacist}= usePharmacySession()
   const [showCounter, setShowCounter] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  //لسا مش قادره احدد اجيب ال id منيننننن
-  const pharmacyId = 1; 
+  const pharmacyId = pharmacist?.pharmacy.id; 
 
   const addToCartMutation = useMutation({
     mutationFn: addToCart,
@@ -30,7 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     addToCartMutation.mutate({
       productId: product.id,
       quantity: quantity,
-      pharmacyId: pharmacyId,
+      pharmacyId: pharmacyId!,
     });
     
     setShowCounter(false);
