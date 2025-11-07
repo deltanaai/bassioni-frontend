@@ -17,3 +17,8 @@ export const StoreBranchBacthProductSchema = z.object({
     .transform((date) => formatDateForBackend(date)),
   batchNumber: z.string("رقم الدفعة مطلوب").min(1, "رقم الدفعة مطلوب"),
 });
+
+export const ShowBranchProductDetailsSchema = z.object({
+  branchId: z.number("معرف خاطئ للفرع").int().positive(),
+  productId: z.number("معرف خاطئ للمنتج").int().positive(),
+});

@@ -114,3 +114,8 @@ interface StoreBranchBatchProductParams {
   expiryDate: string;
   batchNumber: string;
 }
+
+interface ShowBranchProductDetailsParams {
+  branchId: number;
+  productId: number;
+}

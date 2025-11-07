@@ -33,4 +33,19 @@ export const branchProductsEndpoints = {
         body: JSON.stringify(payload),
       }
     ),
+
+  showBranchProductDetails: ({
+    branchId,
+    productId,
+  }: {
+    branchId: number;
+    productId: number;
+  }) =>
+    fetchHandler(
+      `${API_URL}pharmacy/dashboard/branches/${branchId}/products/${productId}`,
+      {
+        method: "GET",
+        auth: true,
+      }
+    ),
 };

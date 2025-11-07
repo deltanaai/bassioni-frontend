@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
+  ShowBranchProductDetailsSchema,
   StoreBranchBacthProductSchema,
   StoreBranchProductSchema,
 } from "@/schemas/pharma/branchProducts";
@@ -79,6 +80,38 @@ export async function storeBranchBatchProduct(
     return {
       success: true,
       message: response.message ?? "تم إضافة المنتج إلى الفرع بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function showBranchProductDetails(
+  params: ShowBranchProductDetailsParams
+): Promise<ActionResponse<BranchProductDetails[]>> {
+  const validationResult = await action({
+    params,
+    schema: ShowBranchProductDetailsSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { branchId, productId } = validationResult.params!;
+
+  try {
+    const response = await api.pharma.branchProducts.showBranchProductDetails({
+      branchId,
+      productId,
+    });
+
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      data: response.data as BranchProductDetails[],
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
