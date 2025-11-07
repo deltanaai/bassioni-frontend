@@ -77,4 +77,24 @@ export const branchProductsEndpoints = {
         body: JSON.stringify(payload),
       }
     ),
+
+  importBranchProducts: ({
+    branchId,
+    file,
+  }: {
+    branchId: number;
+    file: File;
+  }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return fetchHandler(
+      `${API_URL}pharmacy/dashboard/branches/${branchId}/products/import`,
+      {
+        method: "POST",
+        auth: true,
+        body: formData,
+      }
+    );
+  },
 };

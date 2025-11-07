@@ -46,3 +46,12 @@ export const DeleteBranchProductSchema = z.object({
     .min(1, "يجب تحديد منتج واحد على الأقل"),
   batchNumber: z.string("رقم الدفعة مطلوب").min(1, "رقم الدفعة مطلوب"),
 });
+
+export const ImportBranchProductsSchema = z.object({
+  branchId: z.number("معرف خاطئ للفرع").int().positive(),
+  file: z
+    .instanceof(File, { message: "ملف غير صالح" })
+    .refine((file) => file.name.endsWith(".xlsx"), {
+      message: "الملف يجب أن يكون بصيغة .xlsx",
+    }),
+});

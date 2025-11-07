@@ -129,3 +129,8 @@ interface DeleteBranchProductsParams {
   productId: number[];
   batchNumber: string;
 }
+
+interface ImportBranchProductsParams {
+  branchId: number;
+  file: File;
+}

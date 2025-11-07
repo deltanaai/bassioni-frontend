@@ -6,6 +6,7 @@ import handleError from "@/lib/handlers/error";
 import {
   BranchProductsIndexSchema,
   DeleteBranchProductSchema,
+  ImportBranchProductsSchema,
   ShowBranchProductDetailsSchema,
   StoreBranchBacthProductSchema,
   StoreBranchProductSchema,
@@ -207,6 +208,39 @@ export async function deleteBranchProducts(
     return {
       success: true,
       message: response.message ?? "تم حذف المنتجات من الفرع بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function importBranchProducts(
+  params: ImportBranchProductsParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: ImportBranchProductsSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { branchId, file } = validationResult.params!;
+
+  try {
+    const response = await api.pharma.branchProducts.importBranchProducts({
+      branchId,
+      file,
+    });
+
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم استيراد المنتجات إلى الفرع بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
