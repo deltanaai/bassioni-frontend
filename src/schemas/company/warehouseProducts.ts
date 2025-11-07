@@ -4,12 +4,18 @@ import { formatDateForBackend } from "@/lib/utils";
 
 export const WarehouseProductsIndexSchema = z.object({
   warehouseId: z.number("كود المستودع غير صالح").int().positive(),
-  page: z.number().int().positive().optional(),
-  perPage: z.number().int().positive().optional(),
-  deleted: z.boolean().optional(),
-  paginate: z.boolean().optional(),
-  orderByDirection: z.enum(["asc", "desc"]).optional(),
+  filters: z
+    .record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean(), z.null()])
+    )
+    .optional(),
   orderBy: z.string().optional(),
+  orderByDirection: z.enum(["asc", "desc"]).optional(),
+  perPage: z.number().optional(),
+  page: z.number().optional(),
+  paginate: z.boolean().optional(),
+  deleted: z.boolean().optional(),
 });
 
 export const StoreWarehouseProductSchema = z.object({

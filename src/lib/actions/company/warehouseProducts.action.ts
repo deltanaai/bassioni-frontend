@@ -32,9 +32,11 @@ export async function getAllProducts(
     orderByDirection,
     deleted,
     paginate,
+    filters,
   } = validationResult.params!;
 
   const payload: PaginatedSearchPayload = {
+    filters,
     page,
     per_page: perPage,
     order_by: orderBy,
