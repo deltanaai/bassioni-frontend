@@ -48,4 +48,17 @@ export const branchProductsEndpoints = {
         auth: true,
       }
     ),
+
+  branchProductsIndex: ({
+    branchId,
+    payload,
+  }: {
+    branchId: number;
+    payload?: PaginatedSearchPayload;
+  }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/branches/${branchId}/products`, {
+      method: "POST",
+      auth: true,
+      body: payload ? JSON.stringify(payload) : undefined,
+    }),
 };

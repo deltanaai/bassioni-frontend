@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
+  BranchProductsIndexSchema,
   ShowBranchProductDetailsSchema,
   StoreBranchBacthProductSchema,
   StoreBranchProductSchema,
@@ -112,6 +113,58 @@ export async function showBranchProductDetails(
     return {
       success: true,
       data: response.data as BranchProductDetails[],
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function branchProductsIndex(
+  params: BranchProductsIndexParams
+): Promise<ActionResponse<PaginatedResponse<BranchProductDetails>>> {
+  const validationResult = await action({
+    params,
+    schema: BranchProductsIndexSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const {
+    branchId,
+    page,
+    perPage,
+    filters,
+    orderBy,
+    orderByDirection,
+    paginate,
+    deleted,
+  } = validationResult.params!;
+
+  const payload: PaginatedSearchPayload = {
+    page,
+    per_page: perPage,
+    filters,
+    order_by: orderBy,
+    order_by_direction: orderByDirection,
+    paginate,
+    deleted,
+  };
+
+  try {
+    const response = await api.pharma.branchProducts.branchProductsIndex({
+      branchId,
+      payload,
+    });
+
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      data: response.data as PaginatedResponse<BranchProductDetails>,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

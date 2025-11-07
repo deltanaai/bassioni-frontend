@@ -119,3 +119,7 @@ interface ShowBranchProductDetailsParams {
   branchId: number;
   productId: number;
 }
+
+interface BranchProductsIndexParams extends PaginatedSearchParams {
+  branchId: number;
+}
