@@ -246,3 +246,7 @@ interface DeleteDemandedOffersParams {
 interface RestoreDemandedOffersParams {
   offerIds: number[];
 }
+
+interface ListWarehouseOrdersParams {
+  warehouseId: number;
+}

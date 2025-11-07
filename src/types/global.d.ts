@@ -257,3 +257,48 @@ interface PaginatedResponse<T> {
   links: PaginationLinks;
   meta: PaginationMeta;
 }
+
+interface WarehouseOrderProduct {
+  id: number;
+  name: string;
+  category: string | null;
+  brand: string | null;
+  rating: number;
+  rating_count: number | null;
+  price: number;
+  imageUrl: string;
+  image: string | null;
+}
+
+interface WarehouseOrderItem {
+  id: number;
+  product: WarehouseOrderProduct;
+  quantity: number;
+  price: string;
+  total: string | null;
+}
+
+interface WarehouseOrderPharmacy {
+  id: number;
+  name: string;
+  address: string | null;
+}
+
+interface WarehouseOrderPharmacist {
+  id: number;
+  name: string;
+  phone: string | null;
+}
+
+interface WarehouseOrder {
+  order_id: number;
+  status: string;
+  payment_method: string;
+  total_price: string;
+  delivery_fee: string;
+  created_at: string;
+  user: unknown | null;
+  pharmacist: WarehouseOrderPharmacist;
+  pharmacy: WarehouseOrderPharmacy;
+  items: WarehouseOrderItem[];
+}

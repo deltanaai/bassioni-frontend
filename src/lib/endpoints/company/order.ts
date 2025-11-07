@@ -31,4 +31,10 @@ export const orderEndpoints = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
+  listWarehouseOrders: ({ warehouseId }: { warehouseId: number }) =>
+    fetchHandler(`${API_URL}warehouses/${warehouseId}/orders`, {
+      method: "GET",
+      auth: true,
+    }),
 };

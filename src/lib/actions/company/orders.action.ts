@@ -5,6 +5,7 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
   AssignOrderToWarehouseSchema,
+  ListWarehouseOrdersSchema,
   ShowCompanyOrderSchema,
   UpdateOrderStatusSchema,
 } from "@/schemas/company/order";
@@ -106,6 +107,38 @@ export async function assignOrderToWarehouse(
       success: true,
       data: response.data,
       message: response.message || "تم تعيين الطلب إلى المستودع بنجاح",
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function listWarehouseOrders(
+  params: ListWarehouseOrdersParams
+): Promise<ActionResponse<WarehouseOrder[]>> {
+  const validationResult = await action({
+    params,
+    schema: ListWarehouseOrdersSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { warehouseId } = validationResult.params!;
+  try {
+    const response = await api.company.orders.listWarehouseOrders({
+      warehouseId,
+    });
+
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+
+    return {
+      success: true,
+      data: response.data as WarehouseOrder[],
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
