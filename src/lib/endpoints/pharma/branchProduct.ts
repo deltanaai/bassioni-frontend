@@ -2,11 +2,35 @@ import { API_URL } from "@/constants";
 import { fetchHandler } from "@/lib/handlers/fetch";
 
 export const branchProductsEndpoints = {
-    storeBranchProduct: ({ branchId, payload }: {branchId:number, payload: StoreBranchProductPayload }) =>
-        fetchHandler(`${API_URL}pharmacy/dashboard/branches/${branchId}/products/store`, {
-            method: "POST",
-            auth: true,
-            body: JSON.stringify(payload),
-        }),
+  storeBranchProduct: ({
+    branchId,
+    payload,
+  }: {
+    branchId: number;
+    payload: StoreBranchProductPayload;
+  }) =>
+    fetchHandler(
+      `${API_URL}pharmacy/dashboard/branches/${branchId}/products/store`,
+      {
+        method: "POST",
+        auth: true,
+        body: JSON.stringify(payload),
+      }
+    ),
 
-}
+  storeBranchBatchProduct: ({
+    branchId,
+    payload,
+  }: {
+    branchId: number;
+    payload: StoreBranchBatchProductPayload;
+  }) =>
+    fetchHandler(
+      `${API_URL}pharmacy/dashboard/branches/${branchId}/products/store/batch`,
+      {
+        method: "POST",
+        auth: true,
+        body: JSON.stringify(payload),
+      }
+    ),
+};

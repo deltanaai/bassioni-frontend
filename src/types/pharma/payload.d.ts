@@ -70,3 +70,10 @@ interface StoreBranchProductPayload {
   product_id: number;
   reserved_stock: number;
 }
+
+interface StoreBranchBatchProductPayload {
+  product_id: number;
+  stock: number;
+  expiry_date: string;
+  batch_number: string;
+}

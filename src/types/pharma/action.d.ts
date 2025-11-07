@@ -106,3 +106,11 @@ interface StoreBranchProductParams {
   productId: number;
   reservedStock: number;
 }
+
+interface StoreBranchBatchProductParams {
+  branchId: number;
+  productId: number;
+  stock: number;
+  expiryDate: string;
+  batchNumber: string;
+}
