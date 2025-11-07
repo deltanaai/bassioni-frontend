@@ -3,6 +3,7 @@
 import {
   DeleteWarehouseProductSchema,
   GetWarehouseProductsSchema,
+  ImportWarehouseProductsSchema,
   StoreWarehouseBatchProductSchema,
   StoreWarehouseProductSchema,
   WarehouseProductsIndexSchema,
@@ -58,6 +59,39 @@ export async function getAllProducts(
       data: response.data as PaginatedResponse<WarehouseProduct>,
       links: response.links,
       meta: response.meta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function importWarehouseProducts(
+  params: ImportWarehouseProductsParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: ImportWarehouseProductsSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { warehouseId, file } = validationResult.params!;
+
+  try {
+    const response = await api.company.products.importWarehouseProducts({
+      warehouseId,
+      file,
+    });
+
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم استيراد المنتجات إلى الفرع بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

@@ -64,6 +64,26 @@ export const productsEndpoints = {
     );
   },
 
+  importWarehouseProducts: ({
+    warehouseId,
+    file,
+  }: {
+    warehouseId: number;
+    file: File;
+  }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return fetchHandler(
+      `${API_URL}company/dashboard/warehouses/${warehouseId}/products/import`,
+      {
+        method: "POST",
+        auth: true,
+        body: formData,
+      }
+    );
+  },
+
   // updateInWarehouse: ({
   //   warehouseId,
   //   productId,

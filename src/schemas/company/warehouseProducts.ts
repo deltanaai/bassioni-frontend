@@ -82,3 +82,12 @@ export const DeleteWarehouseProductSchema = z.object({
     .min(1, "يجب حذف منتج واحد على الأقل"),
   batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
 });
+
+export const ImportWarehouseProductsSchema = z.object({
+  warehouseId: z.number("معرف خاطئ للفرع").int().positive(),
+  file: z
+    .instanceof(File, { message: "ملف غير صالح" })
+    .refine((file) => file.name.endsWith(".xlsx"), {
+      message: "الملف يجب أن يكون بصيغة .xlsx",
+    }),
+});

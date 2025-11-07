@@ -255,3 +255,9 @@ interface RestoreDemandedOffersParams {
 interface ListWarehouseOrdersParams {
   warehouseId: number;
 }
+
+
+interface ImportWarehouseProductsParams {
+  warehouseId: number;
+  file: File;
+}
