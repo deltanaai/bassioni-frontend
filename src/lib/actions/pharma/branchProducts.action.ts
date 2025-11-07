@@ -5,6 +5,7 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
   BranchProductsIndexSchema,
+  DeleteBranchProductSchema,
   ShowBranchProductDetailsSchema,
   StoreBranchBacthProductSchema,
   StoreBranchProductSchema,
@@ -121,7 +122,7 @@ export async function showBranchProductDetails(
 
 export async function branchProductsIndex(
   params: BranchProductsIndexParams
-): Promise<ActionResponse<PaginatedResponse<BranchProductDetails>>> {
+): Promise<ActionResponse<PaginatedResponse<BranchProduct>>> {
   const validationResult = await action({
     params,
     schema: BranchProductsIndexSchema,
@@ -164,7 +165,48 @@ export async function branchProductsIndex(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<BranchProductDetails>,
+      data: response.data as PaginatedResponse<BranchProduct>,
+      links: response.links,
+      meta: response.meta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteBranchProducts(
+  params: DeleteBranchProductsParams
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteBranchProductSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { branchId, productId, batchNumber } = validationResult.params!;
+
+  const payload: DeleteBranchProductsPayload = {
+    product_id: productId,
+    batch_number: batchNumber,
+  };
+
+  try {
+    const response = await api.pharma.branchProducts.deleteBranchProducts({
+      branchId,
+      payload,
+    });
+
+    if (response.result === "Error" || !response) {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+
+    return {
+      success: true,
+      message: response.message ?? "تم حذف المنتجات من الفرع بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

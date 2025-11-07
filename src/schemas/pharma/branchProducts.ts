@@ -38,3 +38,11 @@ export const BranchProductsIndexSchema = z.object({
   paginate: z.boolean().optional(),
   deleted: z.boolean().optional(),
 });
+
+export const DeleteBranchProductSchema = z.object({
+  branchId: z.number("معرف خاطئ للفرع").int().positive(),
+  productId: z
+    .array(z.number("معرف خاطئ للمنتج").int().positive())
+    .min(1, "يجب تحديد منتج واحد على الأقل"),
+  batchNumber: z.string("رقم الدفعة مطلوب").min(1, "رقم الدفعة مطلوب"),
+});

@@ -77,3 +77,8 @@ interface StoreBranchBatchProductPayload {
   expiry_date: string;
   batch_number: string;
 }
+
+interface DeleteBranchProductsPayload {
+  product_id: number[];
+  batch_number: string;
+}

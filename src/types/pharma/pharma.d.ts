@@ -58,6 +58,20 @@ interface CompanyOffer {
   updated_at: string;
 }
 
+type BranchProduct = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  active: boolean;
+  imageUrl: string;
+  total_stock: number;
+  reserved_stock: number;
+  available_stock: number;
+  total_batches: number;
+  stock_status: string;
+};
+
 type BranchProductDetails = {
   id: number;
   batch_number: string;

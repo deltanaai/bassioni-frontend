@@ -123,3 +123,9 @@ interface ShowBranchProductDetailsParams {
 interface BranchProductsIndexParams extends PaginatedSearchParams {
   branchId: number;
 }
+
+interface DeleteBranchProductsParams {
+  branchId: number;
+  productId: number[];
+  batchNumber: string;
+}
