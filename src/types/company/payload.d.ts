@@ -10,10 +10,14 @@ interface PaginatedSearchPayload {
   order_by?: string;
 }
 
-interface AddWarehouseProductPayload {
+interface StoreWarehouseProductsPayload {
+  product_id: number;
+  reserved_stock: number;
+}
+
+interface StoreWarehouseBatchProductsPayload {
   product_id: number;
   stock: number;
-  reserved_stock: number;
   expiry_date: string;
   batch_number: string;
 }

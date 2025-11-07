@@ -20,11 +20,16 @@ interface WarehouseProductsIndexParams extends PaginatedSearchParams {
   warehouseId: number;
 }
 
-interface AddWarehouseProductParams {
+interface StoreWarehouseProductParams {
+  warehouseId: number;
+  productId: number;
+  reservedStock: number;
+}
+
+interface StoreWarehouseBatchProductParams {
   warehouseId: number;
   productId: number;
   stock: number;
-  reservedStock: number;
   expiryDate: string;
   batchNumber: string;
 }

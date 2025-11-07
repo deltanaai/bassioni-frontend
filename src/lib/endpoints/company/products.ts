@@ -30,15 +30,15 @@ export const productsEndpoints = {
       }
     ),
 
-  addToWarehouse: ({
+  storeWarehouseProduct: ({
     warehouseId,
     payload,
   }: {
     warehouseId: number;
-    payload: AddWarehouseProductPayload;
+    payload: StoreWarehouseProductsPayload;
   }) => {
     return fetchHandler(
-      `${API_URL}company/dashboard/warehouses/${warehouseId}/products`,
+      `${API_URL}company/dashboard/warehouses/${warehouseId}/products/store`,
       {
         method: "POST",
         auth: true,
@@ -47,24 +47,41 @@ export const productsEndpoints = {
     );
   },
 
-  updateInWarehouse: ({
+  storeWarehouseBatchProduct: ({
     warehouseId,
-    productId,
     payload,
   }: {
     warehouseId: number;
-    productId: number;
-    payload: UpdateWarehouseProductPayload;
+    payload: StoreWarehouseBatchProductsPayload;
   }) => {
     return fetchHandler(
-      `${API_URL}company/dashboard/warehouses/${warehouseId}/products/${productId}`,
+      `${API_URL}company/dashboard/warehouses/${warehouseId}/products/store/batch`,
       {
-        method: "PATCH",
+        method: "POST",
         auth: true,
         body: JSON.stringify(payload),
       }
     );
   },
+
+  // updateInWarehouse: ({
+  //   warehouseId,
+  //   productId,
+  //   payload,
+  // }: {
+  //   warehouseId: number;
+  //   productId: number;
+  //   payload: UpdateWarehouseProductPayload;
+  // }) => {
+  //   return fetchHandler(
+  //     `${API_URL}company/dashboard/warehouses/${warehouseId}/products/${productId}`,
+  //     {
+  //       method: "PATCH",
+  //       auth: true,
+  //       body: JSON.stringify(payload),
+  //     }
+  //   );
+  // },
 
   deleteFromWarehouse: ({
     warehouseId,

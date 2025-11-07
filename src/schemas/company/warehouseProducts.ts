@@ -1,23 +1,6 @@
 import { z } from "zod";
 
-// "name": "Panadol",
-//                     "description": "مسكن للصداع والآلام",
-//                     "price": "5.00",
-//                     "active": true,
-//                     "imageUrl": "http://127.0.0.1:8000/storage//images/default-logo.png",
-//                     "stock": 1000,
-//                     "reserved_stock": 200,
-//                     "expiry_date": "2028-05-20",
-//                     "batch_number": "DF4555158"
-
-/// ///////////////////////////
-
-// "product_id" :1,
-//    "warehouse_price":20.50,
-//    "stock":1000,
-//    "reserved_stock":200,
-//    "expiry_date":"20-5-2028",
-//    "batch_number":"DF4555158"
+import { formatDateForBackend } from "@/lib/utils";
 
 export const WarehouseProductsIndexSchema = z.object({
   warehouseId: z.number("كود المستودع غير صالح").int().positive(),
@@ -29,22 +12,36 @@ export const WarehouseProductsIndexSchema = z.object({
   orderBy: z.string().optional(),
 });
 
-export const AddProductSchema = z.object({
+export const StoreWarehouseProductSchema = z.object({
   warehouseId: z.number().int().positive().min(1, "معرف المستودع مطلوب"),
   productId: z
     .number("معرف المنتج مطلوب")
     .int()
     .positive()
     .min(1, "معرف المنتج مطلوب"),
-  stock: z.number("الكمية مطلوبة").int().nonnegative().min(0, "الكمية مطلوبة"),
+
   reservedStock: z
     .number(" الكمية المحجوزة مطلوبة ")
     .int()
     .nonnegative()
     .min(0, "الكمية المحجوزة مطلوبة"),
+});
+
+export const StoreWarehouseBatchProductSchema = z.object({
+  warehouseId: z.number().int().positive().min(1, "معرف المستودع مطلوب"),
+  productId: z
+    .number("معرف المنتج مطلوب")
+    .int()
+    .positive()
+    .min(1, "معرف المنتج مطلوب"),
+  stock: z
+    .number(" الكمية مطلوبة ")
+    .int()
+    .nonnegative()
+    .min(0, "الكمية  مطلوبة"),
   expiryDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)), "تاريخ انتهاء الصلاحية غير صالح"),
+    .date("تاريخ البدء مطلوب")
+    .transform((date) => formatDateForBackend(date)),
   batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
 });
 
