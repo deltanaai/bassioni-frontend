@@ -73,3 +73,31 @@ export function formatArabicDate(dateString: string | undefined): string {
     return dateString;
   }
 }
+
+
+
+export function formatIsoToArabicDate(dateString: string): string {
+  if (!dateString) return "";
+
+  try {
+    const parsedDate = new Date(dateString);
+
+    if (isNaN(parsedDate.getTime())) {
+      console.warn("Invalid date string:", dateString);
+      return dateString;
+    }
+
+    // Format to Arabic full date (without time if not needed)
+    const formattedDate = new Intl.DateTimeFormat("ar-EG", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(parsedDate);
+
+    // Ensure RTL direction markers
+    return `\u202B${formattedDate}\u202C`;
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return dateString;
+  }
+}

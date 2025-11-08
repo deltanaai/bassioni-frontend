@@ -15,7 +15,7 @@ import handleError from "../../handlers/error";
 
 export async function getAllProducts(
   params: WarehouseProductsIndexParams
-): Promise<IndexedActionResponse<WarehouseProduct>> {
+): Promise<ActionResponse<WarehouseProduct[]>> {
   const validationResult = await action({
     params,
     schema: WarehouseProductsIndexSchema,
@@ -56,7 +56,7 @@ export async function getAllProducts(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<WarehouseProduct>,
+      data: response.data as WarehouseProduct[],
       links: response.links,
       meta: response.meta,
     };
@@ -100,7 +100,7 @@ export async function importWarehouseProducts(
 
 export async function getProductsByWarehouse(
   params: GetProductsParams
-): Promise<ActionResponse<WarehouseProduct[]>> {
+): Promise<ActionResponse<ProductBatches[]>> {
   const validationResult = await action({
     params,
     schema: GetWarehouseProductsSchema,
@@ -126,7 +126,7 @@ export async function getProductsByWarehouse(
 
     return {
       success: true,
-      data: response.data as WarehouseProduct[],
+      data: response.data as ProductBatches[],
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

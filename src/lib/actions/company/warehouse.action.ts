@@ -17,7 +17,7 @@ import handleError from "../../handlers/error";
 
 export async function getAllWarehouses(
   params: PaginatedSearchParams = {}
-): Promise<IndexedActionResponse<Warehouse[]>> {
+): Promise<ActionResponse<Warehouse[]>> {
   const validationResult = await action({
     params,
     schema: GetAllWarehousesSchema,
@@ -51,7 +51,7 @@ export async function getAllWarehouses(
     logger.info(`Fetched warehouses: ${JSON.stringify(response.data)}`);
     return {
       success: true,
-      data: response.data as PaginatedResponse<Warehouse[]>,
+      data: response.data as Warehouse[],
       links: response.links,
       meta: response.meta,
     };

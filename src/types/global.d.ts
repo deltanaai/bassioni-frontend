@@ -92,9 +92,12 @@ interface WarehouseProduct {
   price: string;
   active: boolean;
   imageUrl?: string | null;
-  stock: number;
+  total_stock: number;
   reserved_stock: number;
+  available_stock: number;
   expiry_date: string;
+  total_batches: number;
+  stock_status: string;
   batch_number: string;
 }
 
