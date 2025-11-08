@@ -7,7 +7,7 @@ import { GetAllCompanyProductsSchema } from "@/schemas/company/companyProducts";
 
 export async function indexCompanyProducts(
   params: PaginatedSearchParams = {}
-): Promise<IndexedActionResponse<CompanyProductINFO>> {
+): Promise<ActionResponse<CompanyProductINFO[]>> {
   const validationResult = await action({
     params,
     schema: GetAllCompanyProductsSchema,
@@ -51,7 +51,7 @@ export async function indexCompanyProducts(
 
     return {
       success: true,
-      data: response.data as PaginatedResponse<CompanyProductINFO>,
+      data: response.data as CompanyProductINFO[],
       links: response.links,
       meta: response.meta,
     };

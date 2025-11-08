@@ -11,6 +11,7 @@ import { getProductsByWarehouse } from "@/lib/actions/company/warehouseProducts.
 
 import AddBatchModal from "./AddBatchModal";
 import { Batch, ProductDetailsModalProps } from "../_types/product.types";
+import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
 
 export default function ProductDetailsModal({
   isOpen,
@@ -22,6 +23,12 @@ export default function ProductDetailsModal({
 }: Omit<ProductDetailsModalProps, "warehouses">) {
   const numericProductId = Number(productId);
 
+  const {data:MasterProductInfo} = useQuery({
+    queryKey:["MasterproductInfo"],
+    queryFn:()=> indexCompanyProducts({filters:{id:numericProductId}}),
+    enabled: !!numericProductId && isOpen && !isNaN(numericProductId),
+  })
+
   // جلب بيانات المنتج الرئيسي
   const { data: productDetails, isLoading: productLoading } = useQuery({
     queryKey: ["productDetails", numericProductId],
@@ -29,6 +36,8 @@ export default function ProductDetailsModal({
     enabled: !!numericProductId && isOpen && !isNaN(numericProductId),
   });
 
+  console.log("MASTER PRODUCT INFO",MasterProductInfo?.data?.[0]?.name);
+  
 
 
   // جلب جميع المخازن
