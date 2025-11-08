@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { X } from "lucide-react";
+import { useState } from "react";
+
 import { Batch, AddBatchModalProps } from "../_types/product.types";
 
 export default function AddBatchModal({
@@ -34,16 +35,16 @@ export default function AddBatchModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl max-w-md w-full">
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white">
         {/* الهيدر */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-bold text-gray-800">إضافة دفعة جديدة</h2>
           <button
             onClick={handleClose}
             className="p-2 text-gray-400 hover:text-gray-600"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -52,7 +53,7 @@ export default function AddBatchModal({
           <div className="space-y-4">
             {/* رقم الدفعة */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+              <label className="mb-2 block text-right text-sm font-medium text-gray-700">
                 رقم الدفعة
               </label>
               <input
@@ -62,14 +63,14 @@ export default function AddBatchModal({
                 onChange={(e) =>
                   setFormData({ ...formData, batchNumber: e.target.value })
                 }
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-right"
+                className="w-full rounded-xl border border-gray-300 p-3 text-right focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
                 placeholder="أدخل رقم الدفعة"
               />
             </div>
 
             {/* الكمية */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+              <label className="mb-2 block text-right text-sm font-medium text-gray-700">
                 الكمية
               </label>
               <input
@@ -83,14 +84,14 @@ export default function AddBatchModal({
                     quantity: parseInt(e.target.value),
                   })
                 }
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-right"
+                className="w-full rounded-xl border border-gray-300 p-3 text-right focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
                 placeholder="أدخل الكمية"
               />
             </div>
 
             {/* تاريخ الصلاحية */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+              <label className="mb-2 block text-right text-sm font-medium text-gray-700">
                 تاريخ الصلاحية
               </label>
               <input
@@ -100,23 +101,23 @@ export default function AddBatchModal({
                 onChange={(e) =>
                   setFormData({ ...formData, expiryDate: e.target.value })
                 }
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-right"
+                className="w-full rounded-xl border border-gray-300 p-3 text-right focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
               />
             </div>
           </div>
 
           {/* الأزرار */}
-          <div className="flex gap-3 mt-6">
+          <div className="mt-6 flex gap-3">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+              className="flex-1 rounded-xl bg-gray-200 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-300"
             >
               إلغاء
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-medium hover:bg-emerald-600 transition-colors"
+              className="flex-1 rounded-xl bg-emerald-500 py-3 font-medium text-white transition-colors hover:bg-emerald-600"
             >
               إضافة الدفعة
             </button>

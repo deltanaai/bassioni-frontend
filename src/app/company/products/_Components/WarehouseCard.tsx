@@ -2,15 +2,16 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
 
-import { Batch } from "@/constants/staticProductDataPharma";
 import {
   getAllProducts,
   getProductsByWarehouse,
 } from "@/lib/actions/company/warehouseProducts.action";
 import { formatIsoToArabicDate } from "@/lib/utils";
+
+import AddBatchModal from "./AddBatchModal";
 
 interface WarehouseCardProps {
   id: number;
@@ -27,6 +28,8 @@ const WarehouseCard = ({
   expandedWarehouses,
   onToggleWarehouse,
 }: WarehouseCardProps) => {
+  const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
+
   const { data, isLoading } = useQuery({
     queryKey: ["warehouseProductDetails", id, productId],
     queryFn: () =>
@@ -53,7 +56,7 @@ const WarehouseCard = ({
   const { total_batches: totalBatches, total_stock: totalStock } =
     data?.data?.[0] || {};
 
-    const batchDetails = warehouseProductDetails?.data || [];
+  const batchDetails = warehouseProductDetails?.data || [];
 
   const isExpanded = expandedWarehouses.includes(id);
   return (
@@ -120,7 +123,7 @@ const WarehouseCard = ({
                     </td>
                     <td className="border-l border-gray-200 px-4 py-3 text-center">
                       <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                        {batch.stock } وحدة
+                        {batch.stock} وحدة
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -142,17 +145,26 @@ const WarehouseCard = ({
               </tbody>
             </table>
             <div className="my-2 ml-5 flex justify-end">
-              {/* <button
+              <button
                 onClick={() => setIsAddBatchOpen(true)}
                 className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-2.5 text-sm text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-emerald-500 hover:to-emerald-400 hover:shadow-lg"
               >
                 <Plus className="h-4 w-4" />
                 اضافة دفعة
-              </button> */}
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/*  لسا مش شغال مودال إضافة الدفعة */}
+      <AddBatchModal
+        isOpen={isAddBatchOpen}
+        onClose={() => setIsAddBatchOpen(false)}
+        onAddBatch={() => {}}
+        productId={productId}
+        productName={name}
+      />
     </div>
   );
 };

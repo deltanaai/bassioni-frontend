@@ -11,7 +11,7 @@ export interface AddBatchModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddBatch: (batch: Pick<WarehouseProduct, "batch_number"|"stock"| "expiry_date">) => void;
-  productId?: string;
+  productId?: number;
   productName?: string;
 }
 

@@ -1,15 +1,11 @@
 'use client";';
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
-import { Batch } from "@/constants/staticProductDataPharma";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
 import { showMasterProduct } from "@/lib/actions/company/masterProducts";
 import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
-import { getProductsByWarehouse } from "@/lib/actions/company/warehouseProducts.action";
 
-import AddBatchModal from "./AddBatchModal";
 import WarehouseCard from "./WarehouseCard";
 import { ProductDetailsModalProps } from "../_types/product.types";
 
@@ -59,108 +55,11 @@ export default function ProductDetailsModal({
 
   console.log("WAREHOUSE RESPONSE:", warehousesResponse?.data);
 
-  // جلب بيانات المنتج في كل المخازن
-  const { data: warehouseProducts, isLoading: warehouseLoading } = useQuery({
-    queryKey: ["warehouseProducts", numericProductId, warehouses],
-    queryFn: async () => {
-      console.log("عدد المخازن:", warehouses?.length);
-
-      if (!warehouses || warehouses.length === 0) {
-        console.log("لا توجد مخازن متاحة");
-        return [];
-      }
-
-      const warehousePromises = warehouses.map(async (warehouse: Warehouse) => {
-        try {
-          // جلب منتجات هذا المخزن ثم تصفية المنتج المطلوب محلياً
-          const productsData = await getProductsByWarehouse({
-            warehouseId: warehouse.id,
-          });
-
-          // شكل الريسبونس اللي راحع: [{ warehouse: {}, products: [] }]
-          type WarehouseProductEntry = {
-            id?: number;
-            product_id?: number;
-            stock?: number;
-            expiry_date?: string;
-            batch_number?: string;
-          };
-          type WarehouseProductsResponseItem = {
-            warehouse?: Warehouse;
-            products?: WarehouseProductEntry[];
-          };
-
-          const allWarehousesData: WarehouseProductsResponseItem[] =
-            Array.isArray(productsData?.data)
-              ? (productsData.data as WarehouseProductsResponseItem[])
-              : [];
-          const currentWarehouseData = allWarehousesData.find(
-            (w) => w?.warehouse?.id === warehouse.id
-          );
-          const warehouseProductsList: WarehouseProductEntry[] =
-            currentWarehouseData?.products || [];
-          const matchedProducts = warehouseProductsList.filter(
-            (p) =>
-              p?.id === numericProductId || p?.product_id === numericProductId
-          );
-
-          if (!matchedProducts.length) return null;
-
-          const batches = matchedProducts.map((item) => ({
-            batchNumber: item.batch_number,
-            quantity: item.stock,
-            expiryDate: item.expiry_date,
-          }));
-
-          const totalQuantity = matchedProducts.reduce(
-            (sum: number, item) => sum + (item?.stock || 0),
-            0
-          );
-
-          return {
-            warehouseId: warehouse.id,
-            warehouseName: warehouse.name,
-            batches,
-            totalQuantity,
-          };
-        } catch (error) {
-          console.error(`خطأ في جلب بيانات المخزن ${warehouse.name}:`, error);
-          return null;
-        }
-      });
-
-      const results = await Promise.all(warehousePromises);
-
-      // تصفية النتائج لإزالة القيم null
-      const validResults = results.filter(
-        (
-          result
-        ): result is {
-          warehouseId: number;
-          warehouseName: string;
-          batches: Batch[];
-          totalQuantity: number;
-        } => result !== null
-      );
-      console.log("المخازن التي تحتوي على المنتج:", validResults);
-      return validResults;
-    },
-    enabled:
-      !numericProductId || !warehouses || warehouses?.length > 0 || isOpen,
-  });
-
-  console.log("تفاصيل المنتج:", productDetails);
-  console.log("المخازن المتاحة:", warehouses);
-  console.log("منتجات المخازن:", warehouseProducts);
-
-  const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
-
   if (!isOpen) return null;
 
- 
   const displayProductDetails = productDetails?.data;
 
-  if (productLoading || warehousesLoading || warehouseLoading) {
+  if (productLoading || warehousesLoading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
         <div className="rounded-2xl bg-white p-8">
@@ -284,15 +183,6 @@ export default function ProductDetailsModal({
           </div>
         </div>
       </div>
-
-      {/*  لسا مش شغال مودال إضافة الدفعة */}
-      <AddBatchModal
-        isOpen={isAddBatchOpen}
-        onClose={() => setIsAddBatchOpen(false)}
-        onAddBatch={() => {}}
-        productId={productId}
-        productName={displayProductDetails.name ?? productName}
-      />
     </div>
   );
 }
