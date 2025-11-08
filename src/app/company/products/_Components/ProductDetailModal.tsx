@@ -29,6 +29,8 @@ export default function ProductDetailsModal({
     enabled: !!numericProductId && isOpen && !isNaN(numericProductId),
   });
 
+
+
   // جلب جميع المخازن
   const { data: warehousesResponse, isLoading: warehousesLoading } = useQuery({
     queryKey: ["warehouses"],

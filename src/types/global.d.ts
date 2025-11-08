@@ -139,6 +139,21 @@ interface OrderProduct {
   image: string | null;
 }
 
+interface CompanyProductINFO {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  active: boolean;
+  category: string | null;
+  brand: string | null;
+  total_stock: number;
+  total_reserved_stock: number;
+  available_stock: number;
+  total_batches: number;
+  total_warehouses: number;
+}
+
 interface OrderItem {
   id: number;
   product: OrderProduct;
