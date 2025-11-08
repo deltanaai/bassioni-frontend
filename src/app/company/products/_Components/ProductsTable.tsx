@@ -1,5 +1,5 @@
 import { FiEye, FiDollarSign, FiPackage } from "react-icons/fi";
-import { ProductTableProps, Product } from "../types/product.types";
+import { ProductTableProps, Product } from "../_types/product.types";
 
 export default function ProductTable({
   products,

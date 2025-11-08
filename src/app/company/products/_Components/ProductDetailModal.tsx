@@ -10,7 +10,7 @@ import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
 import { getProductsByWarehouse } from "@/lib/actions/company/warehouseProducts.action";
 
 import AddBatchModal from "./AddBatchModal";
-import { Batch, ProductDetailsModalProps } from "../types/product.types";
+import { Batch, ProductDetailsModalProps } from "../_types/product.types";
 
 export default function ProductDetailsModal({
   isOpen,
@@ -132,7 +132,7 @@ export default function ProductDetailsModal({
       return validResults;
     },
     enabled:
-      !numericProductId || !warehouses || (warehouses?.length > 0 || isOpen),
+      !numericProductId || !warehouses || warehouses?.length > 0 || isOpen,
   });
 
   console.log("تفاصيل المنتج:", productDetails);

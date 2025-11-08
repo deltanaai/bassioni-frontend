@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { Batch, AddBatchModalProps } from "../types/product.types";
+import { Batch, AddBatchModalProps } from "../_types/product.types";
 
 export default function AddBatchModal({
   isOpen,

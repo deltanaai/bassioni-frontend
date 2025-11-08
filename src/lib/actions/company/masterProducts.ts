@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
+import logger from "@/lib/logger";
 import {
   GetMasterProductsSchema,
   ShowMasterProductDetailsSchema,
@@ -34,6 +35,8 @@ export async function getMasterProducts(
 
   try {
     const response = await api.company.masterProducts.getAll({ payload });
+
+    logger.info(`MASTER PRODUCTS : ${JSON.stringify(response.data)}`);
 
     if (!response) {
       throw new Error("فشل جلب بيانات المنتجات الرئيسية");

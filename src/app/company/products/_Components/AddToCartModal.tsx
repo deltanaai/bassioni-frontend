@@ -1,5 +1,5 @@
 import { FiMinus, FiPlus } from "react-icons/fi";
-import { AddToCartModalProps } from "../types/product.types";
+import { AddToCartModalProps } from "../_types/product.types";
 
 export default function AddToCartModal({
   isOpen,

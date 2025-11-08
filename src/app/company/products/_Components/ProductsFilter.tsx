@@ -1,5 +1,5 @@
 import { FiSearch, FiFilter } from "react-icons/fi";
-import { ProductFiltersProps } from "../types/product.types";
+import { ProductFiltersProps } from "../_types/product.types";
 import { useQuery } from "@tanstack/react-query";
 import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
@@ -12,7 +12,6 @@ export default function ProductFilters({
   onBrandChange,
   productCount,
 }: ProductFiltersProps) {
-
   const { data: productsData } = useQuery({
     queryKey: ["masterProducts"],
     queryFn: () => getMasterProducts({}),
@@ -20,9 +19,10 @@ export default function ProductFilters({
   // دعم شكلين للاستجابة: مصفوفة مباشرة أو paginate عشان لو عملته بردوو
   const products: MasterProduct[] = Array.isArray(productsData?.data)
     ? (productsData?.data as MasterProduct[])
-    : ((productsData?.data as unknown as PaginatedResponse<MasterProduct>)?.data || []);
+    : (productsData?.data as unknown as PaginatedResponse<MasterProduct>)
+        ?.data || [];
 
-  // استخراج الفئات الفريدة   
+  // استخراج الفئات الفريدة
   const categories: string[] = Array.from(
     new Set<string>(
       products
@@ -35,7 +35,7 @@ export default function ProductFilters({
     )
   );
 
-  // استخراج البراندات    
+  // استخراج البراندات
   const brands: string[] = Array.from(
     new Set<string>(
       products

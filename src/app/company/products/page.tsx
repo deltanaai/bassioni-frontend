@@ -1,96 +1,49 @@
 "use client";
 import { useState } from "react";
 import { FiPackage } from "react-icons/fi";
-import ProductFilters from "./Components/ProductsFilter";
-import ProductTable from "./Components/ProductsTable";
-import ProductDetailsModal from "./Components/ProductDetailModal";
-import { Product } from "./types/product.types";
-import { useQuery } from "@tanstack/react-query";
-import { getMasterProducts } from "@/lib/actions/company/masterProducts";
+
+import ProductDetailsModal from "./_Components/ProductDetailModal";
+import ProductFilters from "./_Components/ProductsFilter";
+import ProductTable from "./_Components/ProductsTable";
+import { useFilteredProducts } from "./_hooks/useFilteredProducts";
+import { useProducts } from "./_hooks/useProducts";
 
 export default function ProductsPage() {
+  // Local filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
 
-  const { data: productsData, isLoading } = useQuery({
-    queryKey: ["masterProducts"],
-    queryFn: () => getMasterProducts({}),
+  // Products fetching & mapping
+  const { products, isLoading } = useProducts();
+
+  // Filtered products
+  const filteredProducts = useFilteredProducts(products, {
+    searchTerm,
+    filterCategory,
+    filterBrand,
   });
 
-  const apiData = Array.isArray(productsData?.data)
-    ? (productsData?.data as MasterProduct[])
-    : (productsData?.data as unknown as PaginatedResponse<MasterProduct>)
-        ?.data || [];
-
-  const products: Product[] = apiData.map((p: MasterProduct) => ({
-    id: p.id,
-    name: p.name,
-    category: p.category,
-    brand: p.brand,
-    description: p.description,
-    price: p.price,
-    imageUrl: p.imageUrl,
-    active: p.active,
-    rating: p.rating,
-    rating_count: p.rating_count,
-    createdAt: p.createdAt,
-    updatedAt: p.updatedAt,
-  }));
-
-  // Modal states
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
+  // Modal state
+  const [selectedProduct, setSelectedProduct] = useState<MasterProduct | null>(null);
   const [expandedWarehouses, setExpandedWarehouses] = useState<number[]>([]);
 
-  // 3. فلترة حسب البحث والفئة والبراند
-  const filteredProducts = products.filter((product: Product) => {
-    const searchLower = searchTerm.trim().toLowerCase();
-
-    const nameMatch = product.name?.toLowerCase().includes(searchLower);
-    const brandMatch = product.brand?.toLowerCase().includes(searchLower);
-    const descMatch = product.description?.toLowerCase().includes(searchLower);
-    const matchesSearch =
-      searchLower === "" ? true : Boolean(nameMatch || brandMatch || descMatch);
-
-    const categoryName =
-      typeof product.category === "string"
-        ? product.category
-        : product.category?.name;
-    const matchesCategory =
-      filterCategory === "all" ||
-      categoryName?.toLowerCase() === filterCategory.toLowerCase();
-
-    const matchesBrand =
-      filterBrand === "all" ||
-      product.brand?.toLowerCase() === filterBrand.toLowerCase();
-
-    return matchesSearch && matchesCategory && matchesBrand;
-  });
-
-  // Modal functions
-  const openProductDetails = (product: Product) => {
-    console.log("فتح تفاصيل المنتج:", product);
-    setSelectedProduct(product);
-  };
-
-  const closeProductDetails = () => {
+  const handleOpenDetails = (product: MasterProduct) => setSelectedProduct(product);
+  const handleCloseDetails = () => {
     setSelectedProduct(null);
     setExpandedWarehouses([]);
   };
-
-  const toggleWarehouse = (index: number) => {
+  const toggleWarehouse = (index: number) =>
     setExpandedWarehouses((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
-  };
 
   if (isLoading) {
     return (
-      <div className="p-6 bg-gradient-to-br from-gray-50 to-white min-h-screen text-gray-800">
-        <div className="flex justify-center items-center min-h-96">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6 text-gray-800">
+        <div className="flex min-h-96 items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600"></div>
             <p>جاري تحميل المنتجات...</p>
           </div>
         </div>
@@ -99,25 +52,25 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-50 to-white min-h-screen text-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6 text-gray-800">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+      <div className="mb-8 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
-            <FiPackage className="w-6 h-6 text-white" />
+          <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 p-2 shadow-lg">
+            <FiPackage className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+            <h1 className="bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-2xl font-bold text-transparent">
               إدارة المنتجات
             </h1>
-            <p className="text-gray-600 text-sm">
+            <p className="text-sm text-gray-600">
               عرض وإدارة جميع المنتجات المتاحة
             </p>
           </div>
         </div>
       </div>
 
-      {/* 4. الفلترات - مؤقتاً بدون فلترة بالفئات والبراندات */}
+      {/* Filters */}
       <ProductFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -128,16 +81,16 @@ export default function ProductsPage() {
         productCount={filteredProducts.length}
       />
 
-      {/* 5. الجدول - هيشتغل مع البيانات الحقيقية */}
+      {/* Table */}
       <ProductTable
         products={filteredProducts}
-        onViewDetails={openProductDetails}
+        onViewDetails={handleOpenDetails}
       />
 
-      {/* 6. المودالات - هتشتغل لما نفتحها */}
+      {/* Details Modal */}
       <ProductDetailsModal
         isOpen={!!selectedProduct}
-        onClose={closeProductDetails}
+        onClose={handleCloseDetails}
         productId={selectedProduct?.id?.toString() || ""}
         productName={selectedProduct?.name || ""}
         expandedWarehouses={expandedWarehouses}

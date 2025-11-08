@@ -253,7 +253,7 @@ interface PaginationMeta {
 }
 
 interface PaginatedResponse<T> {
-  data: T;
+  data: T[];
   links: PaginationLinks;
   meta: PaginationMeta;
 }
