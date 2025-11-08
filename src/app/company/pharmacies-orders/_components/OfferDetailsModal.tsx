@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   X,
   Calendar,
@@ -8,8 +8,13 @@ import {
   Package,
   Percent,
 } from "lucide-react";
+import { toast } from "sonner";
 
-import { showDemandedOfferDetails } from "@/lib/actions/company/responseOffers.action";
+import {
+  showDemandedOfferDetails,
+  updateDemandedOfferStatus,
+} from "@/lib/actions/company/responseOffers.action";
+import { queryClient } from "@/lib/queryClient";
 
 interface OfferDetailsModalProps {
   isOpen: boolean;
@@ -35,6 +40,36 @@ export default function OfferDetailsModal({
     },
     enabled: isOpen && !!offerId, // بيتشغل فقط إذا Modal مفتوح وفيه offerId
   });
+
+  const warehouseId = 1; // TODO: get warehouse id from auth store
+
+  const updateStatusMutation = useMutation({
+    mutationFn: (status: "approved" | "rejected") =>
+      updateDemandedOfferStatus({
+        offerId: offerId as number,
+        warehouseId,
+        status,
+      }),
+    onSuccess: (data) => {
+      if (data.success === true) {
+        toast.success(data.message);
+
+        queryClient.invalidateQueries({ queryKey: ["demandedOffers"] });
+      } else {
+        console.log("MESSAGE", data.error?.message);
+
+        toast.error(data.error?.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error("فشل تحديث الحالة");
+      console.error(error);
+    },
+  });
+
+  const handleUpdateStatus = (status: "approved" | "rejected") => {
+    updateStatusMutation.mutate(status);
+  };
 
   const offerDetails = response?.success ? response.data : null;
 
@@ -278,10 +313,16 @@ export default function OfferDetailsModal({
             </button>
             {offerDetails.status === "pending" && (
               <>
-                <button className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700">
+                <button
+                  className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+                  onClick={() => handleUpdateStatus("approved")}
+                >
                   قبول الطلب
                 </button>
-                <button className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700">
+                <button
+                  className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                  onClick={() => handleUpdateStatus("rejected")}
+                >
                   رفض الطلب
                 </button>
               </>
