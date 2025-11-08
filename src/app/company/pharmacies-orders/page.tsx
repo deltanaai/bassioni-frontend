@@ -22,7 +22,7 @@ export default function DemandedOffersPage() {
       case "pending":
         return { ...baseFilters, status: "pending" };
       case "completed":
-        return { ...baseFilters, status: "accepted" };
+        return { ...baseFilters, status: "approved" };
       case "cancelled":
         return { ...baseFilters, status: "rejected" };
       default:

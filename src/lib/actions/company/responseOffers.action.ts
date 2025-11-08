@@ -123,9 +123,11 @@ export async function updateDemandedOfferStatus(
         offerId,
         payload,
       });
+      logger.info(`MESSAGE : ${response.message}`);
     if (response.result === "Error" || !response) {
       return handleError(new Error(response.message)) as ErrorResponse;
     }
+
     return {
       success: true,
       message: response.message ?? "تم تحديث حالة العرض بنجاح",

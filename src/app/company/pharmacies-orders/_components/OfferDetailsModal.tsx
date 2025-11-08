@@ -40,7 +40,7 @@ export default function OfferDetailsModal({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "accepted":
+      case "approved":
         return "text-green-600 bg-green-100";
       case "rejected":
         return "text-red-600 bg-red-100";
@@ -51,7 +51,7 @@ export default function OfferDetailsModal({
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "accepted":
+      case "approved":
         return "مكتمل";
       case "rejected":
         return "ملغي";
