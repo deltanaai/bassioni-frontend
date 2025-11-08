@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
+import logger from "@/lib/logger";
 import {
   DeleteDemandedOffersSchema,
   GetAllDemandedOffersSchema,
@@ -13,7 +14,7 @@ import {
 
 export async function getAllDemandedOffers(
   params: PaginatedSearchParams
-): Promise<IndexedActionResponse<CompanyResponseOffers[]>> {
+): Promise<IndexedActionResponse<CompanyResponseOffers>> {
   const validationResult = await action({
     params,
     schema: GetAllDemandedOffersSchema,
@@ -49,13 +50,15 @@ export async function getAllDemandedOffers(
       payload,
     });
 
+    logger.info(`DEMANDED OFFERS : ${JSON.stringify(response.data)}`);
+
     if (response.result === "Error" || !response) {
       return handleError(new Error(response.message)) as ErrorResponse;
     }
 
     return {
       success: true,
-      data: response.data as PaginatedResponse<CompanyResponseOffers[]>,
+      data: response.data as PaginatedResponse<CompanyResponseOffers>,
       links: response.links,
       meta: response.meta,
     };

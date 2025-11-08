@@ -1,7 +1,15 @@
 "use client";
-import { X, Calendar, Building, DollarSign, Package, Percent } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { showDemandedOfferDetails } from '@/lib/actions/company/responseOffers.action';
+import { useQuery } from "@tanstack/react-query";
+import {
+  X,
+  Calendar,
+  Building,
+  DollarSign,
+  Package,
+  Percent,
+} from "lucide-react";
+
+import { showDemandedOfferDetails } from "@/lib/actions/company/responseOffers.action";
 
 interface OfferDetailsModalProps {
   isOpen: boolean;
@@ -9,11 +17,20 @@ interface OfferDetailsModalProps {
   offerId: number | null;
 }
 
-export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDetailsModalProps) {
-  const { data: response, isLoading, error, refetch } = useQuery({
-    queryKey: ['offerDetails', offerId],
+export default function OfferDetailsModal({
+  isOpen,
+  onClose,
+  offerId,
+}: OfferDetailsModalProps) {
+  const {
+    data: response,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["offerDetails", offerId],
     queryFn: () => {
-      if (!offerId) throw new Error('No offer ID');
+      if (!offerId) throw new Error("No offer ID");
       return showDemandedOfferDetails({ offerId });
     },
     enabled: isOpen && !!offerId, // بيتشغل فقط إذا Modal مفتوح وفيه offerId
@@ -23,33 +40,39 @@ export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDet
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'accepted': return 'text-green-600 bg-green-100';
-      case 'rejected': return 'text-red-600 bg-red-100';
-      default: return 'text-yellow-600 bg-yellow-100';
+      case "accepted":
+        return "text-green-600 bg-green-100";
+      case "rejected":
+        return "text-red-600 bg-red-100";
+      default:
+        return "text-yellow-600 bg-yellow-100";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'accepted': return 'مكتمل';
-      case 'rejected': return 'ملغي';
-      default: return 'قيد الانتظار';
+      case "accepted":
+        return "مكتمل";
+      case "rejected":
+        return "ملغي";
+      default:
+        return "قيد الانتظار";
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-bold text-gray-900">
-            {isLoading ? 'جاري التحميل...' : `تفاصيل الطلب #${offerId}`}
+            {isLoading ? "جاري التحميل..." : `تفاصيل الطلب #${offerId}`}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="rounded-lg p-2 transition-colors hover:bg-gray-100"
             disabled={isLoading}
           >
             <X className="h-5 w-5 text-gray-500" />
@@ -59,17 +82,17 @@ export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDet
         {/* Content */}
         <div className="p-6">
           {isLoading && (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="flex items-center justify-center py-12">
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
             </div>
           )}
 
           {error && (
-            <div className="text-center py-8 text-red-600">
+            <div className="py-8 text-center text-red-600">
               <p>حدث خطأ في تحميل التفاصيل</p>
               <button
                 onClick={() => refetch()}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
               >
                 إعادة المحاولة
               </button>
@@ -80,73 +103,93 @@ export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDet
             <div className="space-y-6">
               {/* حالة الطلب */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">حالة الطلب:</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(offerDetails.status)}`}>
+                <span className="text-sm font-medium text-gray-700">
+                  حالة الطلب:
+                </span>
+                <span
+                  className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(
+                    offerDetails.status
+                  )}`}
+                >
                   {getStatusText(offerDetails.status)}
                 </span>
               </div>
 
               {/* المعلومات الأساسية */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <Package className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="text-sm text-gray-600">الكمية</p>
-                    <p className="font-semibold text-gray-900">{offerDetails.quantity} وحدة</p>
+                    <p className="font-semibold text-gray-900">
+                      {offerDetails.quantity} وحدة
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <DollarSign className="h-5 w-5 text-green-600" />
                   <div>
                     <p className="text-sm text-gray-600">السعر الإجمالي</p>
-                    <p className="font-semibold text-gray-900">{offerDetails.total_price} جنيه</p>
+                    <p className="font-semibold text-gray-900">
+                      {offerDetails.total_price} جنيه
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <DollarSign className="h-5 w-5 text-purple-600" />
                   <div>
                     <p className="text-sm text-gray-600">سعر الوحدة</p>
-                    <p className="font-semibold text-gray-900">{offerDetails.item_price} جنيه</p>
+                    <p className="font-semibold text-gray-900">
+                      {offerDetails.item_price} جنيه
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <Building className="h-5 w-5 text-orange-600" />
                   <div>
                     <p className="text-sm text-gray-600">رقم العرض</p>
-                    <p className="font-semibold text-gray-900">#{offerDetails.company_offer_id}</p>
+                    <p className="font-semibold text-gray-900">
+                      #{offerDetails.company_offer_id}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* تواريخ */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <Calendar className="h-5 w-5 text-gray-600" />
                   <div>
                     <p className="text-sm text-gray-600">تاريخ الإنشاء</p>
                     <p className="font-semibold text-gray-900">
-                      {new Date(offerDetails.created_at).toLocaleDateString('ar-EG', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {new Date(offerDetails.created_at).toLocaleDateString(
+                        "ar-EG",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <Calendar className="h-5 w-5 text-gray-600" />
                   <div>
                     <p className="text-sm text-gray-600">آخر تحديث</p>
                     <p className="font-semibold text-gray-900">
-                      {new Date(offerDetails.updated_at).toLocaleDateString('ar-EG', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {new Date(offerDetails.updated_at).toLocaleDateString(
+                        "ar-EG",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </p>
                   </div>
                 </div>
@@ -155,41 +198,53 @@ export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDet
               {/* تفاصيل العرض */}
               {offerDetails.offer && (
                 <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">تفاصيل العرض</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                  <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                    تفاصيل العرض
+                  </h3>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="flex items-center gap-3 rounded-lg bg-blue-50 p-3">
                       <Percent className="h-5 w-5 text-blue-600" />
                       <div>
                         <p className="text-sm text-gray-600">الخصم</p>
-                        <p className="font-semibold text-gray-900">{offerDetails.offer.discount}%</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                      <Package className="h-5 w-5 text-blue-600" />
-                      <div>
-                        <p className="text-sm text-gray-600">الحد الأدنى للطلب</p>
-                        <p className="font-semibold text-gray-900">{offerDetails.offer.min_quantity} وحدة</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                      <Calendar className="h-5 w-5 text-blue-600" />
-                      <div>
-                        <p className="text-sm text-gray-600">يبدأ من</p>
                         <p className="font-semibold text-gray-900">
-                          {new Date(offerDetails.offer.start_date).toLocaleDateString('ar-EG')}
+                          {offerDetails.offer.discount}%
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-3 rounded-lg bg-blue-50 p-3">
+                      <Package className="h-5 w-5 text-blue-600" />
+                      <div>
+                        <p className="text-sm text-gray-600">
+                          الحد الأدنى للطلب
+                        </p>
+                        <p className="font-semibold text-gray-900">
+                          {offerDetails.offer.min_quantity} وحدة
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 rounded-lg bg-blue-50 p-3">
+                      <Calendar className="h-5 w-5 text-blue-600" />
+                      <div>
+                        <p className="text-sm text-gray-600">يبدأ من</p>
+                        <p className="font-semibold text-gray-900">
+                          {new Date(
+                            offerDetails.offer.start_date
+                          ).toLocaleDateString("ar-EG")}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 rounded-lg bg-blue-50 p-3">
                       <Calendar className="h-5 w-5 text-blue-600" />
                       <div>
                         <p className="text-sm text-gray-600">ينتهي في</p>
                         <p className="font-semibold text-gray-900">
-                          {new Date(offerDetails.offer.end_date).toLocaleDateString('ar-EG')}
+                          {new Date(
+                            offerDetails.offer.end_date
+                          ).toLocaleDateString("ar-EG")}
                         </p>
                       </div>
                     </div>
@@ -197,9 +252,13 @@ export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDet
 
                   {/* وصف العرض */}
                   {offerDetails.offer.description && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">وصف العرض</h4>
-                      <p className="text-gray-900">{offerDetails.offer.description}</p>
+                    <div className="mt-4 rounded-lg bg-gray-50 p-4">
+                      <h4 className="mb-2 text-sm font-medium text-gray-700">
+                        وصف العرض
+                      </h4>
+                      <p className="text-gray-900">
+                        {offerDetails.offer.description}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -210,19 +269,19 @@ export default function OfferDetailsModal({ isOpen, onClose, offerId }: OfferDet
 
         {/* Footer */}
         {!isLoading && !error && offerDetails && (
-          <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+          <div className="flex justify-end gap-3 border-t border-gray-200 p-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200"
             >
               إغلاق
             </button>
-            {offerDetails.status === 'pending' && (
+            {offerDetails.status === "pending" && (
               <>
-                <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                <button className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700">
                   قبول الطلب
                 </button>
-                <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                <button className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700">
                   رفض الطلب
                 </button>
               </>
