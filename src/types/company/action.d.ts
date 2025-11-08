@@ -256,8 +256,11 @@ interface ListWarehouseOrdersParams {
   warehouseId: number;
 }
 
-
 interface ImportWarehouseProductsParams {
   warehouseId: number;
   file: File;
+}
+
+interface SearchWarehousesParams {
+  name: string;
 }

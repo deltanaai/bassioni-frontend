@@ -15,6 +15,15 @@ export const warehousesEndpoints = {
       }
     ),
 
+  searchWarehouses: ({ name }: { name: string }) =>
+    fetchHandler(
+      `${API_URL}warehouse-products/search?name=${encodeURIComponent(name)}`,
+      {
+        method: "GET",
+        auth: true,
+      }
+    ),
+
   addWarehouse: ({ payload }: { payload: AddWarehousePayload }) =>
     fetchHandler(`${API_URL}company/dashboard/warehouses`, {
       method: "POST",

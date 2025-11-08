@@ -48,3 +48,7 @@ export const RestoreWarehouseSchema = z.object({
     .array(z.number().int().positive())
     .min(1, "يجب تحديد مستودع واحد على الأقل للاستعادة"),
 });
+
+export const SearchWarehousesSchema = z.object({
+  name: z.string().min(1, "الرجاء ادخال اسم  للبحث"),
+})

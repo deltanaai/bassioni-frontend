@@ -6,6 +6,7 @@ import {
   GetAllWarehousesSchema,
   GetWarehouseSchema,
   RestoreWarehouseSchema,
+  SearchWarehousesSchema,
   UpdateWarehouseSchema,
 } from "@/schemas/company/warehouse";
 
@@ -48,6 +49,34 @@ export async function getAllWarehouses(params: PaginatedSearchParams = {}) {
       data: response.data.data as Warehouse[],
       links: response.data.links as PaginationLinks,
       meta: response.data.meta as PaginationMeta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function searchWarehouses(params: SearchWarehousesParams) {
+  const validationResult = await action({
+    params,
+    schema: SearchWarehousesSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { name } = validationResult.params!;
+
+  try {
+    const response = await api.company.warehouses.searchWarehouses({ name });
+
+    if (!response || response.result === "Error") {
+      return handleError(new Error(response.message)) as ErrorResponse;
+    }
+
+    return {
+      success: true,
+      data: response.data,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
