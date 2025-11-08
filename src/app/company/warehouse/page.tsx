@@ -39,7 +39,7 @@ export default function WarehousesPage() {
         paginate: true,
       }),
   });
-  console.log(data);
+  console.log("WAREHOUSE DATA:",data?.data);
 
   //   للمواقع
   // const { data: locationsData } = useQuery({
@@ -83,9 +83,9 @@ export default function WarehousesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mb-8 flex items-center justify-between p-6 bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-200">
+      <div className="mb-8 flex items-center justify-between rounded-2xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6">
         <div className="flex items-center gap-3">
-          <Warehouse className="w-8 h-8 text-emerald-600" />
+          <Warehouse className="h-8 w-8 text-emerald-600" />
           <div>
             <h1 className="text-3xl font-bold text-emerald-600">المخازن</h1>
             <p className="text-gray-600">إدارة وتنظيم مخازن الشركة</p>
@@ -93,9 +93,9 @@ export default function WarehousesPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+          className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="h-5 w-5" />
           إضافة مخزن
         </button>
       </div>
@@ -135,7 +135,7 @@ export default function WarehousesPage() {
                   <Activity className="h-5 w-5 text-emerald-500" /> حاله النشاط
                   :
                   <div
-                    className={`w-2 h-2 rounded-full ${
+                    className={`h-2 w-2 rounded-full ${
                       warehouse.active ? "bg-green-500" : "bg-red-500"
                     }`}
                   ></div>
@@ -176,12 +176,12 @@ export default function WarehousesPage() {
       </div>
       {/* Pagination بس لما يكون فيه اكتر من صفحة */}
       {data?.meta && data.meta.last_page > 1 && (
-        <div className="flex justify-center items-center space-x-4 mt-6">
+        <div className="mt-6 flex items-center justify-center space-x-4">
           {/* السهم اليمين */}
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
             disabled={currentPage === 1}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 transition-all hover:bg-emerald-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronRight size={16} />
           </button>
@@ -193,10 +193,10 @@ export default function WarehousesPage() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-all ${
                     currentPage === page
                       ? "bg-emerald-600 text-white shadow-md"
-                      : "text-emerald-600 border border-emerald-600 hover:bg-emerald-100"
+                      : "border border-emerald-600 text-emerald-600 hover:bg-emerald-100"
                   }`}
                 >
                   {page}
@@ -209,7 +209,7 @@ export default function WarehousesPage() {
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === data.meta.last_page}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 transition-all hover:bg-emerald-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronLeft size={16} />
           </button>

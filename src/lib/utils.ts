@@ -39,3 +39,37 @@ export function formatDateForBackend(date: Date): string {
   const year = date.getFullYear();
   return `${day}-${month}-${year}`;
 }
+
+// utils/formatArabicDate.ts
+
+export function formatArabicDate(dateString: string | undefined): string {
+  if (!dateString) return "";
+
+  try {
+    // Parse backend date string (e.g., "2025-Nov-05 11:10:31 AM")
+    const parsedDate = new Date(dateString.replace(/-/g, " "));
+
+    if (isNaN(parsedDate.getTime())) {
+      console.warn("Invalid date string:", dateString);
+      return dateString;
+    }
+
+    // Use Intl.DateTimeFormat to format in Arabic (RTL)
+    const formattedDate = new Intl.DateTimeFormat("ar-EG", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }).format(parsedDate);
+
+    // Add RTL mark and return
+    return `\u202B${formattedDate}\u202C`;
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return dateString;
+  }
+}

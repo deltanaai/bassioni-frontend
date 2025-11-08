@@ -1,5 +1,6 @@
 "use server";
 
+import logger from "@/lib/logger";
 import {
   AddWarehouseSchema,
   DeleteWarehouseSchema,
@@ -14,7 +15,9 @@ import { api } from "../../api";
 import action from "../../handlers/action";
 import handleError from "../../handlers/error";
 
-export async function getAllWarehouses(params: PaginatedSearchParams = {}) {
+export async function getAllWarehouses(
+  params: PaginatedSearchParams = {}
+): Promise<IndexedActionResponse<Warehouse[]>> {
   const validationResult = await action({
     params,
     schema: GetAllWarehousesSchema,
@@ -44,11 +47,13 @@ export async function getAllWarehouses(params: PaginatedSearchParams = {}) {
         "فشل في جلب المستودعات, لم يتم تلقي بيانات صالحة من الخادم"
       );
     }
+
+    logger.info(`Fetched warehouses: ${JSON.stringify(response.data)}`);
     return {
       success: true,
-      data: response.data.data as Warehouse[],
-      links: response.data.links as PaginationLinks,
-      meta: response.data.meta as PaginationMeta,
+      data: response.data as PaginatedResponse<Warehouse[]>,
+      links: response.links,
+      meta: response.meta,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
