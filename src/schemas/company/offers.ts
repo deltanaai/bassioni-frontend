@@ -23,10 +23,12 @@ export const CreateOfferSchema = z.object({
     .max(500, "الوصف لا يمكن أن يتجاوز 500 حرف")
     .optional(),
   startDate: z
-    .date("تاريخ البدء مطلوب")
+    .string("تاريخ البدء مطلوب")
+    .nonempty("تاريخ البدء مطلوب")
     .transform((date) => formatDateForBackend(date)),
   endDate: z
-    .date("تاريخ الانتهاء مطلوب")
+    .string("تاريخ الانتهاء مطلوب")
+    .nonempty("تاريخ الانتهاء مطلوب")
     .transform((date) => formatDateForBackend(date)),
 });
 

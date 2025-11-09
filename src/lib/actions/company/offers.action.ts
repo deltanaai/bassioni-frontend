@@ -63,7 +63,7 @@ export async function createOffer(
 
 export async function getOffers(
   params: PaginatedSearchParams
-): Promise<ActionResponse<PaginatedResponse<Offer>>> {
+): Promise<ActionResponse<Offer[]>> {
   const validationResult = await action({
     params,
     schema: GetOffersSchema,
@@ -93,7 +93,7 @@ export async function getOffers(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<Offer>,
+      data: response.data as Offer[],
       links: response.links,
       meta: response.meta,
     };
