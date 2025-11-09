@@ -17,7 +17,8 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const { session, isLoadingSession, refetch } = useGetSession();
 
   const isAuthRoute = pathname.startsWith("/auth");
-  const userType = "company";
+  const userType =
+    session?.user && "pharmacy" in session.user ? "pharmacy" : "company";
 
   useEffect(() => {
     if (!isAuthRoute) refetch();
@@ -32,10 +33,8 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (isAuthRoute && session?.token) {
-      if (userType === "company")
-        router.replace(ROUTES_COMPANY.DASHBOARD);
-      else if (userType === "pharmacy")
-        router.replace(ROUTES_PHARMA.DASHBOARD);
+      if (userType === "company") router.replace(ROUTES_COMPANY.DASHBOARD);
+      else if (userType === "pharmacy") router.replace(ROUTES_PHARMA.DASHBOARD);
       return;
     }
 
@@ -44,7 +43,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     } else if (userType !== "company" && pathname.startsWith("/company")) {
       router.replace(ROUTES_PHARMA.DASHBOARD);
     }
-  }, [session, isLoadingSession, pathname, router, isAuthRoute]);
+  }, [session, isLoadingSession, pathname, router, isAuthRoute, userType]);
 
   if (isLoadingSession)
     return (
