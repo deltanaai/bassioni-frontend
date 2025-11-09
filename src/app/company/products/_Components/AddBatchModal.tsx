@@ -1,28 +1,63 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
-import { Batch, AddBatchModalProps } from "../_types/product.types";
+import { formatDateForBackend } from "@/lib/utils";
+
+import { useStoreWarehouseBatch } from "../_hooks/useStoreWarehouseBatch";
+
+// import { Batch, AddBatchModalProps } from "../_types/product.types";
+
+interface AddBatchModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  warehouseId: number;
+  productId: number;
+}
 
 export default function AddBatchModal({
   isOpen,
   onClose,
-  onAddBatch,
+  warehouseId,
+  productId,
 }: AddBatchModalProps) {
-  const [formData, setFormData] = useState<Omit<Batch, "id">>({
+  const [formData, setFormData] = useState({
     batchNumber: "",
     quantity: 0,
     expiryDate: "",
   });
 
+  const { mutate, isPending } = useStoreWarehouseBatch();
+
+  const expiryDate = formatDateForBackend(formData.expiryDate);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAddBatch({
-      ...formData,
-      id: Date.now(),
-    });
-    handleClose();
-  };
+    console.log(formData.expiryDate);
 
+    mutate(
+      {
+        warehouseId,
+        productId,
+        stock: formData.quantity,
+        batchNumber: formData.batchNumber,
+        expiryDate,
+      },
+      {
+        onSuccess: (res) => {
+          if (res.success === true) {
+            toast.success("تمت إضافة الدفعة بنجاح");
+            handleClose();
+          } else {
+            toast.error(res.error?.message || "حدث خطأ أثناء إضافة الدفعة");
+          }
+        },
+        onError: (err) => {
+          toast.error(err.message || "حدث خطأ أثناء إضافة الدفعة");
+        },
+      }
+    );
+  };
   const handleClose = () => {
     setFormData({
       batchNumber: "",
@@ -117,9 +152,10 @@ export default function AddBatchModal({
             </button>
             <button
               type="submit"
+              disabled={isPending}
               className="flex-1 rounded-xl bg-emerald-500 py-3 font-medium text-white transition-colors hover:bg-emerald-600"
             >
-              إضافة الدفعة
+              {isPending ? "جاري الإضافة..." : "إضافة الدفعة"}
             </button>
           </div>
         </form>

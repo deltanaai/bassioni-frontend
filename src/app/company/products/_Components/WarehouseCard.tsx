@@ -161,9 +161,8 @@ const WarehouseCard = ({
       <AddBatchModal
         isOpen={isAddBatchOpen}
         onClose={() => setIsAddBatchOpen(false)}
-        onAddBatch={() => {}}
+        warehouseId={id}
         productId={productId}
-        productName={name}
       />
     </div>
   );

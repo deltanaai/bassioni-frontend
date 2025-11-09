@@ -46,7 +46,8 @@ export const StoreWarehouseBatchProductSchema = z.object({
     .nonnegative()
     .min(0, "الكمية  مطلوبة"),
   expiryDate: z
-    .date("تاريخ البدء مطلوب")
+    .string("تاريخ انتهاء الصلاحية مطلوب")
+    .nonempty("تاريخ انتهاء الصلاحية مطلوب")
     .transform((date) => formatDateForBackend(date)),
   batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
 });

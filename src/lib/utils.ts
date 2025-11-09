@@ -33,12 +33,24 @@ export function normalizeExpiryDateMaybe(date: string): string {
 }
 
 // converts to d-m-Y format
-export function formatDateForBackend(date: Date): string {
+export function formatDateForBackend(dateInput: string | Date): string {
+  if (!dateInput) return "";
+
+  // Ensure we’re working with a Date instance
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+
+  if (isNaN(date.getTime())) {
+    console.warn("Invalid date input:", dateInput);
+    return "";
+  }
+
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+
+  return `${day}-${month}-${year}`; // d-m-Y as required by backend
 }
+
 
 // utils/formatArabicDate.ts
 
@@ -73,8 +85,6 @@ export function formatArabicDate(dateString: string | undefined): string {
     return dateString;
   }
 }
-
-
 
 export function formatIsoToArabicDate(dateString: string): string {
   if (!dateString) return "";
