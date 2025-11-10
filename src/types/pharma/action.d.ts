@@ -142,7 +142,7 @@ interface ImportBranchProductsParams {
 interface CreateBranchParams {
   name: string;
   address: string;
-  active: boolean;
+  active?: boolean;
 }
 
 interface ShowBranchParams {

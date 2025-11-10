@@ -5,6 +5,7 @@ export const pharmaBranchEndpoints = {
   createBranch: ({ payload }: { payload: CreateBranchParams }) =>
     fetchHandler(`${API_URL}pharmacy/dashboard/branches`, {
       method: "POST",
+      auth: true,
       body: JSON.stringify(payload),
     }),
 
