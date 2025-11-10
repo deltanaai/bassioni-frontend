@@ -1,5 +1,7 @@
 "use client";
 
+import { indexBranches } from "@/lib/actions/pharma/branches.action";
+import { useQuery } from "@tanstack/react-query";
 import { MapPin, Plus, Edit, Trash, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -15,20 +17,27 @@ export default function PharmaciesPage() {
   const pharmacies = ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"];
 
   // الفروع الحالية
-  const [branches, setBranches] = useState<Branch[]>([
-    {
-      id: 1,
-      name: "فرع مدينة نصر",
-      location: "القاهرة - مدينة نصر",
-      pharmacy: "صيدلية النور",
-    },
-    {
-      id: 2,
-      name: "فرع سموحة",
-      location: "الإسكندرية - سموحة",
-      pharmacy: "صيدلية الشفاء",
-    },
-  ]);
+  // const [branches, setBranches] = useState<Branch[]>([
+  //   {
+  //     id: 1,
+  //     name: "فرع مدينة نصر",
+  //     location: "القاهرة - مدينة نصر",
+  //     pharmacy: "صيدلية النور",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "فرع سموحة",
+  //     location: "الإسكندرية - سموحة",
+  //     pharmacy: "صيدلية الشفاء",
+  //   },
+  // ]);
+
+  const {data:branchesResponse} = useQuery({
+    queryKey: ["branches"],
+    queryFn: () => indexBranches({}),
+  });
+
+  const branches = branchesResponse?.data || [];
 
   // مودال الإضافة / التعديل
   const [showModal, setShowModal] = useState(false);
@@ -61,26 +70,26 @@ export default function PharmaciesPage() {
   const handleDeleteWarehouse = () => {};
 
   // حفظ الفرع
-  const saveBranch = () => {
-    if (editBranchId !== null) {
-      // تعديل
-      setBranches(
-        branches.map((b) =>
-          b.id === editBranchId ? { ...b, name, location, pharmacy } : b
-        )
-      );
-    } else {
-      // إضافة
-      const newBranch: Branch = {
-        id: branches.length + 1,
-        name,
-        location,
-        pharmacy,
-      };
-      setBranches([...branches, newBranch]);
-    }
-    setShowModal(false);
-  };
+  // const saveBranch = () => {
+  //   if (editBranchId !== null) {
+  //     // تعديل
+  //     setBranches(
+  //       branches.map((b) =>
+  //         b.id === editBranchId ? { ...b, name, location, pharmacy } : b
+  //       )
+  //     );
+  //   } else {
+  //     // إضافة
+  //     const newBranch: Branch = {
+  //       id: branches.length + 1,
+  //       name,
+  //       location,
+  //       pharmacy,
+  //     };
+  //     setBranches([...branches, newBranch]);
+  //   }
+  //   setShowModal(false);
+  // };
 
   return (
     <div className="min-h-screen bg-gray-950 p-6">
@@ -115,11 +124,11 @@ export default function PharmaciesPage() {
             <p className="flex items-center gap-2 text-gray-300">
               <MapPin className="h-5 w-5 text-emerald-400" />
               الموقع:{" "}
-              <span className="font-bold text-white">{branch.location}</span>
+              <span className="font-bold text-white">{branch.address}</span>
             </p>
             <p className="mt-2 flex items-center gap-2 text-gray-300">
               الصيدلية الأساسية:{" "}
-              <span className="font-bold text-white">{branch.pharmacy}</span>
+              <span className="font-bold text-white">{branch.pharmacy.name}</span>
             </p>
             <div className="mt-4 flex justify-end">
               <button
