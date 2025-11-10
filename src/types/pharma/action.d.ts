@@ -145,6 +145,14 @@ interface CreateBranchParams {
   active?: boolean;
 }
 
+interface UpdateBranchParams extends CreateBranchParams {
+  branchId: number;
+}
+
+interface DeleteBranchParams {
+  branchId: number[];
+}
+
 interface ShowBranchParams {
   branchId: number;
 }

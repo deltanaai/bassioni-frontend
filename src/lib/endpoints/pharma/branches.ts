@@ -21,4 +21,18 @@ export const pharmaBranchEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  updateBranch: ({ branchId, ...payload }: UpdateBranchParams) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/branches/${branchId}`, {
+      method: "PATCH",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
+
+  deleteBranch: ({ payload }: { payload: DeleteBranchPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/branches/delete`, {
+      method: "DELETE",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };

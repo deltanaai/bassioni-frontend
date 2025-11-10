@@ -24,3 +24,17 @@ export const IndexBranchesSchema = z.object({
 export const ShowBranchSchema = z.object({
   branchId: z.number("معرف خاطئ للفرع").int().positive(),
 });
+
+export const UpdateBranchSchema = z.object({
+  branchId: z.number("معرف خاطئ للفرع").int().positive(),
+  name: z.string().min(1, "Branch name is required"),
+  address: z.string().min(1, "Address is required"),
+  active: z.boolean().optional(),
+});
+
+export const DeleteBranchSchema = z.object({
+  branchId: z.array(
+    z.number("معرف خاطئ للفرع").int().positive(),
+    "يجب أن يكون معرف الفرع مصفوفة من الأعداد الصحيحة الموجبة"
+  ),
+});

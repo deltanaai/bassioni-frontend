@@ -82,3 +82,7 @@ interface DeleteBranchProductsPayload {
   product_id: number[];
   batch_number: string;
 }
+
+interface DeleteBranchPayload {
+  items: number[];
+}
