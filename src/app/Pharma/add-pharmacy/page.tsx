@@ -14,8 +14,11 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function PharmaciesPage() {
-  // الصيدليات الأساسية
-  const pharmacies = ["صيدلية النور", "صيدلية الشفاء", "صيدلية الحياة"];
+  // مودال الإضافة
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: branchesResponse } = useQuery({
     queryKey: ["branches"],
@@ -27,6 +30,15 @@ export default function PharmaciesPage() {
     handleSubmit,
     reset,
     formState: { errors },
+  } = useForm<CreateBranchParams>({
+    resolver: zodResolver(CreateBranchSchema),
+  });
+
+  const {
+    register: editRegister,
+    handleSubmit: editHandleSubmit,
+    reset: editReset,
+    formState: { errors: editErrors },
   } = useForm<CreateBranchParams>({
     resolver: zodResolver(CreateBranchSchema),
   });
@@ -53,35 +65,11 @@ export default function PharmaciesPage() {
     addBranch.mutate(data);
   };
 
-  const branches = branchesResponse?.data || [];
-
-  // مودال الإضافة
-  const [showModal, setShowModal] = useState(false);
-  const [editBranchId, setEditBranchId] = useState<number | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  // بيانات النموذج
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [pharmacy, setPharmacy] = useState<string>(pharmacies[0]);
-
-  // // فتح مودال الإضافة
-  // const openAddModal = () => {
-  //   setEditBranchId(null);
-  //   setName("");
-  //   setLocation("");
-  //   setPharmacy(pharmacies[0]);
-  //   setShowModal(true);
-  // };
-
-  // فتح مودال التعديل
-  const openEditModal = (branch: Branch) => {
-    setEditBranchId(branch.id);
-    setName(branch.name);
-    setLocation(branch.address);
-    setPharmacy(branch.pharmacy.name);
-    setShowModal(true);
+  const handleEditBranch = (data: CreateBranchParams) => {
+    if (!selectedBranch) return;
   };
+
+  const branches = branchesResponse?.data || [];
 
   const handleDeleteWarehouse = () => {};
 
@@ -131,7 +119,10 @@ export default function PharmaciesPage() {
             </p>
             <div className="mt-4 flex justify-end">
               <button
-                onClick={() => openEditModal(branch)}
+                onClick={() => {
+                  setSelectedBranch(branch);
+                  setShowEditModal(true);
+                }}
                 className="flex items-center gap-2 rounded-xl bg-gray-700 px-3 py-2 text-sm text-white hover:bg-gray-600"
               >
                 <Edit className="h-4 w-4" /> تعديل
@@ -187,7 +178,7 @@ export default function PharmaciesPage() {
         </div>
       )}
 
-      {/* مودال الإضافة / التعديل */}
+      {/* مودال الإضافة */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="w-full max-w-md rounded-2xl bg-gray-900 p-6 text-white shadow-lg">
@@ -209,6 +200,68 @@ export default function PharmaciesPage() {
                 <input
                   type="text"
                   {...register("address")}
+                  placeholder="الموقع"
+                  className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+                />
+                {errors.address && (
+                  <p className="text-sm text-red-500">
+                    {errors.address.message}
+                  </p>
+                )}
+                {/* <select
+                  value={pharmacy}
+                  onChange={(e) => setPharmacy(e.target.value)}
+                  className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+                >
+                  {pharmacies.map((ph, idx) => (
+                    <option key={idx} value={ph}>
+                      {ph}
+                    </option>
+                  ))}
+                </select> */}
+
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="rounded-xl bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    onClick={() => {}}
+                    className="rounded-xl bg-emerald-600 px-4 py-2 hover:bg-emerald-700"
+                  >
+                    حفظ
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* edit modal  */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="w-full max-w-md rounded-2xl bg-gray-900 p-6 text-white shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold text-emerald-400">
+              تعديل بيانات الفرع
+            </h2>
+
+            <form onSubmit={handleSubmit(handleCreateBranch)}>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  {...editRegister("name")}
+                  placeholder="اسم الفرع"
+                  className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name.message}</p>
+                )}
+                <input
+                  type="text"
+                  {...editRegister("address")}
                   placeholder="الموقع"
                   className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
                 />
