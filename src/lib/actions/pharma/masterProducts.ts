@@ -10,7 +10,7 @@ import {
 
 export async function pharmaMasterProducts(
   params: PaginatedSearchParams
-): Promise<ActionResponse<PaginatedResponse<MasterProduct>>> {
+): Promise<ActionResponse<MasterProduct[]>> {
   const validationResult = await action({
     params,
     schema: GetMasterProductsSchema,
@@ -40,7 +40,7 @@ export async function pharmaMasterProducts(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<MasterProduct>,
+      data: response.data as MasterProduct[],
       links: response.links,
       meta: response.meta,
     };
