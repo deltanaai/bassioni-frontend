@@ -101,6 +101,10 @@ interface RequestedOfferDetailsParams {
   requestId: number;
 }
 
+interface CancelRequestedOfferParams {
+  requestId: number;
+}
+
 interface StoreBranchProductParams {
   branchId: number;
   productId: number;

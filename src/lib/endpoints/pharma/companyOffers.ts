@@ -27,22 +27,26 @@ export const companyOffersEndpoints = {
   }: {
     payload?: PaginatedSearchPayload;
   }) =>
-    fetchHandler(
-      `${API_URL}pharmacy/dashboard/response-company-offers/index`,
-      {
-        method: "POST",
-        body: payload ? JSON.stringify(payload) : undefined,
-        auth: true,
-      }
-    ),
+    fetchHandler(`${API_URL}pharmacy/dashboard/response-company-offers/index`, {
+      method: "POST",
+      body: payload ? JSON.stringify(payload) : undefined,
+      auth: true,
+    }),
 
-  getRequestedOfferDetails: ({
-    requestId,
-  }: RequestedOfferDetailsParams) =>
+  getRequestedOfferDetails: ({ requestId }: RequestedOfferDetailsParams) =>
     fetchHandler(
       `${API_URL}pharmacy/dashboard/response-company-offers/${requestId}`,
       {
         method: "GET",
+        auth: true,
+      }
+    ),
+
+  cancelRequestedOffer: ({ requestId }: CancelRequestedOfferParams) =>
+    fetchHandler(
+      `${API_URL}pharmacy/dashboard/response-company-offers/cancel/${requestId}`,
+      {
+        method: "PUT",
         auth: true,
       }
     ),

@@ -47,3 +47,7 @@ export const ShowRequestedCompanyOffersSchema = z.object({
 export const RequestedOfferDetailsSchema = z.object({
   requestId: z.number().int().positive().min(1, "معرف طلب العرض مطلوب"),
 });
+
+export const CancelRequestedOfferSchema = z.object({
+  requestId: z.number().int().positive().min(1, "معرف طلب العرض مطلوب"),
+});

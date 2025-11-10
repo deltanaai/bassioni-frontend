@@ -1,7 +1,7 @@
 // components/CompanyOffersPage.tsx
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { FiEye, FiShoppingCart, FiSearch, FiFilter } from "react-icons/fi";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import {
   showCompanyOfferDetails,
 } from "@/lib/actions/pharma/companyOffers.action";
 import { queryClient } from "@/lib/queryClient";
+import { formatIsoToArabicDate } from "@/lib/utils";
 
 export default function CompanyOffersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -297,8 +298,8 @@ export default function CompanyOffersPage() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-400">
                         <div className="text-center">
-                          <div>{offer.start_date}</div>
-                          <div className="text-xs">إلى {offer.end_date}</div>
+                          <div>{formatIsoToArabicDate(offer.start_date)}</div>
+                          <div className="text-xs">إلى {formatIsoToArabicDate(offer.end_date)}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">

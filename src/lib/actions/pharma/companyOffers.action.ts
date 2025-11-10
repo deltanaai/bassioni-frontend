@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import {
+  CancelRequestedOfferSchema,
   GetCompanyOffersSchema,
   RequestedOfferDetailsSchema,
   RequestToCompanyOfferSchema,
@@ -125,7 +126,7 @@ export async function requestCompanyOffer(
 
 export async function showRequestedCompanyOffers(
   params: PaginatedSearchParams
-): Promise<ActionResponse<PaginatedResponse<CompanyOfferResponse>>> {
+): Promise<ActionResponse<CompanyOfferResponse[]>> {
   const validationResult = await action({
     params,
     schema: ShowRequestedCompanyOffersSchema,
@@ -165,7 +166,7 @@ export async function showRequestedCompanyOffers(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<CompanyOfferResponse>,
+      data: response.data as CompanyOfferResponse[],
       links: response.links,
       meta: response.meta,
     };
@@ -176,7 +177,7 @@ export async function showRequestedCompanyOffers(
 
 export async function getRequestedOfferDetails(
   params: RequestedOfferDetailsParams
-): Promise<ActionResponse<CompanyOfferResponse>> {
+): Promise<ActionResponse<CompanyOfferResponse[]>> {
   const validationResult = await action({
     params,
     schema: RequestedOfferDetailsSchema,
@@ -197,7 +198,39 @@ export async function getRequestedOfferDetails(
     }
     return {
       success: true,
-      data: response.data as CompanyOfferResponse,
+      data: response.data as CompanyOfferResponse[],
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function cancelRequestedOffer(
+  params: CancelRequestedOfferParams
+): Promise<ActionResponse<null>> {
+  const validationResult = await action({
+    params,
+    schema: CancelRequestedOfferSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { requestId } = validationResult.params!;
+  try {
+    const response = await api.pharma.companyOffers.cancelRequestedOffer({
+      requestId,
+    });
+
+    if (!response || response.result === "Error") {
+      return handleError(
+        new Error(response.message || "فشل إلغاء طلب عرض الشركة")
+      ) as ErrorResponse;
+    }
+    return {
+      success: true,
+      data: null,
+      message: "تم إلغاء طلب عرض الشركة بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
