@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { FiChevronRight } from "react-icons/fi";
 
 import {
@@ -7,11 +8,12 @@ import {
   Warehouse,
   Batch,
 } from "@/constants/staticProductDataPharma";
+import { indexBranches } from "@/lib/actions/pharma/branches.action";
 
 interface ProductDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  expandedWarehouses: number[];
+  expandedBranches: number[];
   selectedProduct: MasterProduct | null;
   onToggleWarehouse: (index: number) => void;
 }
@@ -19,11 +21,28 @@ interface ProductDetailsModalProps {
 export default function ProductDetailsModal({
   isOpen,
   onClose,
-  expandedWarehouses,
+  expandedBranches,
   onToggleWarehouse,
   selectedProduct,
 }: ProductDetailsModalProps) {
+  const { data: branchesResponse, isLoading: branchesIsLoading } = useQuery({
+    queryKey: ["branches"],
+    queryFn: () => indexBranches({}),
+    enabled: isOpen,
+  });
+
+  const branches = branchesResponse?.data || [];
+  console.log("RESPONSE",branchesResponse);
+  
+  console.log("BRANCHES",branches);
+  
+
   if (!isOpen || !selectedProduct) return null;
+
+  // const {} = useQuery({
+  //   queryKey: ["branchProducts", selectedProduct.id],
+  //   queryFn:
+  // })
 
   const {
     name,
@@ -96,9 +115,9 @@ export default function ProductDetailsModal({
           <div className="bg-gray-750 mt-6 rounded-xl border border-gray-600 p-6">
             <div className="grid grid-cols-1 gap-6 text-center md:grid-cols-3">
               <div className="rounded-lg border border-gray-600 bg-gray-700 p-4">
-                <div className="mb-2 text-sm text-gray-400">عدد المخازن</div>
+                <div className="mb-2 text-sm text-gray-400">عدد الفروع</div>
                 <div className="text-2xl font-bold text-white">
-                  {totalWarehouses}
+                  {branches.length}
                 </div>
               </div>
               <div className="rounded-lg border border-gray-600 bg-gray-700 p-4">
@@ -116,24 +135,24 @@ export default function ProductDetailsModal({
             </div>
           </div>
 
-          {/* المخازن */}
+          {/* الفروع */}
           <div className="mt-6 space-y-4">
             <h3 className="mb-4 text-lg font-semibold text-white">
-              المخازن المتاحة
+              الفروع المتاحة
             </h3>
 
-            {staticWarehouses.map(
-              (warehouse: Warehouse, warehouseIndex: number) => {
-                const isExpanded = expandedWarehouses.includes(warehouseIndex);
+            {branches.map(
+              (branch) => {
+                const isExpanded = expandedBranches.includes(branch.id);
 
                 return (
                   <div
-                    key={warehouse.id}
+                    key={branch.id}
                     className="bg-gray-750 overflow-hidden rounded-xl border border-gray-600"
                   >
                     {/* هيدر المخزن */}
                     <button
-                      onClick={() => onToggleWarehouse(warehouseIndex)}
+                      onClick={() => onToggleWarehouse(branch.id)}
                       className="flex w-full items-center justify-between border-b border-gray-600 bg-gray-700 px-6 py-4 transition-colors hover:bg-gray-600"
                     >
                       <div className="flex items-center gap-4">
@@ -146,21 +165,21 @@ export default function ProductDetailsModal({
                         </div>
                         <div className="text-right">
                           <h3 className="text-lg font-semibold text-white">
-                            {warehouse.name}
+                            {branch.name}
                           </h3>
-                          <p className="mt-1 text-sm text-gray-400">
+                          {/* <p className="mt-1 text-sm text-gray-400">
                             {warehouse.batches.length} دفعة متاحة
-                          </p>
+                          </p> */}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-4">
-                        <span className="text-sm text-gray-300">
+                        {/* <span className="text-sm text-gray-300">
                           {warehouse.batches.length} دفعة
-                        </span>
-                        <span className="rounded-full border border-emerald-700 bg-emerald-900 px-3 py-1 text-sm text-emerald-300">
+                        </span> */}
+                        {/* <span className="rounded-full border border-emerald-700 bg-emerald-900 px-3 py-1 text-sm text-emerald-300">
                           {warehouse.totalQuantity} وحدة
-                        </span>
+                        </span> */}
                       </div>
                     </button>
 
@@ -186,7 +205,7 @@ export default function ProductDetailsModal({
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-600">
-                              {warehouse.batches.map(
+                              {/* {warehouse.batches.map(
                                 (batch: Batch, batchIndex: number) => {
                                   const expired = isExpired(batch.expiryDate);
                                   return (
@@ -223,7 +242,7 @@ export default function ProductDetailsModal({
                                     </tr>
                                   );
                                 }
-                              )}
+                              )} */}
                             </tbody>
                           </table>
                         </div>
@@ -231,16 +250,16 @@ export default function ProductDetailsModal({
                         {/* ملخص المخزن */}
                         <div className="mt-4 rounded-lg border border-gray-600 bg-gray-700 p-4">
                           <div className="flex items-center justify-between text-sm text-gray-300">
-                            <span>المخزن: {warehouse.name}</span>
+                            <span>المخزن: {branch.name}</span>
                             <span>
                               إجمالي الوحدات:{" "}
-                              <strong className="text-emerald-400">
+                              {/* <strong className="text-emerald-400">
                                 {warehouse.totalQuantity}
-                              </strong>
+                              </strong> */}
                             </span>
                             <span>
                               عدد الدفعات:{" "}
-                              <strong>{warehouse.batches.length}</strong>
+                              {/* <strong>{warehouse.batches.length}</strong> */}
                             </span>
                           </div>
                         </div>
@@ -256,7 +275,7 @@ export default function ProductDetailsModal({
           <div className="bg-gray-750 mt-6 rounded-lg border border-gray-600 p-4">
             <div className="grid grid-cols-2 gap-4 text-center text-sm md:grid-cols-4">
               <div>
-                <div className="text-gray-400">إجمالي المخازن</div>
+                <div className="text-gray-400">إجمالي الفروع</div>
                 <div className="font-semibold text-white">
                   {totalWarehouses}
                 </div>

@@ -3,6 +3,7 @@
 import { ZodError, ZodSchema } from "zod";
 
 import { UnauthorizedError, ValidationError } from "../http-errors";
+import logger from "../logger";
 import { getSession } from "../session";
 
 type ActionOptions<T> = {
@@ -21,6 +22,7 @@ async function action<T>({
       schema.parse(params);
     } catch (error) {
       if (error instanceof ZodError) {
+        logger.error(`Validation error: ${error.message}`);
         throw new ValidationError(error);
       }
       throw error;
@@ -30,7 +32,10 @@ async function action<T>({
   let session: Session | null = null;
   if (authorize) {
     session = await getSession();
-    if (!session) throw new UnauthorizedError();
+    if (!session) {
+      logger.error("Unauthorized access attempt");
+      throw new UnauthorizedError();
+    }
   }
 
   return { params, session };

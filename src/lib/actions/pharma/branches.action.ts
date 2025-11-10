@@ -1,3 +1,5 @@
+"use server";
+
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
@@ -41,7 +43,7 @@ export async function createBranch(
 }
 
 export async function indexBranches(
-  params?: PaginatedSearchParams
+  params: PaginatedSearchParams
 ): Promise<ActionResponse<Branch[]>> {
   const validationResult = await action({
     params,

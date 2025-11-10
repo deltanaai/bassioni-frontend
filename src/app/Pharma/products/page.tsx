@@ -24,7 +24,6 @@ export default function PharmaProductsPage() {
 
   const products = productsData?.data || [];
   console.log("PRODUCTS", products);
-  
 
   // فلترة المنتجات
   const filteredProducts = products.filter((product) => {
@@ -257,7 +256,7 @@ export default function PharmaProductsPage() {
         isOpen={!!selectedProduct}
         onClose={closeProductDetails}
         selectedProduct={selectedProduct}
-        expandedWarehouses={expandedWarehouses}
+        expandedBranches={expandedWarehouses}
         onToggleWarehouse={toggleWarehouse}
       />
     </div>
