@@ -3,13 +3,14 @@ import { fetchHandler } from "@/lib/handlers/fetch";
 
 export const companyOffersEndpoints = {
   getAll: ({ payload }: { payload?: PaginatedSearchPayload }) =>
-    fetchHandler(`${API_URL}/pharmacy/dashboard/company-offers/index`, {
+    fetchHandler(`${API_URL}pharmacy/dashboard/company-offers/index`, {
       method: "POST",
+      auth: true,
       body: payload ? JSON.stringify(payload) : undefined,
     }),
 
   showDetails: ({ offerId }: ShowCompanyOfferDetailsParams) =>
-    fetchHandler(`${API_URL}/pharmacy/dashboard/company-offers/${offerId}`, {
+    fetchHandler(`${API_URL}pharmacy/dashboard/company-offers/${offerId}`, {
       method: "GET",
       auth: true,
     }),
@@ -27,7 +28,7 @@ export const companyOffersEndpoints = {
     payload?: PaginatedSearchPayload;
   }) =>
     fetchHandler(
-      `${API_URL}/pharmacy/dashboard/response-company-offers/index`,
+      `${API_URL}pharmacy/dashboard/response-company-offers/index`,
       {
         method: "POST",
         body: payload ? JSON.stringify(payload) : undefined,
@@ -39,7 +40,7 @@ export const companyOffersEndpoints = {
     requestId,
   }: RequestedOfferDetailsParams) =>
     fetchHandler(
-      `${API_URL}/pharmacy/dashboard/response-company-offers/${requestId}`,
+      `${API_URL}pharmacy/dashboard/response-company-offers/${requestId}`,
       {
         method: "GET",
         auth: true,

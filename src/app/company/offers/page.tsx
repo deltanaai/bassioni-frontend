@@ -12,9 +12,9 @@ import {
 } from "@/lib/actions/company/offers.action";
 // مكون منفصل لإنشاء العرض مع جمع كل المنتجات
 import { queryClient } from "@/lib/queryClient";
+import { formatIsoToArabicDate } from "@/lib/utils";
 
 import CreateOfferModal from "./_components/CreateOfferModal";
-import { formatIsoToArabicDate } from "@/lib/utils";
 
 export default function OffersPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);

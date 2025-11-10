@@ -13,7 +13,7 @@ import {
 
 export async function getCompanyOffers(
   params: PaginatedSearchParams
-): Promise<ActionResponse<PaginatedResponse<CompanyOffer>>> {
+): Promise<ActionResponse<CompanyOffer[]>> {
   const validationResult = await action({
     params,
     schema: GetCompanyOffersSchema,
@@ -52,7 +52,7 @@ export async function getCompanyOffers(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<CompanyOffer>,
+      data: response.data as CompanyOffer[],
       links: response.links,
       meta: response.meta,
     };

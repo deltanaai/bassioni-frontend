@@ -1,9 +1,10 @@
 // components/CompanyOffersPage.tsx
 "use client";
 
-import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { FiEye, FiShoppingCart, FiSearch, FiFilter } from "react-icons/fi";
+
 import {
   getCompanyOffers,
   requestCompanyOffer,
@@ -36,15 +37,18 @@ export default function CompanyOffersPage() {
       getCompanyOffers({
         page: currentPage,
         perPage: 10,
-        filters: {
-          search: searchTerm,
-          active: filters.active,
-        },
+        // filters: {
+        //   search: searchTerm,
+        //   active: filters.active,
+        // },
       }),
   });
 
-  const offers = offersData?.data?.data || [];
-  const pagination = offersData?.data?.meta;
+  const offers = offersData?.data || [];
+  const pagination = offersData?.meta;
+
+  console.log("OFFERS", offers);
+  
 
   // طلب عرض من الشركة
   const requestMutation = useMutation({
@@ -125,12 +129,12 @@ export default function CompanyOffersPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gray-900 min-h-screen">
+    <div className="min-h-screen space-y-6 bg-gray-900 p-6">
       {/* الهيدر */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-800 p-6 rounded-2xl border border-gray-700">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-gray-700 bg-gray-800 p-6 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">عروض الشركات</h1>
-          <p className="text-gray-400 mt-1">
+          <p className="mt-1 text-gray-400">
             استعرض واطلب من عروض الشركات المتاحة
           </p>
         </div>
@@ -138,34 +142,34 @@ export default function CompanyOffersPage() {
         <div className="flex gap-3">
           <button
             onClick={() => setFilters({ ...filters, active: !filters.active })}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-colors ${
               filters.active
                 ? "bg-emerald-600 text-white"
                 : "bg-gray-700 text-gray-300"
             }`}
           >
-            <FiFilter className="w-4 h-4" />
+            <FiFilter className="h-4 w-4" />
             {filters.active ? "النشطة فقط" : "جميع العروض"}
           </button>
         </div>
       </div>
 
       {/* شريط البحث */}
-      <div className="bg-gray-800 p-4 rounded-2xl border border-gray-700">
+      <div className="rounded-2xl border border-gray-700 bg-gray-800 p-4">
         <form onSubmit={handleSearch} className="flex gap-4">
-          <div className="flex-1 relative">
-            <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="relative flex-1">
+            <FiSearch className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="ابحث في عروض الشركات..."
-              className="w-full bg-gray-700 border border-gray-600 rounded-xl pl-4 pr-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full rounded-xl border border-gray-600 bg-gray-700 py-3 pr-10 pl-4 text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors"
+            className="rounded-xl bg-emerald-600 px-6 py-3 text-white transition-colors hover:bg-emerald-700"
           >
             بحث
           </button>
@@ -173,39 +177,39 @@ export default function CompanyOffersPage() {
       </div>
 
       {/* إحصائيات سريعة */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-gray-800 p-4 rounded-2xl border border-gray-700 text-center">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="rounded-2xl border border-gray-700 bg-gray-800 p-4 text-center">
           <div className="text-2xl font-bold text-emerald-400">
             {pagination?.total || 0}
           </div>
-          <div className="text-gray-400 text-sm">إجمالي العروض</div>
+          <div className="text-sm text-gray-400">إجمالي العروض</div>
         </div>
-        <div className="bg-gray-800 p-4 rounded-2xl border border-gray-700 text-center">
+        <div className="rounded-2xl border border-gray-700 bg-gray-800 p-4 text-center">
           <div className="text-2xl font-bold text-blue-400">
             {offers.filter((o) => o.active).length}
           </div>
-          <div className="text-gray-400 text-sm">عروض نشطة</div>
+          <div className="text-sm text-gray-400">عروض نشطة</div>
         </div>
-        <div className="bg-gray-800 p-4 rounded-2xl border border-gray-700 text-center">
+        <div className="rounded-2xl border border-gray-700 bg-gray-800 p-4 text-center">
           <div className="text-2xl font-bold text-orange-400">
             {offers.filter((o) => !o.active).length}
           </div>
-          <div className="text-gray-400 text-sm">عروض منتهية</div>
+          <div className="text-sm text-gray-400">عروض منتهية</div>
         </div>
-        <div className="bg-gray-800 p-4 rounded-2xl border border-gray-700 text-center">
+        <div className="rounded-2xl border border-gray-700 bg-gray-800 p-4 text-center">
           <div className="text-2xl font-bold text-purple-400">
             {offers.reduce((sum, offer) => sum + offer.total_quantity, 0)}
           </div>
-          <div className="text-gray-400 text-sm">الكميات المتاحة</div>
+          <div className="text-sm text-gray-400">الكميات المتاحة</div>
         </div>
       </div>
 
       {/* جدول العروض */}
-      <div className="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-gray-700 bg-gray-800">
         {isLoading ? (
           <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400 mx-auto"></div>
-            <p className="text-gray-400 mt-2">جاري تحميل العروض...</p>
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-emerald-400"></div>
+            <p className="mt-2 text-gray-400">جاري تحميل العروض...</p>
           </div>
         ) : error ? (
           <div className="p-8 text-center text-red-400">
@@ -218,7 +222,7 @@ export default function CompanyOffersPage() {
         ) : (
           <>
             {/* أدوات الجدول */}
-            <div className="flex justify-between items-center p-4 border-b border-gray-700 bg-gray-750">
+            <div className="bg-gray-750 flex items-center justify-between border-b border-gray-700 p-4">
               <div className="text-sm text-gray-400">
                 عرض {offers.length} من {pagination?.total} عرض
               </div>
@@ -232,25 +236,25 @@ export default function CompanyOffersPage() {
               <table className="w-full">
                 <thead className="bg-gray-750 border-b border-gray-700">
                   <tr>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       #
                     </th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       وصف العرض
                     </th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       الخصم
                     </th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       الكمية
                     </th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       الفترة
                     </th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       الحالة
                     </th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-sm font-semibold tracking-wider text-gray-300 uppercase">
                       الإجراءات
                     </th>
                   </tr>
@@ -265,16 +269,16 @@ export default function CompanyOffersPage() {
                         {(currentPage - 1) * 10 + index + 1}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-white text-sm">
+                        <div className="text-sm font-semibold text-white">
                           {offer.description || `عرض #${offer.id}`}
                         </div>
-                        <div className="text-gray-400 text-xs mt-1">
+                        <div className="mt-1 text-xs text-gray-400">
                           المنتج: #{offer.warehouse_product_id} | الشركة: #
                           {offer.company_id}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-red-900 text-red-300">
+                        <span className="inline-flex rounded-full bg-red-900 px-3 py-1 text-xs font-medium text-red-300">
                           {offer.discount}%
                         </span>
                       </td>
@@ -294,7 +298,7 @@ export default function CompanyOffersPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                             offer.active
                               ? "bg-green-900 text-green-300"
                               : "bg-red-900 text-red-300"
@@ -304,12 +308,12 @@ export default function CompanyOffersPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex gap-2 justify-end">
+                        <div className="flex justify-end gap-2">
                           <button
                             onClick={() => showDetails(offer)}
-                            className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors"
+                            className="flex items-center gap-2 rounded-lg bg-blue-900 px-3 py-2 text-sm text-blue-300 transition-colors hover:bg-blue-800"
                           >
-                            <FiEye className="w-4 h-4" />
+                            <FiEye className="h-4 w-4" />
                             التفاصيل
                           </button>
                           <button
@@ -317,9 +321,9 @@ export default function CompanyOffersPage() {
                             disabled={
                               !offer.active || getAvailableQuantity(offer) === 0
                             }
-                            className="flex items-center gap-2 px-3 py-2 text-sm bg-emerald-900 text-emerald-300 rounded-lg hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="flex items-center gap-2 rounded-lg bg-emerald-900 px-3 py-2 text-sm text-emerald-300 transition-colors hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            <FiShoppingCart className="w-4 h-4" />
+                            <FiShoppingCart className="h-4 w-4" />
                             طلب
                           </button>
                         </div>
@@ -332,14 +336,14 @@ export default function CompanyOffersPage() {
 
             {/* الترقيم */}
             {pagination && pagination.last_page > 1 && (
-              <div className="flex justify-center items-center p-4 border-t border-gray-700 bg-gray-750">
+              <div className="bg-gray-750 flex items-center justify-center border-t border-gray-700 p-4">
                 <div className="flex gap-2">
                   <button
                     onClick={() =>
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className="px-3 py-2 text-sm bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                    className="rounded-lg bg-gray-700 px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-600 disabled:opacity-50"
                   >
                     السابق
                   </button>
@@ -352,7 +356,7 @@ export default function CompanyOffersPage() {
                         <button
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                          className={`rounded-lg px-3 py-2 text-sm transition-colors ${
                             currentPage === pageNum
                               ? "bg-emerald-600 text-white"
                               : "bg-gray-700 text-gray-300 hover:bg-gray-600"
@@ -371,7 +375,7 @@ export default function CompanyOffersPage() {
                       )
                     }
                     disabled={currentPage === pagination.last_page}
-                    className="px-3 py-2 text-sm bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 disabled:opacity-50 transition-colors"
+                    className="rounded-lg bg-gray-700 px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-600 disabled:opacity-50"
                   >
                     التالي
                   </button>
@@ -384,19 +388,19 @@ export default function CompanyOffersPage() {
 
       {/* مودال تفاصيل العرض */}
       {showDetailsModal && selectedOffer && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-2xl border border-gray-700 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-gray-700 bg-gray-800">
             <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
+              <div className="mb-6 flex items-start justify-between">
                 <div>
                   <h2 className="text-2xl font-bold text-white">
                     {selectedOffer.description || `عرض #${selectedOffer.id}`}
                   </h2>
-                  <p className="text-gray-400 mt-1">تفاصيل عرض الشركة</p>
+                  <p className="mt-1 text-gray-400">تفاصيل عرض الشركة</p>
                 </div>
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors text-xl p-2"
+                  className="p-2 text-xl text-gray-400 transition-colors hover:text-white"
                 >
                   ✕
                 </button>
@@ -405,50 +409,50 @@ export default function CompanyOffersPage() {
               {/* معلومات العرض */}
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                    <div className="text-gray-400 text-sm">الشركة</div>
-                    <div className="text-white font-semibold">
+                  <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                    <div className="text-sm text-gray-400">الشركة</div>
+                    <div className="font-semibold text-white">
                       #{selectedOffer.company_id}
                     </div>
                   </div>
-                  <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                    <div className="text-gray-400 text-sm">نسبة الخصم</div>
-                    <div className="text-red-400 font-bold text-lg">
+                  <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                    <div className="text-sm text-gray-400">نسبة الخصم</div>
+                    <div className="text-lg font-bold text-red-400">
                       {selectedOffer.discount}%
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                    <div className="text-gray-400 text-sm">المنتج</div>
-                    <div className="text-white font-semibold">
+                  <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                    <div className="text-sm text-gray-400">المنتج</div>
+                    <div className="font-semibold text-white">
                       #{selectedOffer.warehouse_product_id}
                     </div>
                   </div>
-                  <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                    <div className="text-gray-400 text-sm">
+                  <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                    <div className="text-sm text-gray-400">
                       الكمية الإجمالية
                     </div>
-                    <div className="text-white font-bold text-lg">
+                    <div className="text-lg font-bold text-white">
                       {selectedOffer.total_quantity} وحدة
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                    <div className="text-gray-400 text-sm">
+                  <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                    <div className="text-sm text-gray-400">
                       الحد الأدنى للطلب
                     </div>
-                    <div className="text-white font-semibold">
+                    <div className="font-semibold text-white">
                       {selectedOffer.min_quantity} وحدة
                     </div>
                   </div>
-                  <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                    <div className="text-gray-400 text-sm">الحالة</div>
+                  <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                    <div className="text-sm text-gray-400">الحالة</div>
                     <div
-                      className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                      className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${
                         selectedOffer.active
                           ? "bg-green-900 text-green-300"
                           : "bg-red-900 text-red-300"
@@ -459,25 +463,25 @@ export default function CompanyOffersPage() {
                   </div>
                 </div>
 
-                <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                  <div className="text-gray-400 text-sm">فترة العرض</div>
-                  <div className="text-white font-semibold">
+                <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                  <div className="text-sm text-gray-400">فترة العرض</div>
+                  <div className="font-semibold text-white">
                     من {selectedOffer.start_date} إلى {selectedOffer.end_date}
                   </div>
                 </div>
 
-                <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                  <div className="text-gray-400 text-sm">تاريخ الإنشاء</div>
+                <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                  <div className="text-sm text-gray-400">تاريخ الإنشاء</div>
                   <div className="text-white">
                     {new Date(selectedOffer.created_at).toLocaleString("ar-EG")}
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-6">
+              <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="px-6 py-2 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-colors"
+                  className="rounded-xl border border-gray-600 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-700"
                 >
                   إغلاق
                 </button>
@@ -489,7 +493,7 @@ export default function CompanyOffersPage() {
                   disabled={
                     !selectedOffer.active || selectedOffer.total_quantity === 0
                   }
-                  className="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                  className="rounded-xl bg-emerald-600 px-6 py-2 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
                 >
                   طلب العرض
                 </button>
@@ -501,34 +505,34 @@ export default function CompanyOffersPage() {
 
       {/* مودال طلب العرض */}
       {showRequestModal && selectedOffer && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-2xl border border-gray-700 max-w-md w-full">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-800">
             <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
+              <div className="mb-6 flex items-start justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white">طلب عرض</h2>
-                  <p className="text-gray-400 mt-1">
+                  <p className="mt-1 text-gray-400">
                     {selectedOffer.description || `عرض #${selectedOffer.id}`}
                   </p>
                 </div>
                 <button
                   onClick={() => setShowRequestModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors text-xl p-2"
+                  className="p-2 text-xl text-gray-400 transition-colors hover:text-white"
                 >
                   ✕
                 </button>
               </div>
 
               <div className="space-y-4">
-                <div className="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                  <div className="text-gray-400 text-sm">نسبة الخصم</div>
-                  <div className="text-red-400 font-bold text-lg">
+                <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
+                  <div className="text-sm text-gray-400">نسبة الخصم</div>
+                  <div className="text-lg font-bold text-red-400">
                     {selectedOffer.discount}%
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
                     الكمية المطلوبة *
                   </label>
                   <input
@@ -547,26 +551,26 @@ export default function CompanyOffersPage() {
                     }
                     min={selectedOffer.min_quantity}
                     max={selectedOffer.total_quantity}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full rounded-xl border border-gray-600 bg-gray-700 px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="mt-1 text-xs text-gray-400">
                     الحد الأدنى: {selectedOffer.min_quantity} | الحد الأقصى:{" "}
                     {selectedOffer.total_quantity}
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-6">
+              <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={() => setShowRequestModal(false)}
-                  className="px-6 py-2 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-colors"
+                  className="rounded-xl border border-gray-600 px-6 py-2 text-gray-300 transition-colors hover:bg-gray-700"
                 >
                   إلغاء
                 </button>
                 <button
                   onClick={submitRequest}
                   disabled={requestMutation.isPending}
-                  className="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                  className="rounded-xl bg-emerald-600 px-6 py-2 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
                 >
                   {requestMutation.isPending ? "جاري الطلب..." : "تأكيد الطلب"}
                 </button>
