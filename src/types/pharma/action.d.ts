@@ -144,3 +144,7 @@ interface CreateBranchParams {
   address: string;
   active: boolean;
 }
+
+interface ShowBranchParams {
+  branchId: number;
+}

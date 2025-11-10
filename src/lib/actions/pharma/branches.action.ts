@@ -4,6 +4,7 @@ import handleError from "@/lib/handlers/error";
 import {
   CreateBranchSchema,
   IndexBranchesSchema,
+  ShowBranchSchema,
 } from "@/schemas/pharma/branches";
 
 export async function createBranch(
@@ -87,6 +88,39 @@ export async function indexBranches(
       data: response.data as Branch[],
       links: response.links,
       meta: response.meta,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function showBranch(
+  params: ShowBranchParams
+): Promise<ActionResponse<Branch>> {
+  const validationResult = await action({
+    params,
+    schema: ShowBranchSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { branchId } = validationResult.params!;
+  try {
+    const response = await api.pharma.branches.showBranch({
+      branchId,
+    });
+    if (!response || response.result !== "Success") {
+      return handleError(
+        new Error("فشل قي جلب البيانات من الخادم")
+      ) as ErrorResponse;
+    }
+
+    return {
+      success: true,
+      data: response.data as Branch,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

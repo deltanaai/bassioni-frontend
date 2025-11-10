@@ -14,4 +14,10 @@ export const pharmaBranchEndpoints = {
       auth: true,
       body: payload ? JSON.stringify(payload) : undefined,
     }),
+
+  showBranch: ({ branchId }: ShowBranchParams) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/branches/${branchId}`, {
+      method: "GET",
+      auth: true,
+    }),
 };

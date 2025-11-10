@@ -20,3 +20,7 @@ export const IndexBranchesSchema = z.object({
   paginate: z.boolean().optional(),
   deleted: z.boolean().optional(),
 });
+
+export const ShowBranchSchema = z.object({
+  branchId: z.number("معرف خاطئ للفرع").int().positive(),
+});
