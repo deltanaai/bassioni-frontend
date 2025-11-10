@@ -7,4 +7,11 @@ export const pharmaBranchEndpoints = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
+  indexBranches: ({ payload }: { payload?: PaginatedSearchPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/branches/index`, {
+      method: "POST",
+      auth: true,
+      body: payload ? JSON.stringify(payload) : undefined,
+    }),
 };
