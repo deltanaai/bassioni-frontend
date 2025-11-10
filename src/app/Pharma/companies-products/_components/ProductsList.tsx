@@ -15,7 +15,7 @@ export default function ProductsList({ companyId }: GetCompanyProducts) {
     queryFn: () => getCompanyProducts({ companyId }),
     enabled: !!companyId,
   });
-  const companyProducts = products?.data || [];
+  const companyProducts = products?.data?.products || [];
   console.log(companyProducts);
 
   if (isLoading) {
@@ -51,7 +51,7 @@ export default function ProductsList({ companyId }: GetCompanyProducts) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {companyProducts?.map((product: any) => (
+          {companyProducts?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

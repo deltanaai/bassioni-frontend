@@ -49,7 +49,7 @@ export async function addToCart(
 
 export async function getCart(
   params: GetCartParams
-): Promise<ActionResponse<CartResponse>> {
+): Promise<ActionResponse<CartItem[]>> {
   const validationResult = await action({
     params,
     schema: GetCartSchema,
@@ -74,7 +74,7 @@ export async function getCart(
 
     return {
       success: true,
-      data: response.data as CartResponse,
+      data: response.data as CartItem[],
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

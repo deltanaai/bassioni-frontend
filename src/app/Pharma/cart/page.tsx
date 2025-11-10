@@ -1,4 +1,5 @@
 "use client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   FiShoppingCart,
@@ -7,16 +8,20 @@ import {
   FiPlus,
   FiMinus,
 } from "react-icons/fi";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { usePharmacySession } from "@/hooks/usePharmacySession";
 import {
   addToCart,
   getCart,
   deleteCartItem,
   sendToOrder,
 } from "@/lib/actions/pharma/cart.action";
-import { toast } from "sonner";
 
-export default function CartPage({ pharmacyId }: GetCartParams) {
+export default function CartPage() {
+  const session = usePharmacySession();
+  const pharmacyId = session.pharmacist!.pharmacy.id;
+
   console.log("iddd", pharmacyId);
   const queryClient = useQueryClient();
   const [quantityUpdates, setQuantityUpdates] = useState<{
@@ -25,39 +30,40 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
 
   // جلب محتويات السلة
   const {
-    data: cartData,
+    data: cartRespnse,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["cart", pharmacyId],
     queryFn: () => getCart({ pharmacyId }),
-    placeholderData: {
-      success: true,
-      data: [
-        {
-          id: 1,
-          quantity: 2,
-          createdAt: "2024-01-15T10:30:00.000Z",
-          updatedAt: "2024-01-20T14:45:00.000Z",
-          product: {
-            id: 101,
-            name: "باراسيتامول 500 مجم",
-            description: "مسكن للألم وخافض للحرارة - شركة الصحة العالمية",
-            price: "25.50",
-            stock: 150,
-            expiry_date: "2025-12-31",
-            batch_number: "BATCH-2024-001",
-            category: {
-              id: 1,
-              name: "مسكنات الألم",
-            },
-            brand: "فارماسيا",
-          },
-        },
-      ],
-    },
+    // placeholderData: {
+    //   success: true,
+    //   data: [
+    //     {
+    //       id: 1,
+    //       quantity: 2,
+    //       createdAt: "2024-01-15T10:30:00.000Z",
+    //       updatedAt: "2024-01-20T14:45:00.000Z",
+    //       product: {
+    //         id: 101,
+    //         name: "باراسيتامول 500 مجم",
+    //         description: "مسكن للألم وخافض للحرارة - شركة الصحة العالمية",
+    //         price: "25.50",
+    //         stock: 150,
+    //         expiry_date: "2025-12-31",
+    //         batch_number: "BATCH-2024-001",
+    //         category: {
+    //           id: 1,
+    //           name: "مسكنات الألم",
+    //         },
+    //         brand: "فارماسيا",
+    //       },
+    //     },
+    //   ],
+    // },
     enabled: !!pharmacyId,
   });
+  const cartData = cartRespnse?.data || [];
   console.log("dataaa", cartData);
 
   //  بحتاجها عشان وانا بعمل + لمنتج عندي
@@ -144,12 +150,12 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
 
   if (isLoading) {
     return (
-      <div className="p-4 space-y-6 bg-gray-900 text-gray-100 min-h-screen">
+      <div className="min-h-screen space-y-6 bg-gray-900 p-4 text-gray-100">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-700 rounded w-1/4 mb-6"></div>
+          <div className="mb-6 h-8 w-1/4 rounded bg-gray-700"></div>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-800 rounded-lg"></div>
+              <div key={i} className="h-20 rounded-lg bg-gray-800"></div>
             ))}
           </div>
         </div>
@@ -159,8 +165,8 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
 
   if (error) {
     return (
-      <div className="p-4 space-y-6 bg-gray-900 text-gray-100 min-h-screen">
-        <div className="bg-red-900 border border-red-700 text-red-100 p-4 rounded-lg">
+      <div className="min-h-screen space-y-6 bg-gray-900 p-4 text-gray-100">
+        <div className="rounded-lg border border-red-700 bg-red-900 p-4 text-red-100">
           خطأ في تحميل السلة: {(error as Error).message}
         </div>
       </div>
@@ -183,11 +189,11 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
   }, 0);
 
   return (
-    <div className="p-4 space-y-6 bg-gray-900 text-gray-100 min-h-screen">
+    <div className="min-h-screen space-y-6 bg-gray-900 p-4 text-gray-100">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div className="flex items-center gap-3">
-          <FiShoppingCart className="w-8 h-8 text-emerald-400" />
+          <FiShoppingCart className="h-8 w-8 text-emerald-400" />
           <h1 className="text-2xl font-bold text-white">عربة التسوق</h1>
         </div>
 
@@ -202,9 +208,9 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
           <button
             onClick={handleSendToOrder}
             disabled={sendToOrderMutation.isPending || cartItems.length === 0}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2 text-white transition-colors hover:bg-emerald-700 disabled:bg-gray-600"
           >
-            <FiSend className="w-4 h-4" />
+            <FiSend className="h-4 w-4" />
             {sendToOrderMutation.isPending ? "جاري الإرسال..." : "إرسال الطلب"}
           </button>
         </div>
@@ -213,9 +219,9 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
       {/* Cart Items */}
       <div className="space-y-4">
         {cartItems.length === 0 ? (
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-12 text-center">
-            <FiShoppingCart className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-400 mb-2">
+          <div className="rounded-lg border border-gray-700 bg-gray-800 p-12 text-center">
+            <FiShoppingCart className="mx-auto mb-4 h-16 w-16 text-gray-500" />
+            <h3 className="mb-2 text-xl font-semibold text-gray-400">
               السلة فارغة
             </h3>
             <p className="text-gray-500">
@@ -232,31 +238,31 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
             return (
               <div
                 key={item.id}
-                className="bg-gray-800 rounded-lg border border-gray-700 p-4 hover:border-gray-600 transition-colors"
+                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-gray-600"
               >
                 <div className="flex items-center justify-between">
                   {/* المعلومات الأساسية */}
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white text-lg mb-2">
+                    <h3 className="mb-2 text-lg font-semibold text-white">
                       {product.name}
                     </h3>
 
-                    <div className="flex items-center gap-3 text-sm text-gray-400 mb-2">
+                    <div className="mb-2 flex items-center gap-3 text-sm text-gray-400">
                       <span>#{product.id}</span>
                       {product.brand && (
-                        <span className="bg-blue-900 text-blue-300 px-2 py-1 rounded-full text-xs">
+                        <span className="rounded-full bg-blue-900 px-2 py-1 text-xs text-blue-300">
                           {product.brand}
                         </span>
                       )}
                       {product.category && (
-                        <span className="bg-purple-900 text-purple-300 px-2 py-1 rounded-full text-xs">
+                        <span className="rounded-full bg-purple-900 px-2 py-1 text-xs text-purple-300">
                           {product.category.name}
                         </span>
                       )}
                     </div>
 
                     {product.description && (
-                      <p className="text-gray-400 text-sm mb-2">
+                      <p className="mb-2 text-sm text-gray-400">
                         {product.description}
                       </p>
                     )}
@@ -277,8 +283,8 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
                   <div className="flex items-center gap-6">
                     {/* السعر للوحدة */}
                     <div className="text-right">
-                      <div className="text-gray-400 text-sm">سعر الوحدة</div>
-                      <div className="text-emerald-400 font-bold text-lg">
+                      <div className="text-sm text-gray-400">سعر الوحدة</div>
+                      <div className="text-lg font-bold text-emerald-400">
                         {parseFloat(product.price).toFixed(2)} ج.م
                       </div>
                     </div>
@@ -292,12 +298,12 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
                         disabled={
                           addToCartMutation.isPending || displayQuantity <= 1
                         }
-                        className="w-8 h-8 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600 disabled:bg-gray-800"
                       >
-                        <FiMinus className="w-4 h-4" />
+                        <FiMinus className="h-4 w-4" />
                       </button>
 
-                      <span className="w-12 text-center font-semibold text-white text-lg">
+                      <span className="w-12 text-center text-lg font-semibold text-white">
                         {displayQuantity}
                       </span>
 
@@ -309,24 +315,24 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
                           addToCartMutation.isPending ||
                           displayQuantity >= product.stock
                         }
-                        className="w-8 h-8 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600 disabled:bg-gray-800"
                       >
-                        <FiPlus className="w-4 h-4" />
+                        <FiPlus className="h-4 w-4" />
                       </button>
                     </div>
 
                     {/* الإجمالي والحذف */}
-                    <div className="text-right min-w-[140px]">
-                      <div className="text-gray-400 text-sm mb-1">الإجمالي</div>
-                      <div className="text-white font-bold text-lg mb-2">
+                    <div className="min-w-[140px] text-right">
+                      <div className="mb-1 text-sm text-gray-400">الإجمالي</div>
+                      <div className="mb-2 text-lg font-bold text-white">
                         {totalPrice.toFixed(2)} ج.م
                       </div>
                       <button
                         onClick={() => handleRemoveItem(product.id)}
                         disabled={deleteCartItemMutation.isPending}
-                        className="text-red-400 hover:text-red-300 flex items-center gap-1 text-sm transition-colors justify-end"
+                        className="flex items-center justify-end gap-1 text-sm text-red-400 transition-colors hover:text-red-300"
                       >
-                        <FiTrash2 className="w-4 h-4" />
+                        <FiTrash2 className="h-4 w-4" />
                         حذف
                       </button>
                     </div>
@@ -340,28 +346,28 @@ export default function CartPage({ pharmacyId }: GetCartParams) {
 
       {/* Order Summary */}
       {cartItems.length > 0 && (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">ملخص الطلب</h3>
+        <div className="rounded-lg border border-gray-700 bg-gray-800 p-6">
+          <h3 className="mb-4 text-lg font-semibold text-white">ملخص الطلب</h3>
 
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span className="text-gray-400">عدد المنتجات:</span>
-              <span className="text-white font-semibold">{totalItems}</span>
+              <span className="font-semibold text-white">{totalItems}</span>
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span className="text-gray-400">إجمالي المنتجات:</span>
-              <span className="text-white font-semibold">
+              <span className="font-semibold text-white">
                 {totalPrice.toFixed(2)} ج.م
               </span>
             </div>
 
-            <div className="border-t border-gray-700 pt-2 mt-2">
-              <div className="flex justify-between items-center">
-                <span className="text-white font-semibold text-lg">
+            <div className="mt-2 border-t border-gray-700 pt-2">
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-semibold text-white">
                   الإجمالي النهائي:
                 </span>
-                <span className="text-emerald-400 font-bold text-xl">
+                <span className="text-xl font-bold text-emerald-400">
                   {totalPrice.toFixed(2)} ج.م
                 </span>
               </div>

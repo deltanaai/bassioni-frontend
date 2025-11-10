@@ -42,6 +42,18 @@ interface CompanyProduct {
   createdAt?: string;
 }
 
+interface AvailableCompanyProductsCategory {
+  id: number;
+  name: string;
+  position: number;
+  active: boolean;
+  show_home: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  media: [];
+}
+
 interface CompanyOffer {
   id: number;
   company_id: number;

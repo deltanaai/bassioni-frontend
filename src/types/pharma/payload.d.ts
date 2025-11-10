@@ -1,7 +1,7 @@
 interface CompanyProductPayload {
   id: number;
   name: string;
-  category: string | null;
+  category: AvailableCompanyProductsCategory | null;
   brand: string | null;
   position: string | null;
   description: string | null;
