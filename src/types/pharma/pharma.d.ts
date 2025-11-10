@@ -21,6 +21,17 @@ interface PharmacyCompany {
   deleted: boolean;
 }
 
+interface Branch {
+  id: number;
+  name: string;
+  pharmacy: PharmacyCompany;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  deleted: boolean;
+}
+
 interface CompanyProduct {
   id: number;
   name: string;

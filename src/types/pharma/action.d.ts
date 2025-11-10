@@ -138,3 +138,9 @@ interface ImportBranchProductsParams {
   branchId: number;
   file: File;
 }
+
+interface CreateBranchParams {
+  name: string;
+  address: string;
+  active: boolean;
+}
