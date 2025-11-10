@@ -4,12 +4,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FiEye, FiShoppingCart, FiSearch, FiFilter } from "react-icons/fi";
+import { toast } from "sonner";
 
 import {
   getCompanyOffers,
   requestCompanyOffer,
   showCompanyOfferDetails,
 } from "@/lib/actions/pharma/companyOffers.action";
+import { queryClient } from "@/lib/queryClient";
 
 export default function CompanyOffersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,8 +25,6 @@ export default function CompanyOffersPage() {
   const [filters, setFilters] = useState({
     active: true,
   });
-
-  const queryClient = useQueryClient();
 
   // جلب عروض الشركات
   const {
@@ -48,19 +48,24 @@ export default function CompanyOffersPage() {
   const pagination = offersData?.meta;
 
   console.log("OFFERS", offers);
-  
 
   // طلب عرض من الشركة
   const requestMutation = useMutation({
     mutationFn: requestCompanyOffer,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companyOffers"] });
-      setShowRequestModal(false);
-      alert("تم تقديم الطلب بنجاح!");
+    onSuccess: (res) => {
+      if (res.success === true) {
+        queryClient.invalidateQueries({ queryKey: ["companyOffers"] });
+        setShowRequestModal(false);
+        toast.success("تم تقديم الطلب بنجاح!");
+      } else {
+        toast.error(
+          "فشل تقديم الطلب: " + (res.error?.message || "خطأ غير معروف")
+        );
+      }
     },
     onError: (error) => {
       console.error("فشل طلب العرض:", error);
-      alert("فشل تقديم الطلب!");
+      toast.error("فشل تقديم الطلب: حدث خطأ غير متوقع");
     },
   });
 
