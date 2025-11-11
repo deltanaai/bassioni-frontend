@@ -27,13 +27,12 @@ export default function AddBatchModal({
     expiryDate: "",
   });
 
-  
   const { mutate: storeBatchMutation, isPending } = useMutation({
     mutationFn: storeBranchBatchProduct,
   });
   const queryClient = useQueryClient();
   const expiryDate = formatDateForBackend(formData.expiryDate);
-console.log(expiryDate);
+  console.log(expiryDate);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +83,7 @@ console.log(expiryDate);
           <h2 className="text-xl font-bold text-white">إضافة دفعة جديدة</h2>
           <button
             onClick={handleClose}
-            className="p-2 text-gray-400 hover:text-white transition-colors"
+            className="p-2 text-gray-400 transition-colors hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>

@@ -31,10 +31,9 @@ export default function ProductDetailsModal({
     enabled: isOpen,
   });
 
-  const branches = branchesResponse?.data || [];
-  console.log("RESPONSE", branchesResponse);
+  
 
-  console.log("BRANCHES", branches);
+  const branches = branchesResponse?.data || [];
 
   if (!isOpen || !selectedProduct) return null;
 
