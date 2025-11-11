@@ -54,6 +54,7 @@ export async function getCart(
   const validationResult = await action({
     params,
     schema: GetCartSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {
@@ -88,6 +89,7 @@ export async function deleteCartItem(
   const validationResult = await action({
     params,
     schema: DeleteCartItemSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {

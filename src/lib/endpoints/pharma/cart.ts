@@ -13,12 +13,14 @@ export const cartEndpoints = {
     fetchHandler(`${API_URL}pharmacy/cart`, {
       method: "GET",
       body: JSON.stringify(payload),
+      auth: true,
     }),
 
   deleteCartItem: ({ payload }: { payload: DeleteCartItemPayload }) =>
     fetchHandler(`${API_URL}pharmacy/cart`, {
       method: "DELETE",
       body: JSON.stringify(payload),
+      auth: true,
     }),
 
   sendToOrder: ({ payload }: { payload: SendToOrderPayload }) =>
