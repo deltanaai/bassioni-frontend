@@ -2,8 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { staticWarehouses } from "@/constants/staticProductDataPharma";
 import { indexBranches } from "@/lib/actions/pharma/branches.action";
+import { indexPhamacyProducts } from "@/lib/actions/pharma/pharmaProducts.action";
 
 import BranchCard from "./BranchCard";
 
@@ -31,7 +31,15 @@ export default function ProductDetailsModal({
     enabled: isOpen,
   });
 
-  
+  const { data: pharmacyProductsResponse } = useQuery({
+    queryKey: ["pharmacyProducts"],
+    queryFn: () => indexPhamacyProducts({}),
+    enabled: isOpen,
+  });
+
+  const pharmacyProductDetails = pharmacyProductsResponse?.data?.find(
+    (item) => item.id === selectedProduct?.id
+  );
 
   const branches = branchesResponse?.data || [];
 
@@ -47,17 +55,6 @@ export default function ProductDetailsModal({
     brand,
     category,
   } = selectedProduct;
-
-  // حساب الإجماليات
-  const totalWarehouses = staticWarehouses.length;
-  const totalBatches = staticWarehouses.reduce(
-    (sum, warehouse) => sum + warehouse.batches.length,
-    0
-  );
-  const totalQuantity = staticWarehouses.reduce(
-    (sum, warehouse) => sum + warehouse.totalQuantity,
-    0
-  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -112,13 +109,13 @@ export default function ProductDetailsModal({
               <div className="rounded-lg border border-gray-600 bg-gray-700 p-4">
                 <div className="mb-2 text-sm text-gray-400">إجمالي الدفعات</div>
                 <div className="text-2xl font-bold text-white">
-                  {totalBatches}
+                  {pharmacyProductDetails?.total_batches || 0} دفعة
                 </div>
               </div>
               <div className="rounded-lg border border-gray-600 bg-gray-700 p-4">
                 <div className="mb-2 text-sm text-gray-400">إجمالي المخزون</div>
                 <div className="text-2xl font-bold text-emerald-400">
-                  {totalQuantity} وحدة
+                  {pharmacyProductDetails?.total_stock || 0} وحدة
                 </div>
               </div>
             </div>
@@ -143,34 +140,6 @@ export default function ProductDetailsModal({
                 />
               );
             })}
-          </div>
-
-          {/* ملخص نهائي */}
-          <div className="bg-gray-750 mt-6 rounded-lg border border-gray-600 p-4">
-            <div className="grid grid-cols-2 gap-4 text-center text-sm md:grid-cols-4">
-              <div>
-                <div className="text-gray-400">إجمالي الفروع</div>
-                <div className="font-semibold text-white">
-                  {totalWarehouses}
-                </div>
-              </div>
-              <div>
-                <div className="text-gray-400">إجمالي الدفعات</div>
-                <div className="font-semibold text-white">{totalBatches}</div>
-              </div>
-              <div>
-                <div className="text-gray-400">إجمالي الوحدات</div>
-                <div className="font-semibold text-emerald-400">
-                  {totalQuantity}
-                </div>
-              </div>
-              <div>
-                <div className="text-gray-400">متوسط السعر</div>
-                <div className="font-semibold text-white">
-                  {price.toFixed(2)} ج.م
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
