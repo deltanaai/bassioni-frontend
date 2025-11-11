@@ -27,8 +27,9 @@ export async function signIn(
     if (!response || !response.data || !response.token) {
       throw new Error("Invalid login response from the server.");
     }
-
-    await setSession(response.data as SessionUser, response.token);
+    console.log("user data: ", response.data);
+    const userData = { ...response.data, userType: "Company" } as SessionUser;
+    await setSession(userData, response.token);
 
     return {
       success: true,

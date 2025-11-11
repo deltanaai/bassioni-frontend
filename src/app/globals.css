@@ -6,6 +6,52 @@
   .form-input {
     @apply w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all placeholder-gray-400;
   }
+
+  .spinner {
+    margin: 3.2rem auto 1.6rem;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid var(--color-primary);
+    border-right-color: var(--color-secondary);
+    animation: rotate 1s infinite linear;
+  }
+
+  .spinner-mini {
+    margin: 0;
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid var(--color-secondary);
+    border-right-color: transparent;
+    animation: rotate 1s infinite linear;
+  }
+
+  ::view-transition-new(.slide-up) {
+    animation: slideUp 1s;
+  }
+  @keyframes rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-new(.slide-up) {
+      animation: none;
+    }
+  }
 }
 
 @theme inline {

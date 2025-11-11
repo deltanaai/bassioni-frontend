@@ -6,10 +6,7 @@ import logger from "./logger";
 
 const SESSION_KEY = "session";
 
-export async function setSession(
-  user: SessionUser | Pharmacist,
-  token: string
-) {
+export async function setSession(user: SessionUser, token: string) {
   const session: Session = { user, token };
 
   (await cookies()).set(SESSION_KEY, JSON.stringify(session), {

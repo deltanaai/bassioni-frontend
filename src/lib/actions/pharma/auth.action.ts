@@ -26,8 +26,12 @@ export async function loginPharmacy(
     if (!response || response.result === "Error" || !response.token) {
       throw new Error("فشل تسجيل الدخول. يرجى التحقق من بياناتك.");
     }
-
-    await setSession(response.pharmacist as Pharmacist, response.token);
+    console.log("user data: ", response.data);
+    const userData = {
+      ...response.pharmacist,
+      userType: "Pharma",
+    } as SessionUser;
+    await setSession(userData, response.token);
 
     return {
       success: true,

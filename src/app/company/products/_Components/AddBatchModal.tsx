@@ -2,10 +2,10 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { queryClient } from "@/lib/queryClient";
 import { formatDateForBackend } from "@/lib/utils";
 
 import { useStoreWarehouseBatch } from "../_hooks/useStoreWarehouseBatch";
+import { useQueryClient } from "@tanstack/react-query";
 
 // import { Batch, AddBatchModalProps } from "../_types/product.types";
 
@@ -29,7 +29,7 @@ export default function AddBatchModal({
   });
 
   const { mutate, isPending } = useStoreWarehouseBatch();
-
+  const queryClient = useQueryClient();
   const expiryDate = formatDateForBackend(formData.expiryDate);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,11 +49,7 @@ export default function AddBatchModal({
           if (res.success === true) {
             toast.success("تمت إضافة الدفعة بنجاح");
             queryClient.invalidateQueries({
-              queryKey: [
-                "warehouseProductDetails",
-                warehouseId,
-                productId,
-              ],
+              queryKey: ["warehouseProductDetails", warehouseId, productId],
             });
             handleClose();
           } else {

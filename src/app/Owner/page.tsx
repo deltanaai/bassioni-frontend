@@ -1,5 +1,6 @@
 "use client";
 import { ROUTES_OWNER } from "@/constants/routes";
+import { useGetSession } from "@/hooks/useGetSession";
 import {
   Building,
   Users,
@@ -12,6 +13,18 @@ import {
 import Link from "next/link";
 
 export default function OwnerDashboard() {
+  const { isLoadingSession, session } = useGetSession();
+
+  if (isLoadingSession) {
+    return (
+      <div className="w-full h-64 bg-gray-200 rounded-lg relative overflow-hidden animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 bg-red-600 rounded-full opacity-90"></div>
+        </div>
+      </div>
+    );
+  }
+
   const quickStats = [
     { title: "الشركات", value: "24", icon: Building, color: "text-blue-600" },
     { title: "الصيدليات", value: "156", icon: Store, color: "text-green-600" },
@@ -53,11 +66,13 @@ export default function OwnerDashboard() {
           <span className="bg-gradient-to-r from-blue-400 to-blue-700 bg-clip-text text-transparent">
             لوحة التحكم
           </span>
-          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-900 rounded-full">
+          <span className="hidden text-xs px-2 py-1 bg-blue-100 text-blue-900 rounded-full">
             الإصدار 3.0
           </span>
         </h1>
-        <p className="text-gray-500 mt-1">مرحبًا بعودتك، دكتور محمد 👋</p>
+        <p className="text-gray-500 mt-1">
+          مرحبًا بعودتك، دكتور {session?.user?.name} 👋
+        </p>
       </div>
 
       {/* الإحصائيات السريعة */}
