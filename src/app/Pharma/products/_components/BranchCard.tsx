@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import { Plus } from "lucide-react";
+import React, { useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
 
 import {
@@ -9,6 +10,8 @@ import {
   showBranchProductDetails,
 } from "@/lib/actions/pharma/branchProducts.action";
 import { formatIsoToArabicDate } from "@/lib/utils";
+
+import AddBatchModal from "./AddBatchModal";
 
 const BranchCard = ({
   branch,
@@ -21,6 +24,8 @@ const BranchCard = ({
   onToggleWarehouse: (index: number) => void;
   selectedProduct: MasterProduct;
 }) => {
+  const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
+
   const {
     id,
     name,
@@ -53,6 +58,18 @@ const BranchCard = ({
       }),
     enabled: !!selectedProduct.id,
   });
+
+  // const { data: branchProductResponse } = useQuery({
+  //   queryKey: ["branchProductDetails", selectedProduct?.id],
+  //   queryFn: () =>
+  //     branchProductsIndex({
+  //       branchId: id,
+  //       filters: {
+  //         id: selectedProduct!.id,
+  //       },
+  //     }),
+  //   enabled: !!selectedProduct?.id,
+  // });
 
   const batches = batchesResponse?.data || [];
 
@@ -169,9 +186,25 @@ const BranchCard = ({
                 })}
               </tbody>
             </table>
+            <div className="my-2 ml-5 flex justify-end">
+              <button
+                onClick={() => setIsAddBatchOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-2.5 text-sm text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-emerald-500 hover:to-emerald-400 hover:shadow-lg"
+              >
+                <Plus className="h-4 w-4" />
+                اضافة دفعة
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      <AddBatchModal
+        isOpen={isAddBatchOpen}
+        onClose={() => setIsAddBatchOpen(false)}
+        branchId={id}
+        productId={selectedProduct.id}
+      />
     </div>
   );
 };

@@ -1,11 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { FiChevronRight } from "react-icons/fi";
 
 import { staticWarehouses } from "@/constants/staticProductDataPharma";
 import { indexBranches } from "@/lib/actions/pharma/branches.action";
-import { branchProductsIndex } from "@/lib/actions/pharma/branchProducts.action";
 
 import BranchCard from "./BranchCard";
 
@@ -24,35 +22,24 @@ export default function ProductDetailsModal({
   onToggleWarehouse,
   selectedProduct,
 }: ProductDetailsModalProps) {
-  const { data: branchesResponse, isLoading: branchesIsLoading } = useQuery({
+  const {
+    data: branchesResponse,
+    // isLoading: branchesIsLoading
+  } = useQuery({
     queryKey: ["branches"],
     queryFn: () => indexBranches({}),
     enabled: isOpen,
   });
 
-  const { data: branchProductResponse } = useQuery({
-    queryKey: ["branchProductDetails", selectedProduct?.id],
-    queryFn: () =>
-      branchProductsIndex({
-        branchId: 1, // TODO make dynamic
-        filters: {
-          id: selectedProduct!.id,
-        },
-      }),
-    enabled: !!selectedProduct?.id,
-  });
-
   const branches = branchesResponse?.data || [];
   console.log("RESPONSE", branchesResponse);
-
-  const branchProductDetails = branchProductResponse?.data || [];
 
   console.log("BRANCHES", branches);
 
   if (!isOpen || !selectedProduct) return null;
 
   const {
-    id,
+    // id,
     name,
     description,
     price,
@@ -72,8 +59,6 @@ export default function ProductDetailsModal({
     (sum, warehouse) => sum + warehouse.totalQuantity,
     0
   );
-
- 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

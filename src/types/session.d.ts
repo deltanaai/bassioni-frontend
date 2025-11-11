@@ -1,7 +1,8 @@
 // authentication/session types.
 
-import { loginSchema } from "@/schemas/auth";
 import z from "zod";
+
+import { loginSchema } from "@/schemas/auth";
 
 declare global {
   interface SessionUser {

@@ -13,7 +13,7 @@ export const StoreBranchBacthProductSchema = z.object({
   productId: z.number("معرف خاطئ للمنتج").int().positive(),
   stock: z.number("المخزون غير صالح").int().min(0),
   expiryDate: z
-    .date("تاريخ البدء مطلوب")
+    .string("تاريخ البدء مطلوب")
     .transform((date) => formatDateForBackend(date)),
   batchNumber: z.string("رقم الدفعة مطلوب").min(1, "رقم الدفعة مطلوب"),
 });
