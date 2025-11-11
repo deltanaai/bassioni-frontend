@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { queryClient } from "@/lib/queryClient";
 import { formatDateForBackend } from "@/lib/utils";
 
 import { useStoreWarehouseBatch } from "../_hooks/useStoreWarehouseBatch";
@@ -47,6 +48,13 @@ export default function AddBatchModal({
         onSuccess: (res) => {
           if (res.success === true) {
             toast.success("تمت إضافة الدفعة بنجاح");
+            queryClient.invalidateQueries({
+              queryKey: [
+                "warehouseProductDetails",
+                warehouseId,
+                productId,
+              ],
+            });
             handleClose();
           } else {
             toast.error(res.error?.message || "حدث خطأ أثناء إضافة الدفعة");
