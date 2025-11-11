@@ -1,17 +1,23 @@
 "use client";
 
-import {
-  createBranch,
-  indexBranches,
-} from "@/lib/actions/pharma/branches.action";
-import { queryClient } from "@/lib/queryClient";
-import { CreateBranchSchema } from "@/schemas/pharma/branches";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MapPin, Plus, Edit, Trash, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+import {
+  createBranch,
+  deleteBranch,
+  indexBranches,
+  updateBranch,
+} from "@/lib/actions/pharma/branches.action";
+import { queryClient } from "@/lib/queryClient";
+import {
+  CreateBranchSchema,
+  UpdateBranchSchema,
+} from "@/schemas/pharma/branches";
 
 export default function PharmaciesPage() {
   // مودال الإضافة
@@ -39,9 +45,18 @@ export default function PharmaciesPage() {
     handleSubmit: editHandleSubmit,
     reset: editReset,
     formState: { errors: editErrors },
-  } = useForm<CreateBranchParams>({
-    resolver: zodResolver(CreateBranchSchema),
+  } = useForm<UpdateBranchParams>({
+    resolver: zodResolver(UpdateBranchSchema),
   });
+
+  useEffect(() => {
+    if (selectedBranch) {
+      editReset({
+        name: selectedBranch.name,
+        address: selectedBranch.address,
+      });
+    }
+  }, [selectedBranch, editReset]);
 
   const addBranch = useMutation({
     mutationKey: ["add-branch"],
@@ -61,17 +76,56 @@ export default function PharmaciesPage() {
     },
   });
 
+  const editBranch = useMutation({
+    mutationKey: ["edit-branch"],
+    mutationFn: updateBranch,
+    onSuccess: (res) => {
+      if (res.success === true) {
+        queryClient.invalidateQueries({ queryKey: ["branches"] });
+        setShowEditModal(false);
+        editReset();
+        toast.success("تم تعديل بيانات الفرع بنجاح");
+      } else {
+        toast.error(res.error?.message || "فشل في تعديل بيانات الفرع");
+      }
+    },
+    onError: () => {
+      toast.error("حدث خطأ أثناء تعديل بيانات الفرع");
+    },
+  });
+
+  const deleteBranchMutation = useMutation({
+    mutationKey: ["delete-branch"],
+    mutationFn: deleteBranch,
+    onSuccess: (res) => {
+      if (res.success === true) {
+        queryClient.invalidateQueries({ queryKey: ["branches"] });
+        setShowDeleteModal(false);
+        toast.success("تم حذف الفرع بنجاح");
+      } else {
+        toast.error(res.error?.message || "فشل في حذف الفرع");
+      }
+    },
+    onError: () => {
+      toast.error("حدث خطأ أثناء حذف الفرع");
+    },
+  });
+
   const handleCreateBranch = (data: CreateBranchParams) => {
     addBranch.mutate(data);
   };
 
-  const handleEditBranch = (data: CreateBranchParams) => {
+  const handleEditBranch = (data: UpdateBranchParams) => {
     if (!selectedBranch) return;
+    editBranch.mutate({ ...data, branchId: selectedBranch.id });
   };
 
   const branches = branchesResponse?.data || [];
 
-  const handleDeleteWarehouse = () => {};
+  const handleDeleteBranch = () => {
+    if (!selectedBranch) return;
+    deleteBranchMutation.mutate({ branchId: [selectedBranch.id] });
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 p-6">
@@ -98,11 +152,14 @@ export default function PharmaciesPage() {
               </h2>
               <button
                 className="cursor-pointer "
-                onClick={() => setShowDeleteModal(true)}
+                onClick={() => {
+                  setSelectedBranch(branch);
+                  setShowDeleteModal(true);
+                }}
               >
                 <Trash
                   size={18}
-                  className="text-red-500/50 cursor-pointer hover:scale-150 transition-transform "
+                  className="cursor-pointer text-red-500/50 transition-transform hover:scale-150 "
                 />
               </button>
             </div>
@@ -145,7 +202,9 @@ export default function PharmaciesPage() {
               </h3>
               <p className="mb-3 text-base leading-relaxed text-gray-700">
                 هل تريد نقل
-                <span className="mx-1 font-bold text-orange-600">الفرع</span>
+                <span className="mx-1 font-bold text-orange-600">
+                  {selectedBranch?.name}
+                </span>
                 إلى سلة المحذوفات؟
               </p>
               <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-500">
@@ -160,7 +219,7 @@ export default function PharmaciesPage() {
                 إلغاء
               </button>
               <button
-                onClick={handleDeleteWarehouse}
+                onClick={handleDeleteBranch}
                 // disabled={deleteWarehouseMutation.isPending}
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 font-semibold text-white shadow-lg shadow-orange-500/25 transition-all duration-200 hover:bg-orange-600 hover:shadow-orange-500/40 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -208,27 +267,17 @@ export default function PharmaciesPage() {
                     {errors.address.message}
                   </p>
                 )}
-                {/* <select
-                  value={pharmacy}
-                  onChange={(e) => setPharmacy(e.target.value)}
-                  className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-                >
-                  {pharmacies.map((ph, idx) => (
-                    <option key={idx} value={ph}>
-                      {ph}
-                    </option>
-                  ))}
-                </select> */}
 
                 <div className="mt-4 flex justify-end gap-2">
                   <button
+                    type="button"
                     onClick={() => setShowModal(false)}
                     className="rounded-xl bg-gray-700 px-4 py-2 hover:bg-gray-600"
                   >
                     إلغاء
                   </button>
                   <button
-                    onClick={() => {}}
+                    type="submit"
                     className="rounded-xl bg-emerald-600 px-4 py-2 hover:bg-emerald-700"
                   >
                     حفظ
@@ -248,7 +297,7 @@ export default function PharmaciesPage() {
               تعديل بيانات الفرع
             </h2>
 
-            <form onSubmit={handleSubmit(handleCreateBranch)}>
+            <form onSubmit={editHandleSubmit(handleEditBranch)}>
               <div className="space-y-4">
                 <input
                   type="text"
@@ -256,8 +305,10 @@ export default function PharmaciesPage() {
                   placeholder="اسم الفرع"
                   className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
                 />
-                {errors.name && (
-                  <p className="text-sm text-red-500">{errors.name.message}</p>
+                {editErrors.name && (
+                  <p className="text-sm text-red-500">
+                    {editErrors.name.message}
+                  </p>
                 )}
                 <input
                   type="text"
@@ -265,32 +316,25 @@ export default function PharmaciesPage() {
                   placeholder="الموقع"
                   className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
                 />
-                {errors.address && (
+                {editErrors.address && (
                   <p className="text-sm text-red-500">
-                    {errors.address.message}
+                    {editErrors.address.message}
                   </p>
                 )}
-                {/* <select
-                  value={pharmacy}
-                  onChange={(e) => setPharmacy(e.target.value)}
-                  className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-                >
-                  {pharmacies.map((ph, idx) => (
-                    <option key={idx} value={ph}>
-                      {ph}
-                    </option>
-                  ))}
-                </select> */}
 
                 <div className="mt-4 flex justify-end gap-2">
                   <button
-                    onClick={() => setShowModal(false)}
+                    type="button"
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setSelectedBranch(null);
+                    }}
                     className="rounded-xl bg-gray-700 px-4 py-2 hover:bg-gray-600"
                   >
                     إلغاء
                   </button>
                   <button
-                    onClick={() => {}}
+                    type="submit"
                     className="rounded-xl bg-emerald-600 px-4 py-2 hover:bg-emerald-700"
                   >
                     حفظ
