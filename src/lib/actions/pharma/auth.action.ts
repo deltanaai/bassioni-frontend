@@ -3,7 +3,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { setSession } from "@/lib/session";
+import { clearSession, setSession } from "@/lib/session";
 import { PharmacyLoginSchema } from "@/schemas/pharma/auth";
 
 export async function loginPharmacy(
@@ -49,6 +49,8 @@ export async function logoutPharmacy(): Promise<
   }
   try {
     const response = await api.pharma.auth.logout();
+
+    await clearSession();
 
     return {
       success: true,

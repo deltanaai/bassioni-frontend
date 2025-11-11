@@ -33,12 +33,16 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTES_OWNER, ROUTES_PHARMA } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
-import { signOut } from "@/lib/actions/company/login.action";
+import { logoutPharmacy } from "@/lib/actions/pharma/auth.action";
 import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_PHARMA.DASHBOARD, Icon: Home },
-  { name: " منتجات الشركات", href: ROUTES_PHARMA.COMPANIESPRODUCTS, Icon: Package },
+  {
+    name: " منتجات الشركات",
+    href: ROUTES_PHARMA.COMPANIESPRODUCTS,
+    Icon: Package,
+  },
   { name: "طلبات اليوم", href: ROUTES_PHARMA.DAY_ORDERS, Icon: ClipboardList },
   { name: "عروض الشركات", href: ROUTES_PHARMA.OFFERS, Icon: Tag },
   { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
@@ -69,7 +73,7 @@ export default function DashboardLayout({
   const { session, isLoadingSession } = useGetSession();
 
   const mutation = useMutation({
-    mutationFn: signOut, // TODO : change to pharma signOut action when available
+    mutationFn: logoutPharmacy, // TODO : change to pharma signOut action when available
     onSuccess: async (res) => {
       if (!res.success) {
         toast.error(res.error?.message || "حدث خطأ أثناء تسجيل الخروج");
@@ -171,80 +175,6 @@ export default function DashboardLayout({
               </NavLink>
             )
           )}
-          {/* <NavLink
-            href="/Pharma"
-            icon={<Home className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الصفحة الرئيسية
-          </NavLink>
-          <NavLink
-            href="/Pharma/today"
-            icon={<ClipboardList className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            طلبات اليوم
-          </NavLink>
-          <NavLink
-            href="/Pharma/sentorder"
-            icon={<Send className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            عروض الشركات
-          </NavLink>
-          <NavLink
-            href="/Pharma/massgeorder"
-            icon={<Send className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            طلباتي
-          </NavLink>
-          <NavLink
-            href="/Pharma/invoice"
-            icon={<Archive className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الفواتير
-          </NavLink>
-          <NavLink
-            href="/Pharma/attributes"
-            icon={<PlusCircle className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الأصناف والبراندات
-          </NavLink>
-          <NavLink
-            href="/Pharma/products"
-            icon={<Mail className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            المنتجات
-          </NavLink>
-
-          {/* قائمة الخصومات */}
-          {/* <SidebarDropdown sidebarOpen={sidebarOpen} />
-
-          <NavLink
-            href="/Pharma/profile"
-            icon={<User className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الملف الشخصي
-          </NavLink>
-          <NavLink
-            href="/Pharma/settings"
-            icon={<Settings className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            الإعدادات
-          </NavLink>
-          <NavLink
-            href="/auth/login"
-            icon={<LogIn className="w-5 h-5" />}
-            sidebarOpen={sidebarOpen}
-          >
-            تسجيل الدخول
-          </NavLink> */}
         </nav>
 
         {/* الفوتر */}
