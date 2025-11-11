@@ -34,6 +34,7 @@ export default function ProductDetailsModal({
     queryKey: ["branchProductDetails", selectedProduct?.id],
     queryFn: () =>
       branchProductsIndex({
+        branchId: 1, // TODO make dynamic
         filters: {
           id: selectedProduct!.id,
         },
@@ -43,6 +44,8 @@ export default function ProductDetailsModal({
 
   const branches = branchesResponse?.data || [];
   console.log("RESPONSE", branchesResponse);
+
+  const branchProductDetails = branchProductResponse?.data || [];
 
   console.log("BRANCHES", branches);
 
@@ -70,10 +73,7 @@ export default function ProductDetailsModal({
     0
   );
 
-  // التحقق من انتهاء الصلاحية
-  const isExpired = (expiryDate: string) => {
-    return new Date(expiryDate) < new Date();
-  };
+ 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -155,6 +155,7 @@ export default function ProductDetailsModal({
                   branch={{ ...branch }}
                   isExpanded={isExpanded}
                   onToggleWarehouse={onToggleWarehouse}
+                  selectedProduct={selectedProduct}
                 />
               );
             })}

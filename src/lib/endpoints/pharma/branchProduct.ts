@@ -56,11 +56,14 @@ export const branchProductsEndpoints = {
     branchId: number;
     payload?: PaginatedSearchPayload;
   }) =>
-    fetchHandler(`${API_URL}pharmacy/dashboard/branches/${branchId}/index`, {
-      method: "POST",
-      auth: true,
-      body: payload ? JSON.stringify(payload) : undefined,
-    }),
+    fetchHandler(
+      `${API_URL}pharmacy/dashboard/branches/${branchId}/products/index`,
+      {
+        method: "POST",
+        auth: true,
+        body: payload ? JSON.stringify(payload) : undefined,
+      }
+    ),
 
   deleteBranchProducts: ({
     branchId,

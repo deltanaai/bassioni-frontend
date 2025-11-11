@@ -123,7 +123,7 @@ export async function showBranchProductDetails(
 
 export async function branchProductsIndex(
   params: BranchProductsIndexParams
-): Promise<ActionResponse<PaginatedResponse<BranchProduct>>> {
+): Promise<ActionResponse<BranchProduct[]>> {
   const validationResult = await action({
     params,
     schema: BranchProductsIndexSchema,
@@ -166,7 +166,7 @@ export async function branchProductsIndex(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<BranchProduct>,
+      data: response.data as BranchProduct[],
       links: response.links,
       meta: response.meta,
     };
