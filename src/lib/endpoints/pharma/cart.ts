@@ -9,10 +9,9 @@ export const cartEndpoints = {
       auth: true,
     }),
 
-  getCart: ({ payload }: { payload: GetCartPayload }) =>
-    fetchHandler(`${API_URL}pharmacy/cart`, {
+  getCart: ({ pharmacyId }: { pharmacyId: number }) =>
+    fetchHandler(`${API_URL}pharmacy/cart/${pharmacyId}`, {
       method: "GET",
-      body: JSON.stringify(payload),
       auth: true,
     }),
 

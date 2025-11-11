@@ -41,7 +41,7 @@ export async function addToCart(
     }
     return {
       success: true,
-      data: response.data
+      data: response.data,
     };
   } catch (error) {
     return handleError(error as Error) as ErrorResponse;
@@ -63,12 +63,8 @@ export async function getCart(
 
   const { pharmacyId } = validationResult.params!;
 
-  const payload: GetCartPayload = {
-    pharmacy_id: pharmacyId,
-  };
-
   try {
-    const response = await api.pharma.cart.getCart({ payload });
+    const response = await api.pharma.cart.getCart({ pharmacyId });
 
     if (!response) {
       throw new Error("فشل في جلب محتويات السلة");

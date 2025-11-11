@@ -1,5 +1,5 @@
 "use client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   FiShoppingCart,
@@ -17,13 +17,13 @@ import {
   deleteCartItem,
   sendToOrder,
 } from "@/lib/actions/pharma/cart.action";
+import { queryClient } from "@/lib/queryClient";
 
 export default function CartPage() {
   const session = usePharmacySession();
   const pharmacyId = session.pharmacist!.pharmacy.id;
 
   console.log("iddd", pharmacyId);
-  const queryClient = useQueryClient();
   const [quantityUpdates, setQuantityUpdates] = useState<{
     [key: string]: number;
   }>({});
@@ -36,35 +36,11 @@ export default function CartPage() {
   } = useQuery({
     queryKey: ["cart", pharmacyId],
     queryFn: () => getCart({ pharmacyId }),
-    // placeholderData: {
-    //   success: true,
-    //   data: [
-    //     {
-    //       id: 1,
-    //       quantity: 2,
-    //       createdAt: "2024-01-15T10:30:00.000Z",
-    //       updatedAt: "2024-01-20T14:45:00.000Z",
-    //       product: {
-    //         id: 101,
-    //         name: "باراسيتامول 500 مجم",
-    //         description: "مسكن للألم وخافض للحرارة - شركة الصحة العالمية",
-    //         price: "25.50",
-    //         stock: 150,
-    //         expiry_date: "2025-12-31",
-    //         batch_number: "BATCH-2024-001",
-    //         category: {
-    //           id: 1,
-    //           name: "مسكنات الألم",
-    //         },
-    //         brand: "فارماسيا",
-    //       },
-    //     },
-    //   ],
-    // },
+
     enabled: !!pharmacyId,
   });
-  const cartData = cartRespnse?.data || [];
-  console.log("dataaa", cartData);
+  const cartItems = cartRespnse?.data || [];
+  console.log("dataaa", cartItems);
 
   //  بحتاجها عشان وانا بعمل + لمنتج عندي
   const addToCartMutation = useMutation({
@@ -85,9 +61,13 @@ export default function CartPage() {
   //  لإرسال الطلب
   const sendToOrderMutation = useMutation({
     mutationFn: sendToOrder,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
-      toast.success("تم إرسال الطلب بنجاح!");
+    onSuccess: (res) => {
+      if (res.success === true) {
+        queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
+        toast.success("تم إرسال الطلب بنجاح!");
+      } else {
+        toast.error("فشل في إرسال الطلب. حاول مرة أخرى.");
+      }
     },
   });
 
@@ -138,13 +118,14 @@ export default function CartPage() {
 
   // إرسال السلة كطلب
   const handleSendToOrder = () => {
-    if (!cartData?.data?.length) {
+    if (cartItems.length === 0) {
       toast.error("السلة فارغة");
       return;
     }
 
     if (confirm("هل تريد إرسال هذا الطلب؟")) {
       sendToOrderMutation.mutate({ pharmacyId });
+   
     }
   };
 
@@ -173,12 +154,9 @@ export default function CartPage() {
     );
   }
 
-  const cartItems = cartData?.data || [];
-  console.log(cartItems);
-
   const totalPrice = cartItems.reduce((total, item) => {
     const displayQuantity = quantityUpdates[item.product.id] || item.quantity;
-    const productPrice = parseFloat(item.product.price);
+    const productPrice = item.product.price;
     return total + productPrice * displayQuantity;
   }, 0);
 
@@ -233,7 +211,7 @@ export default function CartPage() {
             const displayQuantity =
               quantityUpdates[item.product.id] || item.quantity;
             const product = item.product;
-            const totalPrice = parseFloat(product.price) * displayQuantity;
+            const totalPrice = product.price * displayQuantity;
 
             return (
               <div
@@ -269,13 +247,13 @@ export default function CartPage() {
 
                     {/* معلومات إضافية */}
                     <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <span>الدفعة: {product.batch_number}</span>
-                      <span>
+                      {/* <span>الدفعة: {product.}</span> */}
+                      {/* <span>
                         ينتهي:{" "}
                         {new Date(product.expiry_date).toLocaleDateString(
                           "ar-EG"
                         )}
-                      </span>
+                      </span> */}
                     </div>
                   </div>
 
@@ -285,7 +263,7 @@ export default function CartPage() {
                     <div className="text-right">
                       <div className="text-sm text-gray-400">سعر الوحدة</div>
                       <div className="text-lg font-bold text-emerald-400">
-                        {parseFloat(product.price).toFixed(2)} ج.م
+                        {product.price.toFixed(2)} ج.م
                       </div>
                     </div>
 
@@ -311,10 +289,10 @@ export default function CartPage() {
                         onClick={() =>
                           handleIncreaseQuantity(product.id, displayQuantity)
                         }
-                        disabled={
-                          addToCartMutation.isPending ||
-                          displayQuantity >= product.stock
-                        }
+                        // disabled={
+                        //   addToCartMutation.isPending ||
+                        //   displayQuantity >= product.stock
+                        // }
                         className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600 disabled:bg-gray-800"
                       >
                         <FiPlus className="h-4 w-4" />

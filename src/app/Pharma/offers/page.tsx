@@ -12,7 +12,7 @@ import {
   showCompanyOfferDetails,
 } from "@/lib/actions/pharma/companyOffers.action";
 import { queryClient } from "@/lib/queryClient";
-import { formatIsoToArabicDate } from "@/lib/utils";
+import { formatArabicDate, formatIsoToArabicDate } from "@/lib/utils";
 
 export default function CompanyOffersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -114,7 +114,7 @@ export default function CompanyOffersPage() {
     }
 
     // افترضنا أن pharmacyId بيكون متاح من السياق
-    const pharmacyId = 1; // يجب استبداله بالقيمة الفعلية
+    const pharmacyId = 1; //  TODO يجب استبداله بالقيمة الفعلية
 
     requestMutation.mutate({
       companyOfferId: selectedOffer.id,
@@ -279,8 +279,8 @@ export default function CompanyOffersPage() {
                           {offer.description || `عرض #${offer.id}`}
                         </div>
                         <div className="mt-1 text-xs text-gray-400">
-                          المنتج: #{offer.warehouse_product_id} | الشركة: #
-                          {offer.company_id}
+                          | المنتج : {offer.product.name}
+                          <br />| الشركة : {offer.company}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -299,7 +299,9 @@ export default function CompanyOffersPage() {
                       <td className="px-6 py-4 text-sm text-gray-400">
                         <div className="text-center">
                           <div>{formatIsoToArabicDate(offer.start_date)}</div>
-                          <div className="text-xs">إلى {formatIsoToArabicDate(offer.end_date)}</div>
+                          <div className="text-xs">
+                            إلى {formatIsoToArabicDate(offer.end_date)}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -418,7 +420,7 @@ export default function CompanyOffersPage() {
                   <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
                     <div className="text-sm text-gray-400">الشركة</div>
                     <div className="font-semibold text-white">
-                      #{selectedOffer.company_id}
+                      {selectedOffer.company}
                     </div>
                   </div>
                   <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
@@ -433,7 +435,7 @@ export default function CompanyOffersPage() {
                   <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
                     <div className="text-sm text-gray-400">المنتج</div>
                     <div className="font-semibold text-white">
-                      #{selectedOffer.warehouse_product_id}
+                      {selectedOffer.product.name}
                     </div>
                   </div>
                   <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
@@ -472,14 +474,15 @@ export default function CompanyOffersPage() {
                 <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
                   <div className="text-sm text-gray-400">فترة العرض</div>
                   <div className="font-semibold text-white">
-                    من {selectedOffer.start_date} إلى {selectedOffer.end_date}
+                    من {formatIsoToArabicDate(selectedOffer.start_date)} إلى{" "}
+                    {formatIsoToArabicDate(selectedOffer.end_date)}
                   </div>
                 </div>
 
                 <div className="bg-gray-750 rounded-lg border border-gray-600 p-4">
                   <div className="text-sm text-gray-400">تاريخ الإنشاء</div>
                   <div className="text-white">
-                    {new Date(selectedOffer.created_at).toLocaleString("ar-EG")}
+                    {formatArabicDate(selectedOffer.createdAt)}
                   </div>
                 </div>
               </div>

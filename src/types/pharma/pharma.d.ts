@@ -67,8 +67,6 @@ interface AvailableCompanyProductsCategory {
 
 interface CompanyOffer {
   id: number;
-  company_id: number;
-  warehouse_product_id: number;
   discount: string;
   min_quantity: number;
   total_quantity: number;
@@ -76,9 +74,17 @@ interface CompanyOffer {
   start_date: string;
   end_date: string;
   active: boolean;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
+  company: string;
+  product: {
+    id: number;
+    name: string;
+    bar_code: string;
+  };
+  deleted: boolean;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  sentSince: string;
 }
 
 type BranchProduct = {
