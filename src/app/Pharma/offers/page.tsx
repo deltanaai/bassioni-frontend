@@ -13,8 +13,11 @@ import {
 } from "@/lib/actions/pharma/companyOffers.action";
 import { queryClient } from "@/lib/queryClient";
 import { formatArabicDate, formatIsoToArabicDate } from "@/lib/utils";
+import { useGetSession } from "@/hooks/useGetSession";
 
 export default function CompanyOffersPage() {
+  const session = useGetSession();
+  const pharmacyId = session?.session?.user.pharmacy?.id;
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOffer, setSelectedOffer] = useState<CompanyOffer | null>(null);
   const [requestQuantity, setRequestQuantity] = useState<{
@@ -114,11 +117,12 @@ export default function CompanyOffersPage() {
     }
 
     // افترضنا أن pharmacyId بيكون متاح من السياق
-    const pharmacyId = 1; //  TODO يجب استبداله بالقيمة الفعلية
+    // const pharmacyId = 1;
+    //  TODO يجب استبداله بالقيمة الفعلية
 
     requestMutation.mutate({
       companyOfferId: selectedOffer.id,
-      pharmacyId,
+      pharmacyId: pharmacyId!,
       quantity,
     });
   };
