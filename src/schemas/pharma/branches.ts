@@ -29,7 +29,7 @@ export const UpdateBranchSchema = z.object({
   branchId: z.number("معرف خاطئ للفرع").int().positive(),
   name: z.string().min(1, "Branch name is required"),
   address: z.string().min(1, "Address is required"),
-  active: z.boolean().optional(),
+  active: z.boolean().optional().default(true),
 });
 
 export const DeleteBranchSchema = z.object({

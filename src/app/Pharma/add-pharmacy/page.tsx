@@ -116,9 +116,14 @@ export default function PharmaciesPage() {
   };
 
   const handleEditBranch = (data: UpdateBranchParams) => {
+    console.log("✅ SUBMITTED", data);
     if (!selectedBranch) return;
+    console.log("✅ SUBMITTED AFTER", data);
     editBranch.mutate({ ...data, branchId: selectedBranch.id });
   };
+
+  console.log("Modal rendered:", showEditModal, selectedBranch);
+
 
   const branches = branchesResponse?.data || [];
 
@@ -126,6 +131,7 @@ export default function PharmaciesPage() {
     if (!selectedBranch) return;
     deleteBranchMutation.mutate({ branchId: [selectedBranch.id] });
   };
+console.log("editHandleSubmit ref", editHandleSubmit);
 
   return (
     <div className="min-h-screen bg-gray-950 p-6">
