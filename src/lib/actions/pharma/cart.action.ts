@@ -16,6 +16,7 @@ export async function addToCart(
   const validationResult = await action({
     params,
     schema: AddToCartSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {
