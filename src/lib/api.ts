@@ -27,8 +27,8 @@ import { pharmaCompaniesEndpoints } from "./endpoints/pharma/companies";
 import { companyOffersEndpoints } from "./endpoints/pharma/companyOffers";
 import { companyProductsEndpoints } from "./endpoints/pharma/companyProducts";
 import { pharmaMasterProductsEndpoints } from "./endpoints/pharma/masterProducts";
+import { pharmaOrderEndpoints } from "./endpoints/pharma/orders";
 import { pharmacyProductsEndpoints } from "./endpoints/pharma/pharmaProducts";
-// import { orderEndpoints } from "./endpoints/pharma/orders";
 
 // API_URL in development is http://127.0.0.1:8000/api/
 export const api = {
@@ -59,7 +59,7 @@ export const api = {
     masterProducts: pharmaMasterProductsEndpoints,
     companyOffers: companyOffersEndpoints,
     branchProducts: branchProductsEndpoints,
-    // orders: orderEndpoints,
+    orders: pharmaOrderEndpoints,
   },
   owner: {
     auth: authEndpoints,

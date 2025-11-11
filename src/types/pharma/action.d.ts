@@ -156,3 +156,7 @@ interface DeleteBranchParams {
 interface ShowBranchParams {
   branchId: number;
 }
+
+interface ShowPharmacyOrdersParams{
+  pharmacyId: number;
+}
