@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ArrowRight,
   Star,
@@ -11,73 +11,95 @@ import {
   CheckCircle,
   XCircle,
   Users,
+  Home,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ROUTES_OWNER } from "@/constants/routes";
-
-interface Product {
-  id: number;
-  name: string;
-  category: {
-    id: number;
-    name: string;
-    active: boolean;
-  };
-  brand: string;
-  description: string;
-  active: boolean;
-  rating: number;
-  rating_count: number;
-  price: number;
-  imageUrl: string;
-  media: {
-    id: number;
-    url: string;
-  }[];
-}
+import {
+  getProductDetails,
+  deleteProducts,
+} from "@/lib/actions/owner/products.actions";
+import SuspenseContainer from "@/components/custom/SuspenseContainer";
+import AddProductDialog from "@/components/modals/AddProductDialog";
+import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
+import { toast } from "sonner";
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const router = useRouter();
+  const productId = Number(params.id);
 
-  const product: Product = {
-    id: 1,
-    name: "Panadol",
-    category: {
-      id: 1,
-      name: "مسكنات",
-      active: true,
-    },
-    brand: "lemtless",
-    description:
-      "مسكن للصداع والآلام الخفيفة إلى المتوسطة. يساعد في تخفيف الحمى والألم المصاحب لنزلات البرد والإنفلونزا.",
-    active: true,
-    rating: 4.5,
-    rating_count: 100,
-    price: 5,
-    imageUrl: "/placeholder.jpg",
-    media: [
-      {
-        id: 1,
-        url: "/placeholder.jpg",
-      },
-      {
-        id: 2,
-        url: "/brand.webp",
-      },
-    ],
+  const [product, setProduct] = useState<ProductViewT | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setIsLoading(true);
+      try {
+        const response = await getProductDetails(productId);
+        if (response && response.success) {
+          setProduct(response.data);
+        } else {
+          toast.error("فشل في تحميل بيانات المنتج");
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        toast.error("حدث خطأ أثناء تحميل المنتج");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
+
+  const handleDeleteProduct = async () => {
+    try {
+      const response = await deleteProducts({ items: [productId] });
+      if (response && response.success) {
+        toast.success("تم حذف المنتج بنجاح");
+        router.push(ROUTES_OWNER.PRODUCTS);
+      } else {
+        toast.error("حدث خطأ أثناء حذف المنتج");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("حدث خطأ غير متوقع");
+    }
   };
 
-  const allImages =
-    product.media.length > 0
-      ? product.media
-      : product.imageUrl
-      ? [{ id: 1, url: product.imageUrl }]
-      : [];
+  if (isLoading) {
+    return <SuspenseContainer />;
+  }
 
-  const currentImage = allImages[selectedImageIndex];
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Package className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-4 text-lg font-medium text-gray-900">
+            المنتج غير موجود
+          </h3>
+          <p className="mt-2 text-gray-500">
+            لم يتم العثور على المنتج المطلوب.
+          </p>
+          <Link
+            href={ROUTES_OWNER.PRODUCTS}
+            className="mt-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
+          >
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            العودة إلى المنتجات
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -100,7 +122,10 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
+          <button
+            onClick={() => setOpenEditDialog(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+          >
             <Edit className="w-5 h-5" />
             تعديل المنتج
           </button>
@@ -133,7 +158,7 @@ export default function ProductDetailPage() {
                         />
                       ))}
                       <span className="text-gray-500 text-sm mr-2">
-                        ({product.rating_count})
+                        ({product.rating_count || 0})
                       </span>
                     </div>
                   </div>
@@ -172,13 +197,23 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
 
+                {/* Show in Home */}
+                {product.show_home && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Home className="w-4 h-4" />
+                    <span className="text-sm">معروض في الصفحة الرئيسية</span>
+                  </div>
+                )}
+
                 {/* الوصف */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">الوصف</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {product.description}
-                  </p>
-                </div>
+                {product.description && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">الوصف</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {product.description}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -243,10 +278,24 @@ export default function ProductDetailPage() {
                   <div>
                     <div className="text-sm text-gray-500">التقييمات</div>
                     <div className="text-xl font-bold text-gray-900">
-                      {product.rating_count}
+                      {product.rating_count || 0}
                     </div>
                   </div>
                 </div>
+
+                {product.position && (
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <Package className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">الترتيب</div>
+                      <div className="text-xl font-bold text-gray-900">
+                        {product.position}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -256,9 +305,9 @@ export default function ProductDetailPage() {
             {/* الصورة الرئيسية */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6">
               <div className="relative h-80 bg-gray-100 rounded-xl overflow-hidden">
-                {currentImage ? (
+                {product.image_url ? (
                   <Image
-                    src={currentImage.url}
+                    src={product.image_url}
                     alt={product.name}
                     fill
                     className="object-cover"
@@ -282,7 +331,10 @@ export default function ProductDetailPage() {
                     <span className="font-medium text-red-800">حذف المنتج</span>
                   </div>
 
-                  <button className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                  >
                     حذف
                   </button>
                 </div>
@@ -291,6 +343,38 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      <AddProductDialog
+        product={product}
+        triggerText={
+          <>
+            <Edit className="w-5 h-5" />
+            تعديل المنتج
+          </>
+        }
+        open={openEditDialog}
+        onOpenChange={(open) => {
+          setOpenEditDialog(open);
+          if (!open) {
+            // Refetch product data after edit
+            getProductDetails(productId).then((response) => {
+              if (response && response.success) {
+                setProduct(response.data);
+              }
+            });
+          }
+        }}
+      />
+
+      {/* Delete Confirmation */}
+      <DeleteConfirmModal
+        trigger={<></>}
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        onConfirm={handleDeleteProduct}
+        message={`هل أنت متأكد من حذف المنتج "${product.name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
+      />
     </div>
   );
 }

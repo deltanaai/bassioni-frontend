@@ -1,4 +1,4 @@
-import { authEndpoints } from "./endpoints/company/auth";
+import { authEndpoints as companyAuthEndponts } from "./endpoints/company/auth";
 import { companyProductsInfoEndpoints } from "./endpoints/company/companyProduct";
 import { employeesEndpoints } from "./endpoints/company/employees";
 import { companyEndpoint } from "./endpoints/company/info";
@@ -13,6 +13,12 @@ import { profileEndpoints } from "./endpoints/company/profile";
 import { responseOffersEndpoints } from "./endpoints/company/responseOffers";
 import { rolesEndpoints } from "./endpoints/company/roles";
 import { warehousesEndpoints } from "./endpoints/company/warehouses";
+import { authEndpoints } from "./endpoints/Global/auth";
+import { adminsEndpoints } from "./endpoints/owner/admins";
+import { brandsEndpoints } from "./endpoints/owner/brands";
+import { categoriesEndpoints } from "./endpoints/owner/categories";
+import { ownerPharmacyManageEndpoints } from "./endpoints/owner/pharmacy";
+import { ownerProductsEndpoints } from "./endpoints/owner/products";
 import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
 import { pharmaBranchEndpoints } from "./endpoints/pharma/branches";
 import { branchProductsEndpoints } from "./endpoints/pharma/branchProduct";
@@ -26,7 +32,7 @@ import { pharmaMasterProductsEndpoints } from "./endpoints/pharma/masterProducts
 // API_URL in development is http://127.0.0.1:8000/api/
 export const api = {
   company: {
-    auth: authEndpoints,
+    auth: companyAuthEndponts,
     info: companyEndpoint,
     profile: profileEndpoints,
     masterProducts: masterProductsEndpoints,
@@ -52,5 +58,13 @@ export const api = {
     companyOffers: companyOffersEndpoints,
     branchProducts: branchProductsEndpoints,
     // orders: orderEndpoints,
+  },
+  owner: {
+    auth: authEndpoints,
+    admins: adminsEndpoints,
+    brands: brandsEndpoints,
+    categories: categoriesEndpoints,
+    products: ownerProductsEndpoints,
+    pharmacy: ownerPharmacyManageEndpoints,
   },
 };

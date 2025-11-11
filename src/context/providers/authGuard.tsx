@@ -17,8 +17,8 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const { session, isLoadingSession, refetch } = useGetSession();
 
   const isAuthRoute = pathname.startsWith("/auth");
-  const userType =
-    session?.user && "pharmacy" in session.user ? "pharmacy" : "company";
+  // const userType =
+  //   session?.user && "pharmacy" in session.user ? "pharmacy" : "company";
 
   useEffect(() => {
     if (!isAuthRoute) refetch();
@@ -26,24 +26,42 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (isLoadingSession) return;
-
+    console.log("session data: ", session);
     if (!session?.token && !isAuthRoute) {
       router.replace(ROUTES_OWNER.LOGIN);
       return;
     }
 
     if (isAuthRoute && session?.token) {
-      if (userType === "company") router.replace(ROUTES_COMPANY.DASHBOARD);
-      else if (userType === "pharmacy") router.replace(ROUTES_PHARMA.DASHBOARD);
+      if (session?.user.userType === "Company")
+        router.replace(ROUTES_COMPANY.DASHBOARD);
+      else if (session?.user.userType === "Pharma")
+        router.replace(ROUTES_PHARMA.DASHBOARD);
+      else router.replace(ROUTES_OWNER.MAIN_DASHBOARD);
       return;
     }
 
-    if (userType === "company" && pathname.startsWith("/Pharma")) {
-      router.replace(ROUTES_COMPANY.DASHBOARD);
-    } else if (userType !== "company" && pathname.startsWith("/company")) {
-      router.replace(ROUTES_PHARMA.DASHBOARD);
+    // if (
+    //   session?.user.userType === "company" &&
+    //   pathname.startsWith("/Company")
+    // ) {
+    //   router.replace(ROUTES_COMPANY.DASHBOARD);
+    // } else if (
+    //   session?.user.userType === "pharmacist" &&
+    //   pathname.startsWith("/Pharma")
+    // ) {
+    //   router.replace(ROUTES_PHARMA.DASHBOARD);
+    // } else if (
+    //   session?.user.userType === "owner" &&
+    //   pathname.startsWith("/Owner")
+    // ) {
+    //   router.replace(ROUTES_OWNER.MAIN_DASHBOARD);
+    // }
+
+    if (session?.token && !pathname.startsWith(`/${session?.user.userType}`)) {
+      router.replace(`/${session?.user.userType}`);
     }
-  }, [session, isLoadingSession, pathname, router, isAuthRoute, userType]);
+  }, [session, isLoadingSession, pathname, router, isAuthRoute]);
 
   if (isLoadingSession)
     return (

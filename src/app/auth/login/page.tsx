@@ -3,9 +3,16 @@ import { useState } from "react";
 
 import CompanyAuth from "@/components/forms/authForms/CompanyAuth";
 import PharmacyAuth from "@/components/forms/authForms/PharmacyAuth";
+import AdminAuth from "@/components/forms/authForms/AdminAuth";
 
 export default function LoginPage() {
   const [role, setRole] = useState<"company" | "pharmacy">("company");
+
+  const forms = {
+    company: <CompanyAuth />,
+    pharmacy: <PharmacyAuth />,
+    admin: <AdminAuth />,
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
@@ -24,16 +31,17 @@ export default function LoginPage() {
           <p className="text-md mb-2 text-center text-gray-300">
             اختر نوع الحساب
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {[
               { type: "company", label: "شركة", icon: "🏢" },
               { type: "pharmacy", label: "صيدلية", icon: "💊" },
+              { type: "admin", label: "مسؤول", icon: "🛠️" },
             ].map(({ type, label, icon }) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => setRole(type as "company" | "pharmacy")}
-                className={`flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center justify-center gap-2 rounded-lg border px-2 py-1 text-sm font-medium transition-all duration-200 ${
                   role === type
                     ? "scale-105 border-transparent bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg"
                     : "border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600"
@@ -47,9 +55,7 @@ export default function LoginPage() {
         </div>
 
         {/* Role-specific form */}
-        <div className="p-8">
-          {role === "company" ? <CompanyAuth /> : <PharmacyAuth />}
-        </div>
+        <div className="p-8">{forms[role]}</div>
 
         {/* Footer */}
         <div className="bg-gray-700 p-3 text-center">

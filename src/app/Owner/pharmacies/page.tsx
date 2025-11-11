@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
 import {
-  Plus,
-  Search,
   Edit,
   Trash2,
   Store,
@@ -10,39 +8,37 @@ import {
   Phone,
   ChevronUp,
   ChevronDown,
+  Eye,
 } from "lucide-react";
-
-interface Pharmacy {
-  id: number;
-  name: string;
-  address: string;
-  phone: string;
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
-  deleted: boolean;
-}
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useGetPharmacies } from "@/hooks/owner/useGetPharmacies";
+import PharmaciesFilter from "@/components/Tablecomponents/FilterSearch/PharmaciesFilter";
+import AddPharmacyDialog from "@/components/modals/AddPharmacyDialog";
+import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
+import { deletePharmacies } from "@/lib/actions/owner/pharmacy.actions";
+import { ROUTES_OWNER } from "@/constants/routes";
+import { toast } from "sonner";
+import SuspenseContainer from "@/components/custom/SuspenseContainer";
 
 export default function PharmaciesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { pharmaciesData, isLoadingPharmacies, refetch } = useGetPharmacies();
+
   const [sortStates, setSortStates] = useState({
     name: false,
     address: false,
     phone: false,
   });
-
-  const mockPharmacies: Pharmacy[] = [
-    {
-      id: 1,
-      name: "صيدلية النور",
-      address: "شارع الجمهورية، القاهرة",
-      phone: "01234567890",
-      createdAt: "2024-01-15",
-      updatedAt: "2024-01-15",
-      deletedAt: null,
-      deleted: false,
-    },
-  ];
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [editingPharmacy, setEditingPharmacy] = useState<PharmacyViewT | null>(
+    null
+  );
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingPharmacyId, setDeletingPharmacyId] = useState<number | null>(
+    null
+  );
 
   // دالة قلب السهم فقط
   const handleSortClick = (field: keyof typeof sortStates) => {
@@ -61,12 +57,36 @@ export default function PharmaciesPage() {
     );
   };
 
-  const filteredPharmacies = mockPharmacies.filter(
-    (pharmacy) =>
-      pharmacy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      pharmacy.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      pharmacy.phone.includes(searchTerm)
-  );
+  const handleEditPharmacy = (pharmacy: PharmacyViewT) => {
+    setEditingPharmacy(pharmacy);
+  };
+
+  const handleDeletePharmacy = async () => {
+    if (!deletingPharmacyId) return;
+
+    try {
+      const response = await deletePharmacies({ items: [deletingPharmacyId] });
+      if (response && response.success) {
+        toast.success("تم حذف الصيدلية بنجاح");
+        refetch();
+      } else {
+        toast.error("حدث خطأ أثناء حذف الصيدلية");
+      }
+    } catch (error) {
+      console.error("Error deleting pharmacy:", error);
+      toast.error("حدث خطأ غير متوقع");
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingPharmacyId(null);
+    }
+  };
+
+  const pharmacies = pharmaciesData?.data || [];
+  const meta = pharmaciesData?.meta;
+
+  if (isLoadingPharmacies) {
+    return <SuspenseContainer />;
+  }
 
   return (
     <div className="space-y-6">
@@ -79,31 +99,28 @@ export default function PharmaciesPage() {
             <p className="text-gray-600">إدارة وتنظيم الصيدليات</p>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
-          <Plus className="w-5 h-5" />
-          إضافة صيدلية
-        </button>
+        <AddPharmacyDialog
+          open={openAddDialog}
+          onOpenChange={setOpenAddDialog}
+        />
       </div>
 
-      {/* شريط البحث والإحصائيات */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="ابحث باسم الصيدلية أو العنوان أو التليفون..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+      {/* الفلاتر */}
+      <PharmaciesFilter />
 
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <span>
-              إجمالي الصيدليات: <strong>{filteredPharmacies.length}</strong>
-            </span>
-          </div>
+      {/* شريط الإحصائيات */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="flex items-center gap-4 text-sm text-gray-600">
+          <span>
+            إجمالي الصيدليات:{" "}
+            <strong>{meta?.total || pharmacies.length}</strong>
+          </span>
+          <span>
+            الصفحة الحالية: <strong>{meta?.current_page || 1}</strong>
+          </span>
+          <span>
+            إجمالي الصفحات: <strong>{meta?.last_page || 1}</strong>
+          </span>
         </div>
       </div>
 
@@ -149,14 +166,16 @@ export default function PharmaciesPage() {
           </div>
           {/* جسم الجدول */}
           <div className="divide-y divide-gray-200 min-w-[800px]">
-            {filteredPharmacies.length > 0 ? (
-              filteredPharmacies.map((pharmacy, index) => (
+            {pharmacies.length > 0 ? (
+              pharmacies.map((pharmacy, index) => (
                 <div
                   key={pharmacy.id}
                   className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
                 >
                   <div className="col-span-1 text-sm text-gray-600 text-center">
-                    {index + 1}
+                    {((meta?.current_page || 1) - 1) * (meta?.per_page || 10) +
+                      index +
+                      1}
                   </div>
 
                   <div className="col-span-3">
@@ -193,7 +212,15 @@ export default function PharmaciesPage() {
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center justify-center gap-2">
+                      <Link
+                        href={`${ROUTES_OWNER.PHARMACIES}/${pharmacy.id}`}
+                        className="hidden p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="عرض التفاصيل"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Link>
                       <button
+                        onClick={() => handleEditPharmacy(pharmacy)}
                         className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="تعديل"
                       >
@@ -201,6 +228,10 @@ export default function PharmaciesPage() {
                       </button>
 
                       <button
+                        onClick={() => {
+                          setDeletingPharmacyId(pharmacy.id);
+                          setShowDeleteModal(true);
+                        }}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="حذف"
                       >
@@ -217,15 +248,68 @@ export default function PharmaciesPage() {
                   لا توجد صيدليات
                 </h3>
                 <p className="mt-2 text-gray-500">
-                  {searchTerm
-                    ? "لم نتمكن من العثور على صيدليات تطابق بحثك."
-                    : "لم يتم إضافة أي صيدليات بعد."}
+                  لم يتم إضافة أي صيدليات بعد.
                 </p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Pagination */}
+      {meta && meta.last_page > 1 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              عرض {meta.from || 0} إلى {meta.to || 0} من أصل {meta.total || 0}{" "}
+              صيدلية
+            </div>
+            <div className="flex items-center gap-2">
+              {Array.from({ length: meta.last_page }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      const params = new URLSearchParams(
+                        searchParams.toString()
+                      );
+                      params.set("page", page.toString());
+                      router.push(`?${params.toString()}`);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      page === meta.current_page
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Dialog */}
+      <AddPharmacyDialog
+        pharmacy={editingPharmacy}
+        open={!!editingPharmacy}
+        onOpenChange={(open) => {
+          if (!open) setEditingPharmacy(null);
+        }}
+      />
+
+      {/* Delete Confirmation */}
+      <DeleteConfirmModal
+        trigger={<></>}
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        onConfirm={handleDeletePharmacy}
+        message={`هل أنت متأكد من حذف الصيدلية "${
+          pharmacies.find((p) => p.id === deletingPharmacyId)?.name
+        }"؟ لا يمكن التراجع عن هذا الإجراء.`}
+      />
     </div>
   );
 }

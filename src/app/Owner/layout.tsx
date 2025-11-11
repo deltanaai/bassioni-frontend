@@ -29,8 +29,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
-import { signOut } from "@/lib/actions/company/login.action";
 import { queryClient } from "@/lib/queryClient";
+import { signOut } from "@/lib/actions/auth";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
