@@ -21,6 +21,7 @@ export const adminSchema = z.object({
   email: z.string().trim().email(),
   password: z.string().trim(),
   superAdmin: z.boolean(),
+  role_id: z.number().int().positive(),
 });
 
 export const adminsIdsListSchema = z.object({

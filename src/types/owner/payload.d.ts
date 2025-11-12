@@ -5,6 +5,10 @@ import {
   GetCategorySchema,
 } from "@/schemas/owner/category";
 import {
+  companyIdsListSchema,
+  GetCompanySchema,
+} from "@/schemas/owner/company";
+import {
   GetPharmacySchema,
   pharmacyIdsListSchema,
 } from "@/schemas/owner/pharmacy";
@@ -12,6 +16,10 @@ import {
   GetProductsSchema,
   productssIdsListSchema,
 } from "@/schemas/owner/products";
+import {
+  permissionsIdsListSchema,
+  rolesIdsListSchema,
+} from "@/schemas/owner/roles";
 import z from "zod";
 
 declare global {
@@ -25,5 +33,9 @@ declare global {
   type productsIdsPayload = z.infer<typeof productssIdsListSchema>;
   type GetAllPharmaciesPayload = z.infer<typeof GetPharmacySchema>;
   type pharmaciesIdsPayload = z.infer<typeof pharmacyIdsListSchema>;
+  type GetAllCompaniesPayload = z.infer<typeof GetCompanySchema>;
+  type companiesIdsPayload = z.infer<typeof companyIdsListSchema>;
+  type permissiondsPayload = z.infer<typeof permissionsIdsListSchema>;
+  type rolesIdsPayload = z.infer<typeof rolesIdsListSchema>;
 }
 export {};

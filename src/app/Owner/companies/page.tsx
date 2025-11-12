@@ -1,72 +1,70 @@
 "use client";
 import { useState } from "react";
-import {
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  MapPin,
-  Phone,
-  ChevronUp,
-  ChevronDown,
-  Building,
-} from "lucide-react";
-
-interface Company {
-  id: number;
-  name: string;
-  address: string;
-  phone: string;
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
-  deleted: boolean;
-}
+import { Edit, Trash2, MapPin, Phone, Building, Mail } from "lucide-react";
+import { useGetCompanies } from "@/hooks/owner/useGetCompanies";
+import CompaniesFilter from "@/components/Tablecomponents/FilterSearch/CompaniesFilter";
+import AddCompanyDialog from "@/components/modals/AddCompanyDialog";
+import { deleteCompanies } from "@/lib/actions/owner/compnay.actions";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import SpinnerMini from "@/components/custom/SpinnerMini";
+import Pagination from "@/components/custom/pagination";
 
 export default function CompaniesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortStates, setSortStates] = useState({
-    name: false,
-    address: false,
-    phone: false,
-  });
-
-  const mockCompanies: Company[] = [
-    {
-      id: 1,
-      name: "شركه الحياه ",
-      address: "شارع الجمهورية، القاهرة",
-      phone: "0000000000",
-      createdAt: "2024-01-15",
-      updatedAt: "2024-01-15",
-      deletedAt: null,
-      deleted: false,
-    },
-  ];
-
-  // دالة قلب السهم فقط
-  const handleSortClick = (field: keyof typeof sortStates) => {
-    setSortStates((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
-  };
-
-  // دالة لعرض السهم
-  const getSortIcon = (field: keyof typeof sortStates) => {
-    return sortStates[field] ? (
-      <ChevronUp className="h-4 w-4 text-blue-600" />
-    ) : (
-      <ChevronDown className="h-4 w-4 text-blue-600" />
-    );
-  };
-
-  const filteredCompanies = mockCompanies.filter(
-    (company) =>
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.phone.includes(searchTerm)
+  const queryClient = useQueryClient();
+  const [selectedCompany, setSelectedCompany] = useState<CompanyViewT | null>(
+    null
   );
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  const { data: companiesResponse, isLoading, error } = useGetCompanies();
+
+  const companies = companiesResponse?.data || [];
+  const meta = companiesResponse?.meta;
+
+  const handleEdit = (company: CompanyViewT) => {
+    setSelectedCompany(company);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = async (companyId: number) => {
+    if (!confirm("هل أنت متأكد من حذف هذه الشركة؟")) return;
+
+    try {
+      const response = await deleteCompanies({ items: [companyId] });
+      if (response && response.success) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey.some(
+              (key) => typeof key === "string" && key.includes("companies")
+            ),
+        });
+        toast.success("تم حذف الشركة بنجاح");
+      } else {
+        toast.error("حدث خطأ أثناء حذف الشركة");
+      }
+    } catch (error) {
+      console.error("Error deleting company:", error);
+      toast.error("حدث خطأ غير متوقع");
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">حدث خطأ في تحميل البيانات</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            إعادة المحاولة
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -79,30 +77,21 @@ export default function CompaniesPage() {
             <p className="text-gray-600">إدارة وتنظيم الشركات</p>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
-          <Plus className="w-5 h-5" />
-          إضافة شركة
-        </button>
+        <AddCompanyDialog
+          open={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
+        />
       </div>
 
-      {/* شريط البحث */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="ابحث باسم الشركة أو العنوان أو التليفون..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+      {/* فلترة الشركات */}
+      <CompaniesFilter />
 
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <span>
-              إجمالي الشركات: <strong>{filteredCompanies.length}</strong>
-            </span>
+      {/* شريط الإحصائيات */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            عرض <strong>{companies.length}</strong> من{" "}
+            <strong>{meta?.total || 0}</strong> شركة
           </div>
         </div>
       </div>
@@ -110,73 +99,48 @@ export default function CompaniesPage() {
       {/* الجدول */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          {/* رأس الجدول مع أزرار الترتيب */}
-          <div className="border-b border-gray-200 min-w-[800px]">
+          {/* رأس الجدول */}
+          <div className="border-b border-gray-200 min-w-[1000px]">
             <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
               <div className="col-span-1 text-center">#</div>
-
-              <div className="col-span-3 text-center">
-                <button
-                  onClick={() => handleSortClick("name")}
-                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
-                >
-                  <span>اسم الشركة</span>
-                  {getSortIcon("name")}
-                </button>
-              </div>
-
-              <div className="col-span-4 text-center">
-                <button
-                  onClick={() => handleSortClick("address")}
-                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
-                >
-                  <span>العنوان</span>
-                  {getSortIcon("address")}
-                </button>
-              </div>
-
-              <div className="col-span-2 text-center">
-                <button
-                  onClick={() => handleSortClick("phone")}
-                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
-                >
-                  <span>التليفون</span>
-                  {getSortIcon("phone")}
-                </button>
-              </div>
-
-              <div className="col-span-2 text-center">الإجراءات</div>
+              <div className="col-span-3 text-center">اسم الشركة</div>
+              <div className="col-span-3 text-center">العنوان</div>
+              <div className="col-span-2 text-center">التليفون</div>
+              <div className="col-span-2 text-center">البريد الإلكتروني</div>
+              <div className="col-span-1 text-center">الإجراءات</div>
             </div>
           </div>
+
           {/* جسم الجدول */}
-          <div className="divide-y divide-gray-200 min-w-[800px]">
-            {filteredCompanies.length > 0 ? (
-              filteredCompanies.map((company, index) => (
+          <div className="divide-y divide-gray-200 min-w-[1000px]">
+            {isLoading ? (
+              <div className="px-6 py-12 text-center min-w-[800px]">
+                <SpinnerMini />
+                <p className="mt-4 text-gray-500">جاري تحميل الشركات...</p>
+              </div>
+            ) : companies.length > 0 ? (
+              companies.map((company, index) => (
                 <div
                   key={company.id}
                   className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
                 >
                   <div className="col-span-1 text-sm text-gray-600 text-center">
-                    {index + 1}
+                    {((meta?.current_page || 1) - 1) * (meta?.per_page || 10) +
+                      index +
+                      1}
                   </div>
 
                   <div className="col-span-3">
                     <div className="flex items-center gap-3 justify-center text-center">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Building className="h-4 w-4 text-blue-600" />
-                      </div>
                       <div className="text-center">
                         <p className="font-medium text-gray-900">
                           {company.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          ID: {company.id}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="col-span-4 text-center">
+                  <div className="col-span-3 text-center">
                     <div className="flex items-center gap-2 justify-center">
                       <MapPin className="h-4 w-4 text-gray-400" />
                       <p className="text-sm text-gray-700 line-clamp-1">
@@ -193,8 +157,18 @@ export default function CompaniesPage() {
                   </div>
 
                   <div className="col-span-2 text-center">
+                    <div className="flex items-center gap-2 justify-center">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-700">
+                        {company.owner_email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <button
+                        onClick={() => handleEdit(company)}
                         className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="تعديل"
                       >
@@ -202,6 +176,7 @@ export default function CompaniesPage() {
                       </button>
 
                       <button
+                        onClick={() => handleDelete(company.id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="حذف"
                       >
@@ -213,15 +188,11 @@ export default function CompaniesPage() {
               ))
             ) : (
               <div className="px-6 py-12 text-center min-w-[800px]">
-                <Building className="mx-auto h-12 w-12 text-gray-400" />{" "}
+                <Building className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-4 text-lg font-medium text-gray-900">
                   لا توجد شركات
                 </h3>
-                <p className="mt-2 text-gray-500">
-                  {searchTerm
-                    ? "لم نتمكن من العثور على شركة تطابق بحثك."
-                    : "لم يتم إضافة أي شركات بعد."}
-                </p>
+                <p className="mt-2 text-gray-500">لم يتم إضافة أي شركات بعد.</p>
               </div>
             )}
           </div>
@@ -229,23 +200,18 @@ export default function CompaniesPage() {
       </div>
 
       {/* الباجينيشن */}
-      {/* <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-6 py-3">
-        <div className="text-sm text-gray-600">
-          عرض <strong>1-{filteredPharmacies.length}</strong> من <strong>{filteredPharmacies.length}</strong>
-        </div>
-        
-        <div className="flex gap-2">
-          <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-            السابق
-          </button>
-          <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-            1
-          </button>
-          <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-            التالي
-          </button>
-        </div>
-      </div> */}
+      {meta && meta.last_page > 1 && <Pagination count={meta.total} />}
+
+      {/* Edit Dialog */}
+      <AddCompanyDialog
+        company={selectedCompany}
+        showTrigger={false}
+        open={isEditDialogOpen}
+        onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) setSelectedCompany(null);
+        }}
+      />
     </div>
   );
 }

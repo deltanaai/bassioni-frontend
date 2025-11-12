@@ -17,6 +17,9 @@ export function useGetPharmacies() {
   const address = searchParams.get("address");
   if (address) filters.address = address;
 
+  const owner_email = searchParams.get("owner_email");
+  if (owner_email) filters.owner_email = owner_email;
+
   const page = searchParams.get("page");
   const currentPage = page ? parseInt(page) : 1;
 

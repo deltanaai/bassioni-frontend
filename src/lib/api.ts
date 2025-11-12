@@ -17,8 +17,10 @@ import { authEndpoints } from "./endpoints/Global/auth";
 import { adminsEndpoints } from "./endpoints/owner/admins";
 import { brandsEndpoints } from "./endpoints/owner/brands";
 import { categoriesEndpoints } from "./endpoints/owner/categories";
+import { ownerCompanyManageEndpoints } from "./endpoints/owner/company";
 import { ownerPharmacyManageEndpoints } from "./endpoints/owner/pharmacy";
 import { ownerProductsEndpoints } from "./endpoints/owner/products";
+import { ownerRolesEndpoints } from "./endpoints/owner/roles";
 import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
 import { pharmaBranchEndpoints } from "./endpoints/pharma/branches";
 import { branchProductsEndpoints } from "./endpoints/pharma/branchProduct";
@@ -68,5 +70,7 @@ export const api = {
     categories: categoriesEndpoints,
     products: ownerProductsEndpoints,
     pharmacy: ownerPharmacyManageEndpoints,
+    company: ownerCompanyManageEndpoints,
+    roles: ownerRolesEndpoints,
   },
 };

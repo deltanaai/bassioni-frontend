@@ -63,7 +63,14 @@ export default function AddProductDialog({
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: "",
+      name_ar: "",
+      name_en: "",
+      gtin: "",
+      bar_code: "",
+      qr_code: "",
+      dosage_form: "",
+      scientific_name: "",
+      active_ingredients: "",
       description: "",
       category_id: undefined,
       brand_id: undefined,
@@ -105,7 +112,14 @@ export default function AddProductDialog({
 
       form.reset({
         id: product.id,
-        name: product.name,
+        name_ar: "", // These might need to be populated from API if available
+        name_en: product.name, // Using the current name as English name for now
+        gtin: product.gtin || "",
+        bar_code: product.bar_code || "",
+        qr_code: product.qr_code || "",
+        dosage_form: product.dosage_form || "",
+        scientific_name: product.scientific_name || "",
+        active_ingredients: product.active_ingredients || "",
         description: product.description,
         category_id: product.category.id,
         brand_id: matchingBrand?.id || undefined,
@@ -120,7 +134,14 @@ export default function AddProductDialog({
       //   setImagePreview(product.image_url || null);
     } else if (!product) {
       form.reset({
-        name: "",
+        name_ar: "",
+        name_en: "",
+        gtin: "",
+        bar_code: "",
+        qr_code: "",
+        dosage_form: "",
+        scientific_name: "",
+        active_ingredients: "",
         description: "",
         category_id: undefined,
         brand_id: undefined,
@@ -208,18 +229,141 @@ export default function AddProductDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name Field */}
+            {/* Name Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name_ar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>اسم المنتج (عربي)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="أدخل اسم المنتج بالعربية"
+                        {...field}
+                        className="text-lg"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="name_en"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>اسم المنتج (إنجليزي)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="أدخل اسم المنتج بالإنجليزية"
+                        {...field}
+                        className="text-lg"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Identification Codes */}
+            <div className="space-y-4">
+              <FormLabel className="text-base font-semibold">
+                رموز التعريف (أحد الرموز مطلوب على الأقل)
+              </FormLabel>
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="gtin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>GTIN</FormLabel>
+                      <FormControl>
+                        <Input placeholder="أدخل GTIN" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="bar_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>الباركود</FormLabel>
+                      <FormControl>
+                        <Input placeholder="أدخل الباركود" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="qr_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>رمز QR</FormLabel>
+                      <FormControl>
+                        <Input placeholder="أدخل رمز QR" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Pharmaceutical Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="scientific_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>الاسم العلمي (اختياري)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="أدخل الاسم العلمي" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="dosage_form"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>شكل الجرعة (اختياري)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="مثال: أقراص، كبسولات، سائل"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Active Ingredients */}
             <FormField
               control={form.control}
-              name="name"
+              name="active_ingredients"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>اسم المنتج</FormLabel>
+                  <FormLabel>المكونات الفعالة (اختياري)</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="أدخل اسم المنتج"
+                    <textarea
+                      placeholder="أدخل المكونات الفعالة"
                       {...field}
-                      className="text-lg"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg min-h-[80px] resize-y"
                     />
                   </FormControl>
                   <FormMessage />

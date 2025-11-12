@@ -6,13 +6,14 @@ export const ROUTES_OWNER = {
   PHARMACIES: "/Owner/pharmacies",
   COMPANIES: "/Owner/companies",
   PRODUCTS: "/Owner/products",
-  CATEGORIES: '/Owner/categories',
-  BRANDS: '/Owner/brands',
-  LOCATIONS: '/Owner/locations',
-  BRANCHES: '/Owner/branches',
-  PHARMACISTS: '/Owner/pharmacists',
-  ADMINS: '/Owner/admins',
-  SLIDERS: '/Owner/slider'
+  CATEGORIES: "/Owner/categories",
+  BRANDS: "/Owner/brands",
+  LOCATIONS: "/Owner/locations",
+  BRANCHES: "/Owner/branches",
+  PHARMACISTS: "/Owner/pharmacists",
+  ADMINS: "/Owner/admins",
+  SLIDERS: "/Owner/slider",
+  ROLES: "/Owner/roles",
 };
 
 export const ROUTES_PHARMA = {
@@ -27,11 +28,11 @@ export const ROUTES_PHARMA = {
   PROFILE: "/Pharma/profile",
   SETTINGS: "/Pharma/settings",
   TRASH: "/Pharma/trash",
-  OFFERS:"/Pharma/offers",
-  COUPONS:"/Pharma/coupons",
-  DISCOUNT:"/Pharma/discount",
+  OFFERS: "/Pharma/offers",
+  COUPONS: "/Pharma/coupons",
+  DISCOUNT: "/Pharma/discount",
   CART: "/Pharma/cart",
-  COMPANIESPRODUCTS: '/Pharma/companies-products',
+  COMPANIESPRODUCTS: "/Pharma/companies-products",
 };
 
 export const ROUTES_COMPANY = {
@@ -51,8 +52,7 @@ export const ROUTES_COMPANY = {
   ADD_PHARMACY: "/company/add-pharmacy",
   SYSTEM: "/company/system",
   WAREHOUSES: "/company/warehouse",
-  ADMINISTRATION: '/company/administration',
-  OFFERS: '/company/offers',
-  PHARMACIES_ORDERS: '/company/pharmacies-orders',
-
+  ADMINISTRATION: "/company/administration",
+  OFFERS: "/company/offers",
+  PHARMACIES_ORDERS: "/company/pharmacies-orders",
 };

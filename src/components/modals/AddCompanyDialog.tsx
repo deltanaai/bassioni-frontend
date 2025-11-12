@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { pharmacySchema } from "@/schemas/owner/pharmacy";
+import { companySchema } from "@/schemas/owner/company";
 import { Plus } from "lucide-react";
 import {
   Dialog,
@@ -22,13 +22,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { addOrUpdatePharmacy } from "@/lib/actions/owner/pharmacy.actions";
+import { addOrUpdateCompany } from "@/lib/actions/owner/compnay.actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import SpinnerMini from "../custom/SpinnerMini";
 
-interface AddPharmacyDialogProps {
-  pharmacy?: PharmacyViewT | null;
+interface AddCompanyDialogProps {
+  company?: CompanyViewT | null;
   trigger?: React.ReactNode;
   showTrigger?: boolean;
   triggerText?: string | React.ReactNode;
@@ -36,29 +36,28 @@ interface AddPharmacyDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export default function AddPharmacyDialog({
-  pharmacy = null,
+export default function AddCompanyDialog({
+  company = null,
   trigger,
   showTrigger = true,
   triggerText,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
-}: AddPharmacyDialogProps) {
+}: AddCompanyDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Use controlled state if provided, otherwise use internal state
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setOpen = controlledOnOpenChange || setInternalOpen;
 
-  const isEditMode = !!pharmacy;
+  const isEditMode = !!company;
 
-  const form = useForm<PharmacyT>({
-    resolver: zodResolver(pharmacySchema),
+  const form = useForm<CompanyT>({
+    resolver: zodResolver(companySchema),
     defaultValues: {
       name: "",
       address: "",
       phone: "",
-      license_number: "",
       email: "",
       password: "",
       password_confirmation: "",
@@ -66,16 +65,15 @@ export default function AddPharmacyDialog({
   });
   const queryClient = useQueryClient();
 
-  // Update form values when pharmacy prop changes (for edit mode)
+  // Update form values when company prop changes (for edit mode)
   React.useEffect(() => {
-    if (pharmacy) {
+    if (company) {
       form.reset({
-        id: pharmacy.id,
-        name: pharmacy.name,
-        address: pharmacy.address,
-        phone: pharmacy.phone,
-        license_number: "", // License number not in PharmacyViewT
-        email: pharmacy.owner_email,
+        id: company.id,
+        name: company.name,
+        address: company.address,
+        phone: company.phone,
+        email: company.owner_email,
         password: "", // Don't pre-fill password in edit mode
         password_confirmation: "", // Don't pre-fill password confirmation in edit mode
       });
@@ -84,29 +82,28 @@ export default function AddPharmacyDialog({
         name: "",
         address: "",
         phone: "",
-        license_number: "",
         email: "",
         password: "",
         password_confirmation: "",
       });
     }
-  }, [pharmacy, form]);
+  }, [company, form]);
 
-  const onSubmit = async (data: PharmacyT) => {
+  const onSubmit = async (data: CompanyT) => {
     try {
       console.log("Form data:", data);
-      const response = await addOrUpdatePharmacy(data);
+      const response = await addOrUpdateCompany(data);
       console.log(response);
       if (response && response.success) {
-        // Invalidate and refetch pharmacies query to update the list
+        // Invalidate and refetch companies query to update the list
         queryClient.invalidateQueries({
           predicate: (query) =>
             query.queryKey.some(
-              (key) => typeof key === "string" && key.includes("pharmacies")
+              (key) => typeof key === "string" && key.includes("companies")
             ),
         });
         toast.success(
-          isEditMode ? "تم تحديث الصيدلية بنجاح" : "تم إضافة الصيدلية بنجاح"
+          isEditMode ? "تم تحديث الشركة بنجاح" : "تم إضافة الشركة بنجاح"
         );
         // Close dialog and reset form on success
         setOpen(false);
@@ -114,12 +111,12 @@ export default function AddPharmacyDialog({
       } else {
         toast.error(
           isEditMode
-            ? "حدث خطأ أثناء تحديث الصيدلية"
-            : "حدث خطأ أثناء إضافة الصيدلية"
+            ? "حدث خطأ أثناء تحديث الشركة"
+            : "حدث خطأ أثناء إضافة الشركة"
         );
       }
     } catch (error) {
-      console.error("Error creating pharmacy:", error);
+      console.error("Error creating company:", error);
       toast.error("حدث خطأ غير متوقع");
     }
   };
@@ -132,7 +129,7 @@ export default function AddPharmacyDialog({
             {triggerText || (
               <>
                 <Plus className="w-5 h-5" />
-                إضافة صيدلية جديدة
+                إضافة شركة جديدة
               </>
             )}
           </button>
@@ -142,7 +139,7 @@ export default function AddPharmacyDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-blue-600">
-            {isEditMode ? "تعديل الصيدلية" : "إضافة صيدلية جديدة"}
+            {isEditMode ? "تعديل الشركة" : "إضافة شركة جديدة"}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -153,10 +150,10 @@ export default function AddPharmacyDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>اسم الصيدلية</FormLabel>
+                  <FormLabel>اسم الشركة</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="أدخل اسم الصيدلية"
+                      placeholder="أدخل اسم الشركة"
                       {...field}
                       className="text-lg"
                     />
@@ -175,7 +172,7 @@ export default function AddPharmacyDialog({
                   <FormLabel>العنوان</FormLabel>
                   <FormControl>
                     <textarea
-                      placeholder="أدخل عنوان الصيدلية"
+                      placeholder="أدخل عنوان الشركة"
                       {...field}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg min-h-[80px] resize-y"
                     />
@@ -185,45 +182,28 @@ export default function AddPharmacyDialog({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* Phone Field */}
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>رقم الهاتف</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="tel"
-                        placeholder="أدخل رقم الهاتف"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* License Number Field */}
-              <FormField
-                control={form.control}
-                name="license_number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>رقم الترخيص</FormLabel>
-                    <FormControl>
-                      <Input placeholder="أدخل رقم الترخيص" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Phone Field */}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>رقم الهاتف</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="tel"
+                      placeholder="أدخل رقم الهاتف"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <hr className="my-4" />
-            {/* main user credentails section */}
-            <h3 className="">معلومات الدخول للصيدلية</h3>
+            {/* main user credentials section */}
+            <h3 className="">معلومات الدخول للشركة</h3>
 
             {/* Email Field */}
             <FormField

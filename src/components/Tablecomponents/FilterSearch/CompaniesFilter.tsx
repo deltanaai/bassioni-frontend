@@ -5,7 +5,7 @@ import { Search, X, Filter, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function PharmaciesFilter() {
+export default function CompaniesFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -82,19 +82,19 @@ export default function PharmaciesFilter() {
     <div className="bg-white rounded-xl border border-gray-200 p-4">
       <div className="flex items-center gap-2 mb-4">
         <Filter className="w-5 h-5 text-blue-600" />
-        <h3 className="font-semibold text-gray-900">فلترة الصيدليات</h3>
+        <h3 className="font-semibold text-gray-900">فلترة الشركات</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Name Filter */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">
-            اسم الصيدلية
+            اسم الشركة
           </label>
           <div className="relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="ابحث باسم الصيدلية..."
+              placeholder="ابحث باسم الشركة..."
               value={filters.name}
               onChange={(e) => handleFilterChange("name", e.target.value)}
               className="pr-10"

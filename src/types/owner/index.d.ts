@@ -1,8 +1,10 @@
 import { adminSchema } from "@/schemas/owner/admins";
 import { brandSchema } from "@/schemas/owner/brands";
 import { categorySchema } from "@/schemas/owner/category";
+import { companySchema } from "@/schemas/owner/company";
 import { pharmacySchema } from "@/schemas/owner/pharmacy";
 import { productSchema } from "@/schemas/owner/products";
+import { roleSchema } from "@/schemas/owner/roles";
 import z from "zod";
 
 declare global {
@@ -41,6 +43,12 @@ declare global {
   type ProductViewT = {
     id: number;
     name: string;
+    scientific_name?: string | null;
+    active_ingredients?: string | null;
+    dosage_form?: string | null;
+    gtin?: string;
+    bar_code?: string;
+    qr_code?: string;
     category: CategoryViewT;
     brand: string;
     position: number | null;
@@ -65,10 +73,37 @@ declare global {
     name: string;
     address: string;
     phone: string;
+    owner_email: string;
     createdAt: string | null;
     updatedAt: string | null;
     deletedAt: string | null;
     deleted: boolean;
+  };
+
+  type CompanyT = z.infer<typeof companySchema>;
+  type CompanyViewT = {
+    id: number;
+    name: string;
+    address: string;
+    phone: string;
+    owner_email: string;
+    createdAt: string | null;
+    updatedAt: string | null;
+    deletedAt: string | null;
+    deleted: boolean;
+  };
+
+  type PermissionT = {
+    id: number;
+    name: string;
+    guard_name: string;
+  };
+  type RoleT = z.infer<typeof roleSchema>;
+  type RoleViewT = {
+    id: number;
+    name: string;
+    guard_name: string;
+    permissions: PermissionT[];
   };
 }
 

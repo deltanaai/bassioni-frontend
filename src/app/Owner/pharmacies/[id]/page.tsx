@@ -259,6 +259,7 @@ export default function PharmacyDetailPage() {
       <AddPharmacyDialog
         pharmacy={pharmacy}
         open={openEditDialog}
+        showTrigger={false}
         onOpenChange={(open) => {
           setOpenEditDialog(open);
           if (!open) {

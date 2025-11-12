@@ -214,6 +214,120 @@ export default function ProductDetailPage() {
                     </p>
                   </div>
                 )}
+
+                {/* المعلومات الدوائية */}
+                {(product.scientific_name ||
+                  product.active_ingredients ||
+                  product.dosage_form) && (
+                  <div className="mt-6">
+                    <h3 className="font-semibold text-gray-900 mb-3">
+                      المعلومات الدوائية
+                    </h3>
+                    <div className="space-y-3">
+                      {product.scientific_name && (
+                        <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">
+                              الاسم العلمي
+                            </div>
+                            <div className="font-medium text-gray-900">
+                              {product.scientific_name}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {product.dosage_form && (
+                        <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-4 h-4 text-green-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">
+                              شكل الجرعة
+                            </div>
+                            <div className="font-medium text-gray-900">
+                              {product.dosage_form}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {product.active_ingredients && (
+                        <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-4 h-4 text-purple-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">
+                              المكونات الفعالة
+                            </div>
+                            <div className="font-medium text-gray-900 leading-relaxed">
+                              {product.active_ingredients}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* رموز التعريف */}
+                {(product.gtin || product.bar_code || product.qr_code) && (
+                  <div className="mt-6">
+                    <h3 className="font-semibold text-gray-900 mb-3">
+                      رموز التعريف
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {product.gtin && (
+                        <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
+                          <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-4 h-4 text-orange-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">GTIN</div>
+                            <div className="font-mono text-sm font-medium text-gray-900">
+                              {product.gtin}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {product.bar_code && (
+                        <div className="flex items-center gap-3 p-3 bg-teal-50 rounded-lg">
+                          <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-4 h-4 text-teal-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">
+                              الباركود
+                            </div>
+                            <div className="font-mono text-sm font-medium text-gray-900">
+                              {product.bar_code}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {product.qr_code && (
+                        <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
+                          <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-4 h-4 text-indigo-600" />
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">رمز QR</div>
+                            <div className="font-mono text-sm font-medium text-gray-900">
+                              {product.qr_code}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

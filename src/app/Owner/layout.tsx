@@ -1,24 +1,19 @@
 "use client";
 import { useMutation } from "@tanstack/react-query";
 import {
-  Home,
-  User,
-  Settings,
+  Badge,
   Bell,
-  LogIn,
+  Building,
   ChevronDown,
   ChevronUp,
-  Package,
-  Users,
-  Store,
-  Sliders,
-  Shield,
-  Building,
-  Tags,
-  MapPin,
+  Home,
+  LogIn,
   LogOut,
-  Badge,
-  LocateFixed,
+  Package,
+  Shield,
+  Sliders,
+  Store,
+  Tags,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,8 +24,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
-import { queryClient } from "@/lib/queryClient";
 import { signOut } from "@/lib/actions/auth";
+import { queryClient } from "@/lib/queryClient";
 
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
@@ -39,10 +34,9 @@ const links = [
   { name: "المشرفين", href: ROUTES_OWNER.ADMINS, Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
   { name: "الفئات", href: ROUTES_OWNER.CATEGORIES, Icon: Tags },
-  { name: "الفروع", href: ROUTES_OWNER.BRANCHES, Icon: LocateFixed },
-  { name: "المواقع", href: ROUTES_OWNER.LOCATIONS, Icon: MapPin },
-  { name: "الملف الشخصي", href: "ROUTES.PROFILE", Icon: User },
-  { name: "الإعدادات", href: "ROUTES.SETTINGS", Icon: Settings },
+  { name: "الأدوار", href: ROUTES_OWNER.ROLES, Icon: Building },
+  // { name: "الملف الشخصي", href: "ROUTES.PROFILE", Icon: User },
+  // { name: "الإعدادات", href: "ROUTES.SETTINGS", Icon: Settings },
 ];
 
 export default function OwnerDashboardLayout({
@@ -54,6 +48,7 @@ export default function OwnerDashboardLayout({
   const router = useRouter();
 
   const { session, isLoadingSession } = useGetSession();
+  console.log("session: ", session);
 
   const mutation = useMutation({
     mutationFn: signOut,
@@ -181,12 +176,6 @@ export default function OwnerDashboardLayout({
 
           {/* روابط إضافية في الهيدر */}
           <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
-            <HeaderNavLink
-              href={ROUTES_OWNER.PHARMACISTS}
-              icon={<Users className="h-5 w-5" />}
-            >
-              الصيادلة
-            </HeaderNavLink>
             <HeaderNavLink
               href={ROUTES_OWNER.PRODUCTS}
               icon={<Package className="h-5 w-5" />}

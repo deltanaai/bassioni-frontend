@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const GetPharmacySchema = z.object({
+export const GetCompanySchema = z.object({
   filters: z
     .record(
       z.string(),
@@ -15,13 +15,12 @@ export const GetPharmacySchema = z.object({
   deleted: z.boolean().optional(),
 });
 
-export const pharmacySchema = z
+export const companySchema = z
   .object({
     id: z.number().int().optional(),
     name: z.string().min(1),
     address: z.string().min(1),
     phone: z.string().regex(/^\d{8,15}$/, "Invalid phone number"),
-    license_number: z.string().regex(/^\d+$/, "Invalid license number"),
     email: z.string().email("Invalid email address"),
     password: z
       .string()
@@ -50,6 +49,6 @@ export const pharmacySchema = z
     }
   );
 
-export const pharmacyIdsListSchema = z.object({
+export const companyIdsListSchema = z.object({
   items: z.array(z.number().int().positive()),
 });

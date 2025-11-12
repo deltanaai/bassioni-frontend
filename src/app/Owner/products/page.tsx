@@ -119,10 +119,12 @@ function ProductsPageContent() {
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           {/* رأس الجدول */}
-          <div className="border-b border-gray-200 min-w-[1200px]">
-            <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
+          <div className="border-b border-gray-200 min-w-[1400px]">
+            <div className="grid grid-cols-14 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
               <div className="col-span-1 text-center">#</div>
               <div className="col-span-2 text-center">اسم المنتج</div>
+              <div className="col-span-1 text-center">الاسم العلمي</div>
+              <div className="col-span-1 text-center">شكل الجرعة</div>
               <div className="col-span-1 text-center">السعر</div>
               <div className="col-span-1 text-center">الفئة</div>
               <div className="col-span-1 text-center">العلامة</div>
@@ -134,12 +136,12 @@ function ProductsPageContent() {
             </div>
           </div>
           {/* جسم الجدول */}
-          <div className="divide-y divide-gray-200 min-w-[1200px]">
+          <div className="divide-y divide-gray-200 min-w-[1400px]">
             {products.length > 0 ? (
               products.map((product: ProductViewT, index: number) => (
                 <div
                   key={product.id}
-                  className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
+                  className="grid grid-cols-14 gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors"
                 >
                   <div className="col-span-1 text-sm text-gray-600 text-center">
                     {((pagination?.current_page || 1) - 1) *
@@ -150,6 +152,18 @@ function ProductsPageContent() {
 
                   <div className="col-span-2 text-center">
                     <p className="font-medium text-gray-900">{product.name}</p>
+                  </div>
+
+                  <div className="col-span-1 text-center">
+                    <p className="text-sm text-gray-600">
+                      {product.scientific_name || "-"}
+                    </p>
+                  </div>
+
+                  <div className="col-span-1 text-center">
+                    <p className="text-sm text-gray-600">
+                      {product.dosage_form || "-"}
+                    </p>
                   </div>
 
                   <div className="col-span-1 text-center">
@@ -269,7 +283,7 @@ function ProductsPageContent() {
                 </div>
               ))
             ) : (
-              <div className="px-6 py-12 text-center min-w-[1200px]">
+              <div className="px-6 py-12 text-center min-w-[1400px]">
                 <Package className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-4 text-lg font-medium text-gray-900">
                   لا توجد منتجات

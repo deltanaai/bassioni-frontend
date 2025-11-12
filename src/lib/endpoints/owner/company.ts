@@ -1,10 +1,10 @@
 import { API_URL } from "@/constants";
 import { fetchHandler } from "@/lib/handlers/fetch";
 
-export const ownerPharmacyManageEndpoints = {
+export const ownerCompanyManageEndpoints = {
   getAll: ({ payload }: { payload: PaginatedSearchPayload }) =>
     fetchHandler(
-      `${API_URL}dashboard/pharmacies/index${
+      `${API_URL}dashboard/companies/index${
         payload.page ? `?page=${payload.page}` : ""
       }`,
       {
@@ -17,8 +17,8 @@ export const ownerPharmacyManageEndpoints = {
       }
     ),
 
-  getPharmacyDetails: ({ payload }: { payload: number }) =>
-    fetchHandler(`${API_URL}dashboard/pharmacies/${payload}`, {
+  getCompanyDetails: ({ payload }: { payload: number }) =>
+    fetchHandler(`${API_URL}dashboard/companies/${payload}`, {
       method: "GET",
       auth: true,
       body:
@@ -27,31 +27,31 @@ export const ownerPharmacyManageEndpoints = {
           : undefined,
     }),
 
-  addPharmacy: ({ payload }: { payload: PharmacyT }) => {
-    return fetchHandler(`${API_URL}dashboard/pharmacies`, {
+  addCompany: ({ payload }: { payload: CompanyT }) => {
+    return fetchHandler(`${API_URL}dashboard/companies`, {
       method: "POST",
       auth: true,
       body: JSON.stringify(payload),
     });
   },
 
-  updatePharmacy: ({ payload }: { payload: PharmacyT }) => {
-    return fetchHandler(`${API_URL}dashboard/pharmacies/${payload.id}`, {
+  updateCompany: ({ payload }: { payload: CompanyT }) => {
+    return fetchHandler(`${API_URL}dashboard/companies/${payload.id}`, {
       method: "PATCH",
       auth: true,
       body: JSON.stringify(payload),
     });
   },
 
-  deletePharmacy: ({ payload }: { payload: pharmaciesIdsPayload }) =>
-    fetchHandler(`${API_URL}dashboard/pharmacies/delete`, {
+  deleteCompany: ({ payload }: { payload: companiesIdsPayload }) =>
+    fetchHandler(`${API_URL}dashboard/companies/delete`, {
       method: "DELETE",
       auth: true,
       body: JSON.stringify(payload),
     }),
 
-  restorePharmacy: ({ payload }: { payload: pharmaciesIdsPayload }) =>
-    fetchHandler(`${API_URL}dashboard/pharmacies/restore`, {
+  restoreCompany: ({ payload }: { payload: companiesIdsPayload }) =>
+    fetchHandler(`${API_URL}dashboard/companies/restore`, {
       method: "POST",
       auth: true,
       body: JSON.stringify(payload),

@@ -9,6 +9,7 @@ import {
   ChevronUp,
   ChevronDown,
   Eye,
+  Mail,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -30,6 +31,7 @@ export default function PharmaciesPage() {
     name: false,
     address: false,
     phone: false,
+    email: false,
   });
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [editingPharmacy, setEditingPharmacy] = useState<PharmacyViewT | null>(
@@ -109,7 +111,7 @@ export default function PharmaciesPage() {
       <PharmaciesFilter />
 
       {/* شريط الإحصائيات */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="hidden bg-white rounded-xl border border-gray-200 p-4">
         <div className="flex items-center gap-4 text-sm text-gray-600">
           <span>
             إجمالي الصيدليات:{" "}
@@ -127,7 +129,7 @@ export default function PharmaciesPage() {
       {/* الجدول */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <div className="border-b border-gray-200 min-w-[800px]">
+          <div className="border-b border-gray-200 min-w-[1000px]">
             <div className="grid grid-cols-12 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
               <div className="col-span-1 text-center">#</div>
 
@@ -141,7 +143,7 @@ export default function PharmaciesPage() {
                 </button>
               </div>
 
-              <div className="col-span-4 text-center">
+              <div className="col-span-3 text-center">
                 <button
                   onClick={() => handleSortClick("address")}
                   className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
@@ -161,11 +163,21 @@ export default function PharmaciesPage() {
                 </button>
               </div>
 
-              <div className="col-span-2 text-center">الإجراءات</div>
+              <div className="col-span-2 text-center">
+                <button
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors mx-auto"
+                  onClick={() => handleSortClick("email")}
+                >
+                  <span>البريد الإلكتروني</span>
+                  {getSortIcon("email")}
+                </button>
+              </div>
+
+              <div className="col-span-1 text-center">الإجراءات</div>
             </div>
           </div>
           {/* جسم الجدول */}
-          <div className="divide-y divide-gray-200 min-w-[800px]">
+          <div className="divide-y divide-gray-200 min-w-[1000px]">
             {pharmacies.length > 0 ? (
               pharmacies.map((pharmacy, index) => (
                 <div
@@ -180,21 +192,15 @@ export default function PharmaciesPage() {
 
                   <div className="col-span-3">
                     <div className="flex items-center gap-3 justify-center text-center">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Store className="h-4 w-4 text-blue-600" />
-                      </div>
                       <div className="text-center">
                         <p className="font-medium text-gray-900">
                           {pharmacy.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          ID: {pharmacy.id}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="col-span-4 text-center">
+                  <div className="col-span-3 text-center">
                     <div className="flex items-center gap-2 justify-center">
                       <MapPin className="h-4 w-4 text-gray-400" />
                       <p className="text-sm text-gray-700 line-clamp-1">
@@ -211,17 +217,26 @@ export default function PharmaciesPage() {
                   </div>
 
                   <div className="col-span-2 text-center">
+                    <div className="flex items-center gap-2 justify-center">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-700">
+                        {pharmacy.owner_email || "---"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Link
                         href={`${ROUTES_OWNER.PHARMACIES}/${pharmacy.id}`}
-                        className="hidden p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className=" p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="عرض التفاصيل"
                       >
                         <Eye className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => handleEditPharmacy(pharmacy)}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="تعديل"
                       >
                         <Edit className="h-4 w-4" />
@@ -232,7 +247,7 @@ export default function PharmaciesPage() {
                           setDeletingPharmacyId(pharmacy.id);
                           setShowDeleteModal(true);
                         }}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="حذف"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -295,6 +310,7 @@ export default function PharmaciesPage() {
       <AddPharmacyDialog
         pharmacy={editingPharmacy}
         open={!!editingPharmacy}
+        showTrigger={false}
         onOpenChange={(open) => {
           if (!open) setEditingPharmacy(null);
         }}
