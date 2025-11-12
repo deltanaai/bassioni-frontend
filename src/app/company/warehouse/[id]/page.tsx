@@ -412,7 +412,7 @@ export default function WarehouseDetailsPage() {
                 </div>
 
                 {/* كود المخزن */}
-                <div>
+                {/* <div>
                   <label className="mb-1 block text-sm font-medium">
                     كود المخزن
                   </label>
@@ -426,7 +426,7 @@ export default function WarehouseDetailsPage() {
                       {editForm.formState.errors.code.message}
                     </p>
                   )}
-                </div>
+                </div> */}
 
                 {/* الموقع */}
                 <div>
