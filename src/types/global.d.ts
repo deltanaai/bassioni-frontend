@@ -178,6 +178,28 @@ interface CompanyOrder {
   items: OrderItem[];
 }
 
+interface ALLcompanyOrders {
+  id: number;
+  user_id: number | null;
+  pharmacist_id: number | null;
+  pharmacy_id: number | null;
+  address_id: number | null;
+  promo_code_id: number | null;
+  status: "pending" | "approved" | "rejected" | "completed" | string; // widen if backend can add more
+  total_price: string; // backend returns as string ("165.00")
+  delivery_fee: string;
+  payment_method: "cash" | "card" | string;
+  rating: number | null;
+  review: string | null;
+  created_at: string;
+  updated_at: string;
+  warehouse_id: number | null;
+
+  warehouse: Warehouse | null;
+  pharmacy: Pharmacy | null;
+  pharmacist: Pharmacist | null;
+}
+
 interface PharmacyOrderItem {
   id: number;
   product: OrderProduct;

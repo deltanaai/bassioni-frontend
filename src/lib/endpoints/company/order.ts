@@ -32,6 +32,12 @@ export const orderEndpoints = {
       body: JSON.stringify(payload),
     }),
 
+  listCompanyOrders: ({ companyId }: { companyId: number }) =>
+    fetchHandler(`${API_URL}company/${companyId}/orders`, {
+      method: "GET",
+      auth: true,
+    }),
+
   listWarehouseOrders: ({ warehouseId }: { warehouseId: number }) =>
     fetchHandler(`${API_URL}warehouses/${warehouseId}/orders`, {
       method: "GET",

@@ -264,3 +264,7 @@ interface ImportWarehouseProductsParams {
 interface SearchWarehousesParams {
   name: string;
 }
+
+interface ListCompanyOrdersParams {
+  companyId: number;
+}
