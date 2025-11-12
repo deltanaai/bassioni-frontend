@@ -16,53 +16,60 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 
   const { session, isLoadingSession, refetch } = useGetSession();
 
-  const isAuthRoute = pathname.startsWith("/auth");
-  // const userType =
-  //   session?.user && "pharmacy" in session.user ? "pharmacy" : "company";
+  // Normalize for consistent checks
+  const lowerPath = pathname.toLowerCase();
+  const isAuthRoute = lowerPath.startsWith("/auth");
+  const userType = session?.user?.userType?.toLowerCase();
 
+  /**
+   * ✅ Always refetch session when pathname changes
+   * This ensures that if the user manually deletes the session (token),
+   * the guard immediately detects it and redirects appropriately.
+   */
   useEffect(() => {
-    if (!isAuthRoute) refetch();
-  }, [refetch, pathname, isAuthRoute]);
+    refetch();
+  }, [pathname, refetch]);
 
   useEffect(() => {
     if (isLoadingSession) return;
-    console.log("session data: ", session);
+
+    // 1️⃣ If user not logged in and not on /auth -> redirect to login
     if (!session?.token && !isAuthRoute) {
       router.replace(ROUTES_OWNER.LOGIN);
       return;
     }
 
+    // 2️⃣ If user is logged in and visiting /auth -> redirect to dashboard
     if (isAuthRoute && session?.token) {
-      if (session?.user.userType === "Company")
-        router.replace(ROUTES_COMPANY.DASHBOARD);
-      else if (session?.user.userType === "Pharma")
-        router.replace(ROUTES_PHARMA.DASHBOARD);
-      else router.replace(ROUTES_OWNER.MAIN_DASHBOARD);
+      switch (userType) {
+        case "company":
+          router.replace(ROUTES_COMPANY.DASHBOARD);
+          break;
+        case "pharma":
+          router.replace(ROUTES_PHARMA.DASHBOARD);
+          break;
+        default:
+          router.replace(ROUTES_OWNER.MAIN_DASHBOARD);
+          break;
+      }
       return;
     }
 
-    // if (
-    //   session?.user.userType === "company" &&
-    //   pathname.startsWith("/Company")
-    // ) {
-    //   router.replace(ROUTES_COMPANY.DASHBOARD);
-    // } else if (
-    //   session?.user.userType === "pharmacist" &&
-    //   pathname.startsWith("/Pharma")
-    // ) {
-    //   router.replace(ROUTES_PHARMA.DASHBOARD);
-    // } else if (
-    //   session?.user.userType === "owner" &&
-    //   pathname.startsWith("/Owner")
-    // ) {
-    //   router.replace(ROUTES_OWNER.MAIN_DASHBOARD);
-    // }
-
-    if (session?.token && !pathname.startsWith(`/${session?.user.userType}`)) {
-      router.replace(`/${(session?.user.userType)?.toLowerCase()}`);
+    // 3️⃣ If logged in but on the wrong dashboard -> correct route
+    if (session?.token && !lowerPath.startsWith(`/${userType}`)) {
+      router.replace(`/${userType}`);
     }
-  }, [session, isLoadingSession, pathname, router, isAuthRoute]);
+  }, [
+    session,
+    isLoadingSession,
+    pathname,
+    router,
+    isAuthRoute,
+    userType,
+    lowerPath,
+  ]);
 
+  // 4️⃣ While verifying session -> show loader
   if (isLoadingSession)
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
