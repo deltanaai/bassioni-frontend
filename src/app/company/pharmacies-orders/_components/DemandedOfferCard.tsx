@@ -12,11 +12,13 @@ import OfferDetailsModal from "./OfferDetailsModal";
 interface DemandedOfferCardProps {
   offer: CompanyResponseOffers;
   activeTab: string;
+  showBadge?: boolean;
 }
 
 export default function DemandedOfferCard({
   offer,
   activeTab,
+  showBadge,
 }: DemandedOfferCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -83,6 +85,11 @@ export default function DemandedOfferCard({
               <h3 className="text-lg font-semibold text-gray-900">
                 طلب عرض #{offer.id}
               </h3>
+              {showBadge && (
+                <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                  عرض خاص
+                </span>
+              )}
               <span
                 className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(
                   offer.status

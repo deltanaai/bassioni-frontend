@@ -1,12 +1,14 @@
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { Package } from "lucide-react";
 
+import { listCompanyOrders } from "@/lib/actions/company/orders.action";
 import { getAllDemandedOffers } from "@/lib/actions/company/responseOffers.action";
 
 import DemandedOfferCard from "./DemandedOfferCard";
 
-interface DemandedOffersListProps {
+interface OrdersListProps {
   filters: any;
   currentPage: number;
   onPageChange: (page: number) => void;
@@ -18,35 +20,44 @@ export default function OrdersList({
   currentPage,
   onPageChange,
   activeTab,
-}: DemandedOffersListProps) {
-  const {
-    data: offersResponse,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["demandedOffers", activeTab, filters, currentPage],
-    queryFn: () =>
-      getAllDemandedOffers({
-        page: currentPage,
-        perPage: 10,
-        paginate: true,
-      }),
+}: OrdersListProps) {
+  // Fetch both in parallel
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["ordersAndOffers", activeTab, filters, currentPage],
+    queryFn: async () => {
+      const [ordersRes, offersRes] = await Promise.all([
+        listCompanyOrders({ companyId: 1 }), // TODO: use actual companyId
+        getAllDemandedOffers({
+          page: currentPage,
+          perPage: 10,
+          paginate: true,
+        }),
+      ]);
+
+      return {
+        orders: ordersRes?.data ?? [],
+        offers: offersRes?.data ?? [],
+        meta: offersRes?.meta,
+      };
+    },
   });
 
-  // const {
-    
-  // } = useQuery({
-  //   queryKey: ["orders", activeTab, filters, currentPage],
-  //   queryFn:()=> 
-  // })
+  const orders = data?.orders || [];
+  const offers = data?.offers || [];
+  const pagination = data?.meta;
 
- 
+  // Combine both lists
+  const combinedOrders = [
+    ...orders.map((order) => ({ ...order, type: "order" })),
+    ...offers.map((offer) => ({ ...offer, type: "offer" })),
+  ];
 
-  const offers = offersResponse?.data || [];
-  console.log("offerss", offers);
-  // مجربتوش لساا
-  const pagination = offersResponse?.meta;
-  console.log("paginationnn", pagination);
+  // Optional: sort by created date if both share it
+  combinedOrders.sort((a, b) => {
+    const dateA = new Date(a.created_at ?? 0).getTime();
+    const dateB = new Date(b.created_at ?? 0).getTime();
+    return dateB - dateA;
+  });
 
   const getTabTitle = () => {
     switch (activeTab) {
@@ -104,25 +115,26 @@ export default function OrdersList({
         </p>
       </div>
 
-      {/* قائمة الطلبات */}
+      {/* Orders List */}
       <div className="divide-y divide-gray-200">
-        {offers.length === 0 ? (
+        {combinedOrders.length === 0 ? (
           <div className="py-12 text-center text-gray-500">
             <Package className="mx-auto mb-4 h-16 w-16 opacity-50" />
             <p>{getEmptyMessage()}</p>
           </div>
         ) : (
-          offers.map((offer) => (
+          combinedOrders.map((item) => (
             <DemandedOfferCard
-              key={offer.id}
-              offer={offer}
+              key={`${item.type}-${item.id}`}
+              offer={item}
               activeTab={activeTab}
+              showBadge={item.type === "offer"}
             />
           ))
         )}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination (from offers only) */}
       {pagination && pagination.total > 0 && (
         <div className="flex items-center justify-between border-t border-gray-200 p-4">
           <div className="text-sm text-gray-600">
