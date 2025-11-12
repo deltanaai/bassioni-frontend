@@ -83,7 +83,7 @@ export default function DemandedOfferCard({
           <div className="flex-1">
             <div className="mb-3 flex items-center gap-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                طلب عرض #{offer.id}
+                {showBadge ? "طلب عرض رقم " : "طلب رقم"}#{offer.id}
               </h3>
               {showBadge && (
                 <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
