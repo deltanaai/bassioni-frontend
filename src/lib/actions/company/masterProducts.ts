@@ -11,7 +11,7 @@ import {
 
 export async function getMasterProducts(
   params: PaginatedSearchParams
-): Promise<ActionResponse<PaginatedResponse<MasterProduct>>> {
+): Promise<ActionResponse<MasterProduct[]>> {
   const validationResult = await action({
     params,
     schema: GetMasterProductsSchema,
@@ -43,7 +43,7 @@ export async function getMasterProducts(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<MasterProduct>,
+      data: response.data as MasterProduct[],
       links: response.links,
       meta: response.meta,
     };

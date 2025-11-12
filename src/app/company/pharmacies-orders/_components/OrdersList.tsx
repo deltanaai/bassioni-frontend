@@ -46,6 +46,9 @@ export default function OrdersList({
   const offers = data?.offers || [];
   const pagination = data?.meta;
 
+  console.log("ORDERS:", orders);
+  console.log("OFFERS:", offers);
+  
   // Combine both lists
   const combinedOrders = [
     ...orders.map((order) => ({ ...order, type: "order" })),

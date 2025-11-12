@@ -12,7 +12,6 @@ import {
   Calendar,
   Loader2,
   Circle,
-  Warehouse,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,7 +28,7 @@ import {
 import {
   storeWarehouseProduct,
   deleteProductFromWarehouse,
-  getProductsByWarehouse,
+  getAllWarehouseProducts,
 } from "@/lib/actions/company/warehouseProducts.action";
 import { formatArabicDate } from "@/lib/utils";
 import { UpdateWarehouseSchema } from "@/schemas/company/warehouse";
@@ -61,7 +60,7 @@ export default function WarehouseDetailsPage() {
     queryFn: () => getWarehouse({ warehouseId }),
     enabled: !isNaN(warehouseId),
   });
-  const warehouse = data?.data?.warehouse;
+  const warehouse = data?.data;
   console.log("Warehouse data:", warehouse);
 
   // المنتجات الرئيسية
@@ -80,22 +79,30 @@ export default function WarehouseDetailsPage() {
   const locations = locationsData?.data || [];
 
   // جلب ادويه المخزن
-  const { data: produtsData } = useQuery({
+
+  const { data: warehouseProducts } = useQuery({
     queryKey: ["warehouseProducts", warehouseId],
-    queryFn: () => getProductsByWarehouse({ warehouseId }),
+    queryFn: () => getAllWarehouseProducts({ warehouseId }),
   });
+
+  const products = warehouseProducts?.data || [];
+
+  // const { data: produtsData } = useQuery({
+  //   queryKey: ["warehouseProducts", warehouseId],
+  //   queryFn: () => getProductsByWarehouse({ warehouseId }),
+  // });
   // تصفية البيانات لاستخراج منتجات المخزن الحالي فقط
-  const allWarehousesData = produtsData?.data || [];
-  const currentWarehouseData = allWarehousesData.find(
-    (item: any) => item.warehouse?.id === warehouseId
-  );
+  // const allWarehousesData = produtsData?.data || [];
+  // const currentWarehouseData = allWarehousesData.find(
+  //   (item) => item.warehouse?.id === warehouseId
+  // );
 
-  const products = currentWarehouseData?.products || [];
+  // const products = currentWarehouseData?.product || [];
 
-  console.log(" Current warehouse ID:", warehouseId);
-  console.log(" All warehouses data:", allWarehousesData);
-  console.log(" Current warehouse data:", currentWarehouseData);
-  console.log(" Products to display:", products);
+  // console.log(" Current warehouse ID:", warehouseId);
+  // console.log(" All warehouses data:", allWarehousesData);
+  // console.log(" Current warehouse data:", currentWarehouseData);
+  // console.log(" Products to display:", products);
 
   // نموذج تعديل المخزن
   const editForm = useForm({
@@ -331,7 +338,7 @@ export default function WarehouseDetailsPage() {
           <p className="flex items-center gap-2 text-gray-700">
             <Building className="h-5 w-5 text-emerald-500" /> الشركة:
             <span className="font-semibold text-gray-900">
-              {warehouse?.company}
+              {warehouse?.company.name}
             </span>
           </p>
 
@@ -506,7 +513,7 @@ export default function WarehouseDetailsPage() {
         </div>
 
         {/* جدول المنتجات */}
-        {products.length > 0 ? (
+        {products?.length > 0 ? (
           <table className="w-full border-collapse text-sm">
             <thead className="bg-gray-200">
               <tr>
@@ -529,10 +536,13 @@ export default function WarehouseDetailsPage() {
                   <td className="p-3 text-center">{p.id}</td>
                   <td className="p-3 text-center">{p.name}</td>
                   <td className="p-3 text-center">{p.batch_number}</td>
-                  <td className="p-3 text-center">{p.stock}</td>
+                  <td className="p-3 text-center">{p.available_stock}</td>
                   <td className="p-3 text-center">{p.price} ج.م</td>
                   <td className="p-3 text-center">
-                    {((p.stock ?? 0) * Number(p.price)).toLocaleString()} ج.م
+                    {(
+                      (p.available_stock ?? 0) * Number(p.price)
+                    ).toLocaleString()}{" "}
+                    ج.م
                   </td>
                   <td className="p-3 text-center">{p.expiry_date}</td>
                   <td className="p-3 text-center">

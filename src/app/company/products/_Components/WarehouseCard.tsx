@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
 
 import {
-  getAllProducts,
+  getAllWarehouseProducts,
   getProductsByWarehouse,
 } from "@/lib/actions/company/warehouseProducts.action";
 import { formatIsoToArabicDate } from "@/lib/utils";
@@ -33,7 +33,7 @@ const WarehouseCard = ({
   const { data, isLoading } = useQuery({
     queryKey: ["warehouseProductDetails", id, productId],
     queryFn: () =>
-      getAllProducts({
+      getAllWarehouseProducts({
         warehouseId: id,
         filters: { id: productId },
       }),

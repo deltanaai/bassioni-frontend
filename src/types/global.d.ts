@@ -105,7 +105,10 @@ interface Warehouse {
   id: number;
   name: string;
   code: string;
-  company: string;
+  company: {
+    id: number;
+    name: string;
+  };
   location: string;
   createdAt: string;
   updatedAt: string;

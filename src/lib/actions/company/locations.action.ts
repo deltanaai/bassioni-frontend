@@ -13,7 +13,7 @@ import {
 
 export async function getAllLocations(
   params?: PaginatedSearchParams
-): Promise<IndexedActionResponse<Location>> {
+): Promise<ActionResponse<Location[]>> {
   const validationResult = await action({
     params,
     schema: GetAllLocationsSchema,
@@ -42,7 +42,7 @@ export async function getAllLocations(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<Location>,
+      data: response.data as Location[],
       links: response.links,
       meta: response.meta,
     };

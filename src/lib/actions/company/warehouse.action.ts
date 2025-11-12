@@ -124,7 +124,7 @@ export async function addNewWarehouse(
 
 export async function getWarehouse(
   params: GetWarehouseParams
-): Promise<ActionResponse<{ warehouse: Warehouse }>> {
+): Promise<ActionResponse<Warehouse>> {
   const validationResult = await action({
     params,
     schema: GetWarehouseSchema,
@@ -145,7 +145,7 @@ export async function getWarehouse(
     }
     return {
       success: true,
-      data: { warehouse: response.data as Warehouse },
+      data: response.data as Warehouse,
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

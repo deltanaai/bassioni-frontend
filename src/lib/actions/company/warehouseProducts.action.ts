@@ -13,7 +13,7 @@ import { api } from "../../api";
 import action from "../../handlers/action";
 import handleError from "../../handlers/error";
 
-export async function getAllProducts(
+export async function getAllWarehouseProducts(
   params: WarehouseProductsIndexParams
 ): Promise<ActionResponse<WarehouseProduct[]>> {
   const validationResult = await action({
@@ -47,7 +47,7 @@ export async function getAllProducts(
   };
 
   try {
-    const response = await api.company.products.getAll({
+    const response = await api.company.products.indexWarehouseProducts({
       warehouseId,
       payload,
     });
