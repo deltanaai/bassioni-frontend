@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 import OffersFilter from "./_components/OffersFilter";
-import OrdersList from "./_components/DemandedOffersList";
+import OrdersList from "./_components/OrdersList";
 
 type TabType = "all" | "pending" | "completed" | "cancelled";
 

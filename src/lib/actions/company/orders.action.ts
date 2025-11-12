@@ -24,7 +24,7 @@ export async function showCompanyOrder(
   }
   const { orderId } = validationResult.params!;
   try {
-    const response = await api.company.orders.showOrder({ orderId });
+    const response = await api.company.orders.showOrderDetails({ orderId });
 
     if (!response) {
       throw new Error("فشل في جلب تفاصيل الطلب");

@@ -14,7 +14,7 @@ import {
 
 export async function getAllDemandedOffers(
   params: PaginatedSearchParams
-): Promise<IndexedActionResponse<CompanyResponseOffers>> {
+): Promise<ActionResponse<CompanyResponseOffers[]>> {
   const validationResult = await action({
     params,
     schema: GetAllDemandedOffersSchema,
@@ -58,7 +58,7 @@ export async function getAllDemandedOffers(
 
     return {
       success: true,
-      data: response.data as PaginatedResponse<CompanyResponseOffers>,
+      data: response.data as CompanyResponseOffers[],
       links: response.links,
       meta: response.meta,
     };

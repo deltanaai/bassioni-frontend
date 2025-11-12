@@ -20,7 +20,7 @@ export default function OrdersList({
   activeTab,
 }: DemandedOffersListProps) {
   const {
-    data: response,
+    data: offersResponse,
     isLoading,
     error,
   } = useQuery({
@@ -33,12 +33,19 @@ export default function OrdersList({
       }),
   });
 
+  // const {
+    
+  // } = useQuery({
+  //   queryKey: ["orders", activeTab, filters, currentPage],
+  //   queryFn:()=> 
+  // })
+
  
 
-  const offers = response?.data || [];
+  const offers = offersResponse?.data || [];
   console.log("offerss", offers);
   // مجربتوش لساا
-  const pagination = response?.meta;
+  const pagination = offersResponse?.meta;
   console.log("paginationnn", pagination);
 
   const getTabTitle = () => {
