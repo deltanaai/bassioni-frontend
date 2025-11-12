@@ -59,7 +59,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     // }
 
     if (session?.token && !pathname.startsWith(`/${session?.user.userType}`)) {
-      router.replace(`/${session?.user.userType}`);
+      router.replace(`/${(session?.user.userType)?.toLowerCase()}`);
     }
   }, [session, isLoadingSession, pathname, router, isAuthRoute]);
 

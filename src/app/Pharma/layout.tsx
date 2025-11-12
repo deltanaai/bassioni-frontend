@@ -73,7 +73,7 @@ export default function DashboardLayout({
   const { session, isLoadingSession } = useGetSession();
 
   const mutation = useMutation({
-    mutationFn: logoutPharmacy, // TODO : change to pharma signOut action when available
+    mutationFn: logoutPharmacy, 
     onSuccess: async (res) => {
       if (!res.success) {
         toast.error(res.error?.message || "حدث خطأ أثناء تسجيل الخروج");
