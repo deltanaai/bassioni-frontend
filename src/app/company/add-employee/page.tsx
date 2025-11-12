@@ -17,7 +17,6 @@ import {
 import { useForm } from "react-hook-form";
 import { CreateEmployeeSchema } from "@/schemas/company/employee";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EmployeeCreateInput } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addEmployee,
@@ -34,6 +33,7 @@ export default function EmployeesPage() {
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -73,11 +73,11 @@ export default function EmployeesPage() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<EmployeeCreateInput>({
+  } = useForm<CreateEmployeeParams>({
     resolver: zodResolver(CreateEmployeeSchema),
     defaultValues: {
       active: true,
-      warehouseId: null,
+      warehouses: null,
       address: null,
     },
   });
@@ -98,7 +98,8 @@ export default function EmployeesPage() {
     },
   });
 
-  const onSubmit = (data: EmployeeCreateInput) => {
+  const onSubmit = (data: CreateEmployeeParams) => {
+    data.warehouses = selectedEmployees;
     mutation.mutate(data);
     console.log(data);
   };
@@ -359,7 +360,9 @@ export default function EmployeesPage() {
                 {/* المستودع */}
                 <div>
                   <select
-                    {...register("warehouseId", { valueAsNumber: true })}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setSelectedEmployees([+e.target.value]);
+                    }}
                     className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-emerald-500"
                     defaultValue=""
                   >
@@ -374,9 +377,9 @@ export default function EmployeesPage() {
                       )
                     )}
                   </select>
-                  {errors.warehouseId && (
+                  {errors.warehouses && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errors.warehouseId.message}
+                      {errors.warehouses.message}
                     </p>
                   )}
                 </div>

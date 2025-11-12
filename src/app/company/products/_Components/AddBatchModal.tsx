@@ -49,7 +49,12 @@ export default function AddBatchModal({
           if (res.success === true) {
             toast.success("تمت إضافة الدفعة بنجاح");
             queryClient.invalidateQueries({
-              queryKey: ["warehouseProductDetails", warehouseId, productId],
+              predicate: (query) =>
+                query.queryKey.some(
+                  (key) =>
+                    typeof key === "string" &&
+                    key.startsWith("warehouseProductDetails")
+                ),
             });
             handleClose();
           } else {

@@ -28,6 +28,7 @@ import { addOrUpdateAdmin } from "@/lib/actions/owner/admins.action";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import SpinnerMini from "../custom/SpinnerMini";
+import { useGetRoles } from "@/hooks/owner/useGetRoles";
 
 type AdminFormValues = z.infer<typeof adminSchema>;
 
@@ -52,6 +53,8 @@ export default function AddAdminDialog({
 
   const isEditMode = !!admin;
 
+  const { roles, isLoading: rolesLoading } = useGetRoles();
+
   const form = useForm<AdminFormValues>({
     resolver: zodResolver(adminSchema),
     defaultValues: {
@@ -59,6 +62,7 @@ export default function AddAdminDialog({
       email: "",
       password: "",
       superAdmin: false,
+      role_id: undefined,
     },
   });
   const queryClient = useQueryClient();
@@ -72,6 +76,7 @@ export default function AddAdminDialog({
         email: admin.email,
         password: "", // Don't pre-fill password for security
         superAdmin: admin.superAdmin,
+        role_id: admin.role_id,
       });
     } else {
       form.reset({
@@ -79,6 +84,7 @@ export default function AddAdminDialog({
         email: "",
         password: "",
         superAdmin: false,
+        role_id: undefined,
       });
     }
   }, [admin, form]);
@@ -193,6 +199,40 @@ export default function AddAdminDialog({
                       {...field}
                       className="text-lg"
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Role Field */}
+            <FormField
+              control={form.control}
+              name="role_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>الدور</FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? Number(e.target.value) : undefined
+                        )
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                      disabled={rolesLoading}
+                    >
+                      <option value="">
+                        {rolesLoading ? "جاري التحميل..." : "اختر الدور"}
+                      </option>
+                      {roles.map((role) => (
+                        <option key={role.id} value={role.id}>
+                          {role.name}
+                        </option>
+                      ))}
+                    </select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

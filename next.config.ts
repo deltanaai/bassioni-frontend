@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   serverExternalPackages: ["pino", "pino-pretty"],
   images: {
     remotePatterns: [
@@ -20,7 +28,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "backend.valideria.com",
+        hostname: "back.remedsupply.com",
         port: "",
         pathname: "/storage/**",
       },

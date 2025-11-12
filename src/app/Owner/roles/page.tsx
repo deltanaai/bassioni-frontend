@@ -105,7 +105,7 @@ export default function RolesPage() {
             <div className="grid grid-cols-10 gap-4 px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50">
               <div className="col-span-1 text-center">#</div>
               <div className="col-span-4 text-center">اسم الدور</div>
-              <div className="col-span-3 text-center">عدد الصلاحيات</div>
+              {/* <div className="col-span-3 text-center">عدد الصلاحيات</div> */}
               <div className="col-span-2 text-center">الإجراءات</div>
             </div>
           </div>
@@ -135,11 +135,11 @@ export default function RolesPage() {
                     </div>
                   </div>
 
-                  <div className="col-span-3 text-center">
+                  {/* <div className="col-span-3 text-center">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                       {role.permissions?.length || 0} صلاحية
                     </span>
-                  </div>
+                  </div> */}
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center justify-center gap-2">

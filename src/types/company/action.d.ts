@@ -60,7 +60,7 @@ interface CreateEmployeeParams {
   password: string;
   passwordConfirmation: string;
   roleId: number;
-  warehouseId?: number | null;
+  warehouses?: number[] | null;
   active: boolean;
   address?: string | null;
 }

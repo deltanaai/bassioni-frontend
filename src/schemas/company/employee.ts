@@ -84,7 +84,7 @@ export const CreateEmployeeSchema = z
       .number("معرف الدور مطلوب")
       .int("معرف الدور مطلوب")
       .positive("معرف الدور مطلوب"),
-    warehouseId: z.number().int().positive().nullable().optional(),
+    warehouses: z.array(z.number().int().positive()).nullable().optional(),
     active: z.boolean(),
     address: z.string().nullable().optional(),
   })

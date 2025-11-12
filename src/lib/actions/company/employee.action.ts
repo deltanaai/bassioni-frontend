@@ -110,7 +110,7 @@ export async function addEmployee(
     password,
     passwordConfirmation,
     roleId,
-    warehouseId,
+    warehouses,
     active,
     address,
   } = validationResult.params!;
@@ -122,7 +122,7 @@ export async function addEmployee(
     password,
     password_confirmation: passwordConfirmation,
     role_id: roleId,
-    warehouse_id: warehouseId ?? null,
+    warehouses: warehouses ?? null,
     active,
     address: address ?? null,
   };
@@ -131,7 +131,7 @@ export async function addEmployee(
   try {
     const response = await api.company.employee.addEmployee({ payload });
 
-    if (!response || !response.data) {
+    if (!response || response.result !== "Success") {
       console.log(response);
       throw new Error(
         "فشل في إضافة الموظف, لم يتم تلقي بيانات صالحة من الخادم"

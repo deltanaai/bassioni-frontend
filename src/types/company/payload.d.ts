@@ -42,7 +42,7 @@ interface CreateEmployeePayload {
   password: string;
   password_confirmation: string;
   role_id: number;
-  warehouse_id: number | null;
+  warehouses: number[] | null;
   active: boolean;
   address: string | null;
 }
