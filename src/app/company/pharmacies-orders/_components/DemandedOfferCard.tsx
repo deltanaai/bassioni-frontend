@@ -8,9 +8,10 @@ import { updateDemandedOfferStatus } from "@/lib/actions/company/responseOffers.
 import { queryClient } from "@/lib/queryClient";
 
 import OfferDetailsModal from "./OfferDetailsModal";
+import OrderDetailsModal from "./OrderDetailsModal";
 
 interface DemandedOfferCardProps {
-  offer: CompanyResponseOffers;
+  offer: CompanyResponseOffers | ALLcompanyOrders;
   activeTab: string;
   showBadge?: boolean;
 }
@@ -21,6 +22,13 @@ export default function DemandedOfferCard({
   showBadge,
 }: DemandedOfferCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Type guard to determine if this is an offer or order
+  const isOffer = (
+    item: CompanyResponseOffers | ALLcompanyOrders
+  ): item is CompanyResponseOffers => {
+    return "company_offer_id" in item && "offer" in item;
+  };
 
   const warehouseId = 1; // TODO: get warehouse id from auth store
 
@@ -42,7 +50,7 @@ export default function DemandedOfferCard({
         toast.error(data.error?.message);
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error("فشل تحديث الحالة");
       console.error(error);
     },
@@ -55,26 +63,53 @@ export default function DemandedOfferCard({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "approved":
+      case "completed":
         return "text-green-600 bg-green-100";
       case "rejected":
         return "text-red-600 bg-red-100";
-      default:
+      case "pending":
         return "text-yellow-600 bg-yellow-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
       case "approved":
+        return "موافق عليه";
+      case "completed":
         return "مكتمل";
       case "rejected":
-        return "ملغي";
-      default:
+        return "مرفوض";
+      case "pending":
         return "قيد الانتظار";
+      default:
+        return status;
     }
   };
 
-  const showActionButtons = activeTab === "pending" || activeTab === "all";
+  const showActionButtons =
+    (activeTab === "pending" || activeTab === "all") && isOffer(offer);
+
+  // Extract common display data
+  const displayData = isOffer(offer)
+    ? {
+        title: `طلب عرض رقم #${offer.id}`,
+        quantity: offer.quantity,
+        totalPrice: offer.total_price,
+        createdAt: offer.created_at,
+        status: offer.status,
+        description: offer.offer?.description,
+      }
+    : {
+        title: `طلب رقم #${offer.id}`,
+        quantity: null, // ALLcompanyOrders doesn't include items in this context
+        totalPrice: offer.total_price,
+        createdAt: offer.created_at,
+        status: offer.status,
+        description: null,
+      };
 
   return (
     <>
@@ -83,42 +118,46 @@ export default function DemandedOfferCard({
           <div className="flex-1">
             <div className="mb-3 flex items-center gap-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                {showBadge ? "طلب عرض رقم " : "طلب رقم"}#{offer.id}
+                {displayData.title}
               </h3>
               {showBadge && (
                 <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                  عرض خاص
+                  {isOffer(offer) ? "عرض خاص" : "طلب عادي"}
                 </span>
               )}
               <span
                 className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(
-                  offer.status
+                  displayData.status
                 )}`}
               >
-                {getStatusText(offer.status)}
+                {getStatusText(displayData.status)}
               </span>
             </div>
 
             <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
               <div className="flex items-center gap-2 text-gray-700">
                 <Building className="h-4 w-4" />
-                <span>الكمية: {offer.quantity}</span>
+                <span>
+                  {isOffer(offer)
+                    ? `الكمية: ${displayData.quantity}`
+                    : "طلب عادي"}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <DollarSign className="h-4 w-4" />
-                <span>السعر الإجمالي: {offer.total_price} جنيه</span>
+                <span>السعر الإجمالي: {displayData.totalPrice} جنيه</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <Calendar className="h-4 w-4" />
                 <span>
-                  {new Date(offer.created_at).toLocaleDateString("ar-EG")}
+                  {new Date(displayData.createdAt).toLocaleDateString("ar-EG")}
                 </span>
               </div>
             </div>
 
-            {offer.offer?.description && (
+            {displayData.description && (
               <p className="mt-3 text-sm text-gray-600">
-                {offer.offer.description}
+                {displayData.description}
               </p>
             )}
           </div>
@@ -152,11 +191,20 @@ export default function DemandedOfferCard({
         </div>
       </div>
 
-      <OfferDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        offerId={offer.id}
-      />
+      {/* Render the appropriate modal based on type */}
+      {isOffer(offer) ? (
+        <OfferDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          offerId={offer.id}
+        />
+      ) : (
+        <OrderDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          orderId={offer.id}
+        />
+      )}
     </>
   );
 }

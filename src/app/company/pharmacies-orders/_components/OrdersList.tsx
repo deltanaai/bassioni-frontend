@@ -67,8 +67,6 @@ export default function OrdersList({
     }
   };
 
-
-
   const getEmptyMessage = () => {
     switch (activeTab) {
       case "pending":
@@ -82,7 +80,8 @@ export default function OrdersList({
     }
   };
 
-  const displayList = viewSource === "orders" ? orders : offers;
+  const displayList: (CompanyResponseOffers | ALLcompanyOrders)[] =
+    viewSource === "orders" ? orders : offers;
   const isLoading =
     viewSource === "orders" ? ordersQuery.isLoading : offersQuery.isLoading;
   const fetchError =
@@ -146,8 +145,7 @@ export default function OrdersList({
             <p>{getEmptyMessage()}</p>
           </div>
         ) : (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          displayList.map((item: any) => (
+          displayList.map((item) => (
             <DemandedOfferCard
               key={`${viewSource}-${item.id}`}
               offer={item}
