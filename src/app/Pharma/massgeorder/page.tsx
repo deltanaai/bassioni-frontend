@@ -2,16 +2,16 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { FiEye, FiClock, FiCheck, FiX } from "react-icons/fi";
+import {  FiClock, FiCheck, FiX } from "react-icons/fi";
 import { toast } from "sonner";
 
+import { useGetSession } from "@/hooks/useGetSession";
+import { showPharmacyOrders } from "@/lib/actions/company/pharmacyOrders";
 import {
   cancelRequestedOffer,
   showRequestedCompanyOffers,
 } from "@/lib/actions/pharma/companyOffers.action";
-import { showPharmacyOrders } from "@/lib/actions/company/pharmacyOrders";
 import { queryClient } from "@/lib/queryClient";
-import { useGetSession } from "@/hooks/useGetSession";
 
 export default function MyRequestsPage() {
   const session = useGetSession();
@@ -44,13 +44,14 @@ export default function MyRequestsPage() {
     enabled: !!pharmacyId,
   });
 
-  /** 🔹 Extract and normalize data */
-  const orders = ordersResponse?.data || [];
-  const requests = requestsData?.data || [];
-  console.log(orders);
-
   /** 🔹 Combine both datasets into unified shape */
   const unifiedOrders = useMemo(() => {
+    /** 🔹 Extract and normalize data */
+    const orders = ordersResponse?.data || [];
+    const requests = requestsData?.data || [];
+    console.log("ORDERS",orders);
+    console.log("REQUESTS",requests);
+    
     const defaultOrders =
       orders.map((order) => ({
         id: order.order_id,
@@ -75,16 +76,16 @@ export default function MyRequestsPage() {
         itemPrice: parseFloat(req.item_price),
         totalPrice: req.total_price,
         status: req.status,
-        createdAt: req.created_at,
-        updatedAt: req.updated_at,
-        referenceId: req.company_offer_id,
+        createdAt: req.createdAt,
+        updatedAt: req.updatedAt,
+        referenceId: req.offer.id,
       })) || [];
 
     return [...defaultOrders, ...offerOrders].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [orders, requests]);
+  }, [ordersResponse, requestsData]);
 
   /** 🔹 Apply filter */
   const filteredOrders = useMemo(() => {
@@ -189,7 +190,7 @@ export default function MyRequestsPage() {
         ].map((tab) => (
           <button
             key={tab.value}
-            onClick={() => setFilter(tab.value as any)}
+            onClick={() => setFilter(tab.value as "all" | "default" | "offer")}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               filter === tab.value
                 ? "bg-emerald-600 text-white"
@@ -266,7 +267,7 @@ export default function MyRequestsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-semibold">
+                          <span className="font-semibold text-white">
                             #{order.referenceId}
                           </span>
                           {order.type === "offer" && (

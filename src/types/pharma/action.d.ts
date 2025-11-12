@@ -87,14 +87,20 @@ interface RequestToCompanyOfferParams {
 
 interface CompanyOfferResponse {
   id: number;
+  pharmacy: {
+    id: number;
+    name: string;
+  };
   company_offer_id: number;
-  pharmacy_id: number;
-  quantity: string;
+  quantity: number;
   item_price: string;
   total_price: number;
   status: string;
-  created_at: string;
-  updated_at: string;
+  offer: CompanyOffer;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  deleted: boolean;
 }
 
 interface RequestedOfferDetailsParams {
@@ -157,6 +163,6 @@ interface ShowBranchParams {
   branchId: number;
 }
 
-interface ShowPharmacyOrdersParams{
+interface ShowPharmacyOrdersParams {
   pharmacyId: number;
 }
