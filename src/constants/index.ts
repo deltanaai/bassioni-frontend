@@ -7,10 +7,10 @@
 
 export const API_URL =
   process.env.NEXT_PUBLIC_LARAVEL_PUBLIC_API_BASE_URL ||
-  "https://back.remedsupply.com/";
+  "https://back.remedsupply.com/api/";
 export const API_STORAGE =
   process.env.NEXT_PUBLIC_LARAVEL_PUBLIC_SERVER_URL_IMAGES ||
-  "https://back.remedsupply.com/";
+  "https://back.remedsupply.com/storage";
 
 export const PERMISSION_LABELS: Record<string, string> = {
   // General
