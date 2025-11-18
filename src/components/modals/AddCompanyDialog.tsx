@@ -55,10 +55,10 @@ export default function AddCompanyDialog({
   const form = useForm<CompanyT>({
     resolver: zodResolver(companySchema),
     defaultValues: {
-      name: "",
-      address: "",
-      phone: "",
-      email: "",
+      name: company?.name || "",
+      address: company?.address || "",
+      phone: company?.phone || "",
+      email: company?.owner_email || "",
       password: "",
       password_confirmation: "",
     },
@@ -70,10 +70,10 @@ export default function AddCompanyDialog({
     if (company) {
       form.reset({
         id: company.id,
-        name: company.name,
-        address: company.address,
-        phone: company.phone,
-        email: company.owner_email,
+        name: company.name || "",
+        address: company.address || "",
+        phone: company.phone || "",
+        email: company.owner_email || "",
         password: "", // Don't pre-fill password in edit mode
         password_confirmation: "", // Don't pre-fill password confirmation in edit mode
       });

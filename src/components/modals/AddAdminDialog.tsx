@@ -58,11 +58,11 @@ export default function AddAdminDialog({
   const form = useForm<AdminFormValues>({
     resolver: zodResolver(adminSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: admin?.name || "",
+      email: admin?.email || "",
       password: "",
-      superAdmin: false,
-      role_id: undefined,
+      superAdmin: admin?.superAdmin || false,
+      role_id: admin?.role_id || undefined,
     },
   });
   const queryClient = useQueryClient();
@@ -72,11 +72,11 @@ export default function AddAdminDialog({
     if (admin) {
       form.reset({
         id: admin.id,
-        name: admin.name,
-        email: admin.email,
+        name: admin.name || "",
+        email: admin.email || "",
         password: "", // Don't pre-fill password for security
-        superAdmin: admin.superAdmin,
-        role_id: admin.role_id,
+        superAdmin: admin.superAdmin || false,
+        role_id: admin.role_id || undefined,
       });
     } else {
       form.reset({
