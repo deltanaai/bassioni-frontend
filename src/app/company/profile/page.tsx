@@ -1,105 +1,155 @@
 "use client";
 
-import DashboardLayout from "../layout";
-import React from "react";
-import Image from "next/image";
-import { Trash2, Eye } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Building,
+  Calendar,
+  Briefcase,
+} from "lucide-react";
+import React, { useState } from "react";
+
+import { getProfile } from "@/lib/actions/company/profile.action";
+import { formatBackendDateToArabic } from "@/lib/utils";
+
+import ChangePasswordModal from "./_components/ChangePasswordModal";
+import EditProfileModal from "./_components/EditProfileModal";
+import InfoCard from "./_components/InfoCard";
+import InfoItem from "./_components/InfoItem";
+import ProfileHeader from "./_components/ProfileHeader";
 
 export default function ProfilePage() {
-  const orders = [
-    { id: 1, name: "بانادول", date: "2025-08-01", status: "قيد التنفيذ" },
-    { id: 2, name: "زيرتك", date: "2025-07-30", status: "تم التوصيل" },
-  ];
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["companyProfile"],
+    queryFn: getProfile,
+  });
+
+  const profile = response?.success ? response.data : null;
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-gray-500">لم يتم العثور على بيانات الملف الشخصي</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 space-y-8 bg-gray-50 text-gray-800 min-h-screen">
-      {/* كرت بيانات المستخدم */}
-      <div className="bg-white rounded-2xl shadow-md p-6 md:flex items-center gap-6 border border-gray-100">
-        <div className="relative w-24 h-24 mx-auto md:mx-0">
-          <Image
-            src="/images.png"
-            alt="User Avatar"
-            fill
-            className="rounded-full border-4 border-emerald-500 object-cover"
-          />
-        </div>
-        <div className="flex-1 text-center md:text-right mt-4 md:mt-0">
-          <h2 className="text-2xl font-bold text-emerald-600">محمد بسيوني</h2>
-          <p className="text-sm text-gray-500 mt-1">example@email.com</p>
-          <p className="text-sm text-gray-500">01012345678 - القاهرة، مصر</p>
-        </div>
-        <div className="flex flex-col gap-2 mt-4 md:mt-0">
-          <button className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg text-white text-sm transition">
-            تعديل البيانات
-          </button>
-          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white text-sm transition">
-            تغيير كلمة المرور
-          </button>
+    <div className="min-h-screen space-y-6 bg-gray-50 p-6">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">الملف الشخصي</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            إدارة معلوماتك الشخصية وإعدادات الحساب
+          </p>
         </div>
       </div>
 
-      {/* الطلبات */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-        <h3 className="text-xl font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-700">
-          طلباتي
-        </h3>
+      {/* Main Profile Card */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <ProfileHeader
+          name={profile.name}
+          role={profile.role}
+          isActive={profile.active}
+          onEditClick={() => setIsEditModalOpen(true)}
+          onPasswordClick={() => setIsPasswordModalOpen(true)}
+        />
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-gray-700 text-right">
-            <thead>
-              <tr className="bg-gray-100 text-gray-600">
-                <th className="p-3">رقم</th>
-                <th className="p-3">اسم الطلب</th>
-                <th className="p-3">التاريخ</th>
-                <th className="p-3">الحالة</th>
-                <th className="p-3 text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr
-                  key={order.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition"
-                >
-                  <td className="p-3 font-semibold">{order.id}</td>
-                  <td className="p-3">{order.name}</td>
-                  <td className="p-3">{order.date}</td>
-                  <td className="p-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        order.status === "تم التوصيل"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="p-3 flex justify-center gap-3">
-                    <button className="text-emerald-600 hover:text-emerald-800 transition">
-                      <Eye size={18} />
-                    </button>
-                    <button className="text-red-500 hover:text-red-700 transition">
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {orders.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-center p-4 text-gray-400">
-                    لا توجد طلبات حالياً.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        {/* Info Grid */}
+        <div className="grid grid-cols-1 gap-6 px-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Contact Info Card */}
+          <InfoCard title="معلومات الاتصال" icon={Mail}>
+            <InfoItem
+              icon={Mail}
+              label="البريد الإلكتروني"
+              value={profile.email}
+              iconBgColor="bg-blue-100"
+              iconColor="text-blue-600"
+            />
+            <InfoItem
+              icon={Phone}
+              label="رقم الهاتف"
+              value={profile.phone}
+              iconBgColor="bg-green-100"
+              iconColor="text-green-600"
+            />
+          </InfoCard>
+
+          {/* Company Info Card */}
+          <InfoCard title="معلومات الشركة" icon={Building}>
+            <InfoItem
+              icon={Building}
+              label="الدور الوظيفي"
+              value={profile.role}
+              iconBgColor="bg-purple-100"
+              iconColor="text-purple-600"
+            />
+            <InfoItem
+              icon={Briefcase}
+              label="المستودعات"
+              value={profile.warehouse_id ? "مخصص" : "غير مخصص"}
+              iconBgColor="bg-orange-100"
+              iconColor="text-orange-600"
+            />
+          </InfoCard>
+
+          {/* Location & Dates Card */}
+          <InfoCard title="الموقع والتواريخ" icon={MapPin}>
+            <InfoItem
+              icon={MapPin}
+              label="العنوان"
+              value={profile.address || "غير محدد"}
+              iconBgColor="bg-red-100"
+              iconColor="text-red-600"
+            />
+            <InfoItem
+              icon={Calendar}
+              label="تاريخ الإنشاء"
+              value={formatBackendDateToArabic(profile.createdAt)}
+              iconBgColor="bg-indigo-100"
+              iconColor="text-indigo-600"
+            />
+          </InfoCard>
+        </div>
+
+        {/* Last Updated */}
+        <div className="m-6 mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Calendar className="h-4 w-4" />
+              آخر تحديث
+            </div>
+            <span className="text-sm font-medium text-gray-900">
+              {formatBackendDateToArabic(profile.updatedAt)}
+            </span>
+          </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        profile={profile}
+      />
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   );
 }
-
-ProfilePage.getLayout = function getLayout(page: React.ReactNode) {
-  return <DashboardLayout>{page}</DashboardLayout>;
-};
