@@ -30,7 +30,7 @@ const WarehouseCard = ({
 }: WarehouseCardProps) => {
   const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["warehouseProductDetails", id, productId],
     queryFn: () =>
       getAllWarehouseProducts({
@@ -40,10 +40,10 @@ const WarehouseCard = ({
     enabled: !!productId,
   });
 
-  const {
-    data: warehouseProductDetails,
-    isLoading: isWarehouseProductDetailsLoading,
-  } = useQuery({
+  console.log("WAREHOUSE PRODUCT DETAILS:", data);
+  
+
+  const { data: warehouseProductDetails } = useQuery({
     queryKey: ["warehouseProductDetailsInfo", id, productId],
     queryFn: () =>
       getProductsByWarehouse({

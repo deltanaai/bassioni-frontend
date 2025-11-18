@@ -7,14 +7,14 @@ export const productsEndpoints = {
     payload,
   }: {
     warehouseId: number;
-    payload: PaginatedSearchPayload;
+    payload?: PaginatedSearchPayload;
   }) =>
     fetchHandler(
       `${API_URL}company/dashboard/warehouses/${warehouseId}/products/index`,
       {
         method: "POST",
         auth: true,
-        body: JSON.stringify(payload),
+        body: payload ? JSON.stringify(payload) : undefined,
       }
     ),
 

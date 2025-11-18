@@ -159,11 +159,11 @@ interface CreateOfferPayload {
 }
 
 interface UpdateOfferPayload {
-  warehouse_product_id: number;
-  discount: number;
-  active: boolean;
-  min_quantity: number;
-  total_quantity: number;
+  warehouse_product_id?: number;
+  discount?: number;
+  active?: boolean;
+  min_quantity?: number;
+  total_quantity?: number;
   description?: string | null;
   start_date?: string;
   end_date?: string;

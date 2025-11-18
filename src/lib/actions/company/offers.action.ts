@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
+import logger from "@/lib/logger";
 import {
   CreateOfferSchema,
   DeleteOfferSchema,
@@ -48,8 +49,10 @@ export async function createOffer(
   try {
     const response = await api.company.offers.create({ payload });
 
-    if (!response || !response.data) {
-      throw new Error("فشل إنشاء العرض");
+    if (!response || response.result !== "Success") {
+      return handleError(
+        new Error(response.message || "فشل إنشاء العرض")
+      ) as ErrorResponse;
     }
 
     return {
@@ -137,9 +140,11 @@ export async function updateOffer(
     end_date: endDate,
   };
 
+  logger.info(`Updating offer ${offerId} with payload: ${JSON.stringify(payload)}`);
   try {
     const response = await api.company.offers.update({ offerId, payload });
     if (!response || response.result !== "Success") {
+      logger.error(`Failed to update offer ${offerId}: ${response?.message}`);
       throw new Error("فشل تحديث بيانات العرض");
     }
     return {
