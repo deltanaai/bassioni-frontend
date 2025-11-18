@@ -197,11 +197,7 @@ export default function PharmacyDetailPage() {
                     <div className="mt-2 flex items-center gap-3">
                       <Calendar className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {pharmacy.createdAt
-                          ? new Date(pharmacy.createdAt).toLocaleDateString(
-                              "ar-EG"
-                            )
-                          : "غير محدد"}
+                        {pharmacy?.createdAt || "غير محدد"}
                       </span>
                     </div>
                   </div>
@@ -213,11 +209,7 @@ export default function PharmacyDetailPage() {
                     <div className="mt-2 flex items-center gap-3">
                       <Clock className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {pharmacy.updatedAt
-                          ? new Date(pharmacy.updatedAt).toLocaleDateString(
-                              "ar-EG"
-                            )
-                          : "غير محدد"}
+                        {pharmacy?.updatedAt || "غير محدد"}
                       </span>
                     </div>
                   </div>
