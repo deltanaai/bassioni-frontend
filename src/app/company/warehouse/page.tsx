@@ -1,295 +1,105 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Package,
-  ArrowRight,
-  Plus,
-  MapPin,
-  Warehouse,
-  Activity,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import Link from "next/link";
+import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import {
-  addNewWarehouse,
-  getAllWarehouses,
-} from "@/lib/actions/company/warehouse.action";
-import { AddWarehouseSchema } from "@/schemas/company/warehouse";
-import { WarehouseFormData } from "@/types/company/uiProps";
+  WarehouseHeader,
+  WarehousesGrid,
+  AddWarehouseModal,
+} from "@/components/warehouse";
+import { useWarehouses } from "@/hooks/warehouse";
 
 export default function WarehousesPage() {
-  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
-
-  // المخازنن
-  const { data } = useQuery({
-    queryKey: ["warehouses", currentPage],
-    queryFn: () =>
-      getAllWarehouses({
-        page: currentPage,
-        perPage: 9,
-        deleted: false,
-        paginate: true,
-      }),
-  });
-  console.log("WAREHOUSE DATA:",data?.data);
-
-  //   للمواقع
-  // const { data: locationsData } = useQuery({
-  //   queryKey: ["locations"],
-  //   queryFn: () => getAllLocations({ page: 1, perPage: 10 }),
-  // });
-  // const locations = locationsData?.data || [];
-  // console.log(locations);
-
   const [showModal, setShowModal] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<WarehouseFormData>({
-    resolver: zodResolver(AddWarehouseSchema),
-  });
+  const { data, isLoading, isError } = useWarehouses(currentPage);
 
-  const mutation = useMutation({
-    mutationFn: addNewWarehouse,
-    onSuccess: async (res) => {
-      if (!res.success) {
-        toast.error(res.error?.message ?? "حدث خطأ أثناء إنشاء المخزن");
-        return;
-      }
-      await queryClient.invalidateQueries({ queryKey: ["warehouses"] });
-
-      setShowModal(false);
-      reset();
-
-      toast.success(`تم إنشاء المخزن بنجاح`);
-    },
-  });
-
-  const onSubmit = (data: WarehouseFormData) => {
-    mutation.mutate(data);
-    console.log(data);
-  };
+  const warehouses = data?.data || [];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mb-8 flex items-center justify-between rounded-2xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6">
-        <div className="flex items-center gap-3">
-          <Warehouse className="h-8 w-8 text-emerald-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-emerald-600">المخازن</h1>
-            <p className="text-gray-600">إدارة وتنظيم مخازن الشركة</p>
-          </div>
+      <div className="flex items-center justify-between">
+        <WarehouseHeader />
+
+        <div className="-mt-20">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl"
+          >
+            <Plus className="h-5 w-5" />
+            إضافة مخزن
+          </button>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl"
-        >
-          <Plus className="h-5 w-5" />
-          إضافة مخزن
-        </button>
       </div>
 
-      {/* عرض المخازن */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {Array.isArray(data?.data) && data.data.length > 0 ? (
-          data.data.map((warehouse) => (
-            <div
-              key={warehouse.id}
-              className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg"
-            >
-              {/* العنوان */}
-              <h2 className="mb-4 text-xl font-bold text-gray-900">
-                {warehouse.name}
-              </h2>
+      {isLoading ? (
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600"></div>
+            <p>جاري تحميل المخازن...</p>
+          </div>
+        </div>
+      ) : isError ? (
+        <div className="mt-8 text-center text-red-600">
+          حدث خطأ أثناء تحميل المخازن
+        </div>
+      ) : (
+        <div className="mt-6">
+          <WarehousesGrid warehouses={warehouses} />
 
-              {/* بيانات المخزن */}
-              <div className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Warehouse className="h-5 w-5 text-emerald-500" /> كود المخزن
-                  :
-                  <span className="font-semibold text-gray-900">
-                    {warehouse.code}
-                  </span>
-                </div>
+          {/* Pagination */}
+          {data?.meta && data.meta.last_page > 1 && (
+            <div className="mt-6 flex items-center justify-center space-x-4">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 transition-all hover:bg-emerald-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                ←
+              </button>
 
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-emerald-500" />
-                  الموقع:
-                  <span className="font-semibold text-gray-900">
-                    {warehouse.location}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-emerald-500" /> حاله النشاط
-                  :
-                  <div
-                    className={`h-2 w-2 rounded-full ${
-                      warehouse.active ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  ></div>
-                  <span
-                    className={`font-semibold ${
-                      warehouse.active ? "text-green-700" : "text-red-700"
+              <div className="flex space-x-1">
+                {Array.from(
+                  { length: data.meta.last_page },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-all ${
+                      currentPage === page
+                        ? "bg-emerald-600 text-white shadow-md"
+                        : "border border-emerald-600 text-emerald-600 hover:bg-emerald-100"
                     }`}
                   >
-                    {warehouse.active ? "نشط" : "غير نشط"}
-                  </span>
-                </div>
+                    {page}
+                  </button>
+                ))}
               </div>
 
-              <div className="mt-6 text-left">
-                <Link
-                  href={`/company/warehouse/${warehouse.id}`}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-emerald-700"
-                >
-                  المزيد
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-              </div>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(data?.meta?.last_page ?? prev + 1, prev + 1)
+                  )
+                }
+                disabled={currentPage === data.meta.last_page}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 transition-all hover:bg-emerald-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                →
+              </button>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full flex items-center justify-center">
-            <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white py-16 text-center shadow-sm">
-              <Package className="mx-auto mb-4 h-20 w-20 text-gray-400" />
-              <h2 className="mb-3 text-2xl font-bold text-gray-600">
-                لا توجد مخازن
-              </h2>
-              <p className="mb-6 text-lg text-gray-500">
-                ابدأ بإضافة مخزنك الأول
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-      {/* Pagination بس لما يكون فيه اكتر من صفحة */}
-      {data?.meta && data.meta.last_page > 1 && (
-        <div className="mt-6 flex items-center justify-center space-x-4">
-          {/* السهم اليمين */}
-          <button
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-            disabled={currentPage === 1}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 transition-all hover:bg-emerald-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            <ChevronRight size={16} />
-          </button>
-
-          {/* أرقام الصفحات */}
-          <div className="flex space-x-1">
-            {Array.from({ length: data.meta.last_page }, (_, i) => i + 1).map(
-              (page) => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-all ${
-                    currentPage === page
-                      ? "bg-emerald-600 text-white shadow-md"
-                      : "border border-emerald-600 text-emerald-600 hover:bg-emerald-100"
-                  }`}
-                >
-                  {page}
-                </button>
-              )
-            )}
-          </div>
-
-          {/* السهم الشمال */}
-          <button
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={currentPage === data.meta.last_page}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-600 text-emerald-600 transition-all hover:bg-emerald-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            <ChevronLeft size={16} />
-          </button>
+          )}
         </div>
       )}
-      {/* مودال الإضافة */}
+
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-6 text-gray-900 shadow-lg">
-            <h2 className="mb-4 text-2xl font-bold text-emerald-600">
-              إضافة مخزن جديد
-            </h2>
-
-            {/* فورم المخزن */}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <input
-                {...register("name")}
-                placeholder="اسم المخزن"
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
-
-              {/* <input
-                {...register("code")}
-                placeholder="كود المخزن "
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-              />
-              {errors.code && (
-                <p className="text-sm text-red-500">{errors.code.message}</p>
-              )} */}
-
-              {/* الموقع */}
-              <input
-                {...register("location")}
-                placeholder="موقع المخزن"
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-emerald-400"
-              />
-              {errors.location && (
-                <p className="text-sm text-red-500">
-                  {errors.location.message}
-                </p>
-              )}
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="activecheckbox"
-                  {...register("active")}
-                  className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
-                  defaultChecked
-                />
-                <label
-                  htmlFor="activecheckbox"
-                  className="text-sm text-gray-700"
-                >
-                  المخزن نشط
-                </label>
-              </div>
-
-              <div className="mt-4 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="rounded-xl bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
-                >
-                  إلغاء
-                </button>
-                <button
-                  type="submit"
-                  disabled={mutation.isPending}
-                  className="rounded-xl bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700 disabled:opacity-50"
-                >
-                  {mutation.isPending ? "جارٍ الحفظ..." : "حفظ المخزن"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddWarehouseModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </div>
   );

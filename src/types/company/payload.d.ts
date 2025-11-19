@@ -105,8 +105,8 @@ interface AddWarehousePayload {
 
 interface UpdateWarehousePayload {
   name?: string;
-  code?: string;
-  location_id?: number;
+  // code?: string;
+  location?: string;
   active?: boolean;
 }
 

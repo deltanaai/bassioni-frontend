@@ -33,7 +33,7 @@ export const UpdateWarehouseSchema = z.object({
   warehouseId: z.number("معرف المستودع مطلوب").int().positive(),
   name: z.string().min(1, "الرجاء ادخال اسم المخزن").optional(),
   // code: z.string().min(1, "الرجاء ادخال كود المخزن").optional(),
-  locationId: z.string("الموقع مطلوب").optional(),
+  location: z.string("الموقع مطلوب").optional(),
   active: z.boolean().optional(),
 });
 
@@ -51,4 +51,4 @@ export const RestoreWarehouseSchema = z.object({
 
 export const SearchWarehousesSchema = z.object({
   name: z.string().min(1, "الرجاء ادخال اسم  للبحث"),
-})
+});

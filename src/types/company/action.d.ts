@@ -130,7 +130,7 @@ interface UpdateWarehouseParams {
   warehouseId: number;
   name?: string;
   code?: string;
-  locationId?: number;
+  location?: string;
   active?: boolean;
 }
 
