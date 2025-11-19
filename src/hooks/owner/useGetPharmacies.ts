@@ -1,3 +1,5 @@
+"use client"
+
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { getAllPharmacies } from "@/lib/actions/owner/pharmacy.actions";
@@ -22,6 +24,8 @@ export function useGetPharmacies() {
 
   const page = searchParams.get("page");
   const currentPage = page ? parseInt(page) : 1;
+  const deleted = searchParams.get("deleted");
+
 
   const orderBy = searchParams.get("orderBy") || undefined;
   const orderByDirection =
@@ -32,7 +36,7 @@ export function useGetPharmacies() {
     isLoading: isLoadingPharmacies,
     refetch,
   } = useQuery({
-    queryKey: ["pharmacies", filters, currentPage, orderBy, orderByDirection],
+    queryKey: ["pharmacies", filters, currentPage, orderBy, orderByDirection, deleted],
     queryFn: async () => {
       const response = await getAllPharmacies({
         filters: Object.keys(filters).length > 0 ? filters : undefined,
@@ -40,6 +44,8 @@ export function useGetPharmacies() {
         paginate: true,
         orderBy,
         orderByDirection,
+        deleted: deleted === "true",
+
       });
       return response;
     },

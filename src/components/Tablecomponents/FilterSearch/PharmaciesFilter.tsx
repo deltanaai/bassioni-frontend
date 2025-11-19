@@ -14,6 +14,7 @@ export default function PharmaciesFilter() {
     phone: searchParams.get("phone") || "",
     address: searchParams.get("address") || "",
     owner_email: searchParams.get("owner_email") || "",
+    deleted: searchParams.get("deleted") || "false",
   });
 
   const orderBy = searchParams.get("orderBy") || "id";
@@ -44,7 +45,13 @@ export default function PharmaciesFilter() {
   };
 
   const clearFilters = () => {
-    setFilters({ name: "", phone: "", address: "", owner_email: "" });
+    setFilters({
+      name: "",
+      phone: "",
+      address: "",
+      owner_email: "",
+      deleted: "false",
+    });
     const params = new URLSearchParams(searchParams.toString());
     params.delete("name");
     params.delete("phone");
@@ -53,6 +60,7 @@ export default function PharmaciesFilter() {
     params.delete("orderBy");
     params.delete("orderByDirection");
     params.set("page", "1");
+    params.set("deleted", "false");
     router.push(`?${params.toString()}`);
   };
 
@@ -129,6 +137,23 @@ export default function PharmaciesFilter() {
               onChange={(e) => handleFilterChange("address", e.target.value)}
               className="pr-10"
             />
+          </div>
+        </div>
+
+        {/* Status Filter */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            حالة الصيدلية
+          </label>
+          <div className="relative">
+            <select
+              value={filters.deleted}
+              onChange={(e) => handleFilterChange("deleted", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            >
+              <option value="false">الصيدليات المتاحة</option>
+              <option value="true">الصيدليات المحذوفة</option>
+            </select>
           </div>
         </div>
 

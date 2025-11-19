@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Eye,
   Mail,
+  RefreshCw,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -17,10 +18,14 @@ import { useGetPharmacies } from "@/hooks/owner/useGetPharmacies";
 import PharmaciesFilter from "@/components/Tablecomponents/FilterSearch/PharmaciesFilter";
 import AddPharmacyDialog from "@/components/modals/AddPharmacyDialog";
 import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
-import { deletePharmacies } from "@/lib/actions/owner/pharmacy.actions";
+import {
+  deletePharmacies,
+  restorepharmacies,
+} from "@/lib/actions/owner/pharmacy.actions";
 import { ROUTES_OWNER } from "@/constants/routes";
 import { toast } from "sonner";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
+import { queryClient } from "@/lib/queryClient";
 
 export default function PharmaciesPage() {
   const router = useRouter();
@@ -69,6 +74,12 @@ export default function PharmaciesPage() {
     try {
       const response = await deletePharmacies({ items: [deletingPharmacyId] });
       if (response && response.success) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey.some(
+              (key) => typeof key === "string" && key.includes("pharmacies")
+            ),
+        });
         toast.success("تم حذف الصيدلية بنجاح");
         refetch();
       } else {
@@ -80,6 +91,23 @@ export default function PharmaciesPage() {
     } finally {
       setShowDeleteModal(false);
       setDeletingPharmacyId(null);
+    }
+  };
+
+  const handleRestore = async (deletingPharmacyId: number) => {
+    if (!confirm("هل أنت متأكد من استعادة هذه الصيدلية")) return;
+
+    try {
+      const response = await restorepharmacies({ items: [deletingPharmacyId] });
+      if (response && response.success) {
+        queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
+        toast.success("تم استعادة الصيدلية بنجاح");
+      } else {
+        toast.error("حدث خطأ أثناء استعادة الصيدلية");
+      }
+    } catch (error) {
+      console.error("Error restoring company:", error);
+      toast.error("حدث خطأ غير متوقع");
     }
   };
 
@@ -227,31 +255,44 @@ export default function PharmaciesPage() {
 
                   <div className="col-span-1 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Link
-                        href={`${ROUTES_OWNER.PHARMACIES}/${pharmacy.id}`}
-                        className=" p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="عرض التفاصيل"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                      <button
-                        onClick={() => handleEditPharmacy(pharmacy)}
-                        className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="تعديل"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
+                      {pharmacy.deletedAt ? (
+                        // الصيدليات المحذوفه نحط ريستور بس
+                        <button
+                          onClick={() => handleRestore(pharmacy.id)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="استعادة"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <>
+                          <Link
+                            href={`${ROUTES_OWNER.PHARMACIES}/${pharmacy.id}`}
+                            className=" p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="عرض التفاصيل"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                          <button
+                            onClick={() => handleEditPharmacy(pharmacy)}
+                            className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="تعديل"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
 
-                      <button
-                        onClick={() => {
-                          setDeletingPharmacyId(pharmacy.id);
-                          setShowDeleteModal(true);
-                        }}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="حذف"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                          <button
+                            onClick={() => {
+                              setDeletingPharmacyId(pharmacy.id);
+                              setShowDeleteModal(true);
+                            }}
+                            className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="حذف"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
