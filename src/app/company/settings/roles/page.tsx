@@ -95,7 +95,11 @@ export default function RolesManagementPage() {
   });
 
   // Update role mutation
-  const updateMutation = useMutation({
+  const updateMutation = useMutation<
+    ActionResponse<{ message: string }>,
+    Error,
+    Parameters<typeof updateRole>[0]
+  >({
     mutationFn: updateRole,
     onSuccess: async (res) => {
       if (res.success === true) {
@@ -107,7 +111,7 @@ export default function RolesManagementPage() {
         toast.error(res.error?.message ?? "حدث خطأ أثناء تعديل الدور");
       }
     },
-    onError: (error: unknown) => {
+    onError: (error: Error) => {
       toast.error("حدث خطأ أثناء تعديل الدور");
       console.error(error);
     },
