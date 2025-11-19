@@ -53,7 +53,10 @@ export default function AddBatchModal({
                 query.queryKey.some(
                   (key) =>
                     typeof key === "string" &&
-                    key.startsWith("warehouseProductDetails")
+                    (key.startsWith("warehouseProductDetailsInfo") ||
+                      key.startsWith("warehouseProductDetails") ||
+                      key.startsWith("productDetails") ||
+                      key.startsWith("MasterproductInfo"))
                 ),
             });
             handleClose();
