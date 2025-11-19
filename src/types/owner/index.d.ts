@@ -73,6 +73,7 @@ declare global {
     name: string;
     address: string;
     phone: string;
+    license_number: string;
     owner_email: string;
     createdAt: string | null;
     updatedAt: string | null;
