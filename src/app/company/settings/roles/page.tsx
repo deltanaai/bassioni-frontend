@@ -98,14 +98,18 @@ export default function RolesManagementPage() {
   const updateMutation = useMutation({
     mutationFn: updateRole,
     onSuccess: async (res) => {
-      if (!res.success) {
+      if (res.success === true) {
+        await queryClient.invalidateQueries({ queryKey: ["roles"] });
+        await queryClient.invalidateQueries({ queryKey: ["role"] });
+        toast.success("تم تعديل الدور بنجاح");
+        setRoleToUpdate(null);
+      } else {
         toast.error(res.error?.message ?? "حدث خطأ أثناء تعديل الدور");
-        return;
       }
-      await queryClient.invalidateQueries({ queryKey: ["roles"] });
-      await queryClient.invalidateQueries({ queryKey: ["role"] });
-      toast.success("تم تعديل الدور بنجاح");
-      setRoleToUpdate(null);
+    },
+    onError: (error: unknown) => {
+      toast.error("حدث خطأ أثناء تعديل الدور");
+      console.error(error);
     },
   });
 
