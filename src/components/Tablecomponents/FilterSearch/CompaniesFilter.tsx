@@ -13,7 +13,8 @@ export default function CompaniesFilter() {
     name: searchParams.get("name") || "",
     phone: searchParams.get("phone") || "",
     address: searchParams.get("address") || "",
-    owner_email: searchParams.get("owner_email") || "",
+    email: searchParams.get("email") || "",
+    deleted: searchParams.get("deleted") || "false",
   });
 
   const orderBy = searchParams.get("orderBy") || "id";
@@ -44,12 +45,19 @@ export default function CompaniesFilter() {
   };
 
   const clearFilters = () => {
-    setFilters({ name: "", phone: "", address: "", owner_email: "" });
+    setFilters({
+      name: "",
+      phone: "",
+      address: "",
+      email: "",
+      deleted: "false",
+    });
     const params = new URLSearchParams(searchParams.toString());
     params.delete("name");
     params.delete("phone");
     params.delete("address");
-    params.delete("owner_email");
+    params.delete("email");
+    params.delete("deleted");
     params.delete("orderBy");
     params.delete("orderByDirection");
     params.set("page", "1");
@@ -132,8 +140,25 @@ export default function CompaniesFilter() {
           </div>
         </div>
 
-        {/* Owner Email Filter */}
+        {/* Status Filter */}
         <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            حالة الشركة
+          </label>
+          <div className="relative">
+            <select
+              value={filters.deleted}
+              onChange={(e) => handleFilterChange("deleted", e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="false">المتاحة فقط</option>
+              <option value="true">المحذوفة فقط</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Owner Email Filter */}
+        {/* <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">
             البريد الإلكتروني للمالك
           </label>
@@ -148,7 +173,7 @@ export default function CompaniesFilter() {
               className="pr-10"
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Sorting Section */}

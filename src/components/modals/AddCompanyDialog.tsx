@@ -58,7 +58,7 @@ export default function AddCompanyDialog({
       name: company?.name || "",
       address: company?.address || "",
       phone: company?.phone || "",
-      email: company?.owner_email || "",
+      email: company?.email || "",
       password: "",
       password_confirmation: "",
     },
@@ -73,7 +73,7 @@ export default function AddCompanyDialog({
         name: company.name || "",
         address: company.address || "",
         phone: company.phone || "",
-        email: company.owner_email || "",
+        email: company.email || "",
         password: "", // Don't pre-fill password in edit mode
         password_confirmation: "", // Don't pre-fill password confirmation in edit mode
       });
