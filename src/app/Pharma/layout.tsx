@@ -40,7 +40,7 @@ export default function DashboardLayout({
     return (
       <div className="flex h-screen items-center justify-center bg-gray-900">
         <div className="text-center">
-          <div className="mb-4 h-12 w-12 mx-auto animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
           <p className="text-sm text-gray-400">جارٍ التحقق من الجلسة...</p>
         </div>
       </div>
