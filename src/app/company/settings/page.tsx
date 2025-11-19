@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import {
   Building,
   Phone,
@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES_COMPANY } from "@/constants/routes";
 import { getCompanyInfo } from "@/lib/actions/company/company.action";
-import { getAllRoles } from "@/lib/actions/company/role.action";
+import { getAllRoles, getRoleById } from "@/lib/actions/company/role.action";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -41,7 +41,26 @@ export default function SettingsPage() {
 
   const company = companyData?.success ? companyData.data : null;
   const roles = rolesData?.data || [];
-  const totalRoles = Array.isArray(roles) ? roles.length : 0;
+  const pagination = rolesData?.meta;
+  const totalRoles = pagination ? pagination.total : 0;
+
+  // Fetch detailed data for each role to get accurate permission counts
+  const roleDetailsQueries = useQueries({
+    queries: Array.isArray(roles)
+      ? roles.slice(0, 3).map((role: CompanyRole) => ({
+          queryKey: ["role", role.id],
+          queryFn: () => getRoleById({ roleId: role.id }),
+          enabled: !!role.id,
+        }))
+      : [],
+  });
+
+  const isLoadingRoleDetails = roleDetailsQueries.some(
+    (query) => query.isLoading
+  );
+  const rolesWithDetails = roleDetailsQueries
+    .map((query) => (query.data?.success ? query.data.data : null))
+    .filter((role): role is CompanyRole => role !== null);
 
   if (isLoadingCompany) {
     return (
@@ -155,19 +174,15 @@ export default function SettingsPage() {
         }}
       >
         <div className="space-y-4">
-          {isLoadingRoles ? (
+          {isLoadingRoles || isLoadingRoleDetails ? (
             <div className="space-y-3">
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
             </div>
-          ) : Array.isArray(roles) && roles.length > 0 ? (
+          ) : rolesWithDetails.length > 0 ? (
             <div className="space-y-3">
-              {roles.slice(0, 3).map((role: CompanyRole) => (
-                <RolePreviewItem
-                  key={role.id}
-                  name={role.name}
-                  permissionsCount={role.permissions?.length || 0}
-                />
+              {rolesWithDetails.map((role) => (
+                <RolePreviewItem key={role.id} role={role} />
               ))}
             </div>
           ) : (
