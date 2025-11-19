@@ -220,7 +220,7 @@ export default function PharmaciesPage() {
                     <div className="flex items-center gap-2 justify-center">
                       <Mail className="h-4 w-4 text-gray-400" />
                       <p className="text-sm text-gray-700">
-                        {pharmacy.owner_email || "---"}
+                        {pharmacy.email || "--- "}
                       </p>
                     </div>
                   </div>

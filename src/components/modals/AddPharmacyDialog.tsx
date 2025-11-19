@@ -75,7 +75,7 @@ export default function AddPharmacyDialog({
         address: pharmacy.address,
         phone: pharmacy.phone,
         license_number: "", // License number not in PharmacyViewT
-        email: pharmacy.owner_email,
+        email: pharmacy.email,
         password: "", // Don't pre-fill password in edit mode
         password_confirmation: "", // Don't pre-fill password confirmation in edit mode
       });

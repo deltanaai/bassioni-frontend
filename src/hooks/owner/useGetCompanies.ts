@@ -22,6 +22,11 @@ export function useGetCompanies() {
   const owner_email = searchParams.get("owner_email");
   if (owner_email) filters.owner_email = owner_email;
 
+   const deleted = searchParams.get("deleted");
+  if (deleted) {
+    filters.deleted = deleted === "true";
+  } 
+
   // Get pagination and sorting params
   const page = searchParams.get("page");
   const perPage = searchParams.get("perPage");

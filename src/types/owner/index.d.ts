@@ -73,7 +73,7 @@ declare global {
     name: string;
     address: string;
     phone: string;
-    owner_email: string;
+    email: string;
     createdAt: string | null;
     updatedAt: string | null;
     deletedAt: string | null;
@@ -86,7 +86,7 @@ declare global {
     name: string;
     address: string;
     phone: string;
-    owner_email: string;
+    email: string;
     createdAt: string | null;
     updatedAt: string | null;
     deletedAt: string | null;
