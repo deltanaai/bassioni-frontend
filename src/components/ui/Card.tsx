@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 export const Card = ({
   className,
@@ -10,15 +10,15 @@ export const Card = ({
   return (
     <div
       className={cn(
-        'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm',
+        "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm",
         className
       )}
       {...props}
     >
       {children}
     </div>
-  )
-}
+  );
+};
 
 export const CardHeader = ({
   className,
@@ -26,15 +26,11 @@ export const CardHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div
-      className={cn('p-5', className)}
-      {...props}
-    >
+    <div className={cn("p-5", className)} {...props}>
       {children}
     </div>
-  )
-}
-
+  );
+};
 
 export const CardTitle = ({
   className,
@@ -42,15 +38,26 @@ export const CardTitle = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div
-      className={cn('p-5', className)}
+    <div className={cn("p-5", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+export const CardDescription = ({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) => {
+  return (
+    <p
+      className={cn("text-sm text-gray-500 dark:text-gray-400", className)}
       {...props}
     >
       {children}
-    </div>
-  )
-}
-
+    </p>
+  );
+};
 
 export const CardContent = ({
   className,
@@ -58,15 +65,11 @@ export const CardContent = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div
-      className={cn('p-5', className)}
-      {...props}
-    >
+    <div className={cn("p-5", className)} {...props}>
       {children}
     </div>
-  )
-}
-
+  );
+};
 
 export const CardFooter = ({
   className,
@@ -74,11 +77,8 @@ export const CardFooter = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div
-      className={cn('p-5', className)}
-      {...props}
-    >
+    <div className={cn("p-5", className)} {...props}>
       {children}
     </div>
-  )
-}
+  );
+};

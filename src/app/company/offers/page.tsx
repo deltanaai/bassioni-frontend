@@ -12,7 +12,7 @@ import {
 } from "@/lib/actions/company/offers.action";
 // مكون منفصل لإنشاء العرض مع جمع كل المنتجات
 import { queryClient } from "@/lib/queryClient";
-import { formatIsoToArabicDate } from "@/lib/utils";
+import { formatDateForBackend, formatIsoToArabicDate } from "@/lib/utils";
 
 import CreateOfferModal from "./_components/CreateOfferModal";
 
@@ -53,13 +53,17 @@ export default function OffersPage() {
   const updateMutation = useMutation({
     mutationFn: updateOffer,
     onSuccess: (res) => {
-      if (!res?.success) {
+      if (res.success === true) {
+        queryClient.invalidateQueries({ queryKey: ["offers"] });
+        toast.success("تم تحديث العرض بنجاح");
+        setEditing(null);
+      } else {
         toast.error(res?.error?.message || "فشل تحديث العرض");
-        return;
       }
-      queryClient.invalidateQueries({ queryKey: ["offers"] });
-      toast.success("تم تحديث العرض بنجاح");
-      setEditing(null);
+    },
+    onError: (error) => {
+      console.error("❌ خطأ في تحديث العرض:", error);
+      toast.error(" خطأ في تحديث العرض");
     },
   });
 
@@ -315,8 +319,8 @@ function EditOfferModal({
     description: offer.description || "",
     discount: offer.discount.toString(),
     active: offer.active,
-    startDate: offer.start_date,
-    endDate: offer.end_date,
+    startDate: formatDateForBackend(offer.start_date),
+    endDate: formatDateForBackend(offer.end_date),
   });
 
   const handleSubmit = () => {

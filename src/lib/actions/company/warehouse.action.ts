@@ -163,13 +163,11 @@ export async function updateWarehouse(
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  const { warehouseId, name, code, locationId, active } =
-    validationResult.params!;
+  const { warehouseId, name, location, active } = validationResult.params!;
 
   const payload: UpdateWarehousePayload = {
     ...(name !== undefined && { name }),
-    ...(code !== undefined && { code }),
-    ...(locationId !== undefined && { location_id: locationId }),
+    ...(location !== undefined && { location }),
     ...(active !== undefined && { active }),
   };
   try {

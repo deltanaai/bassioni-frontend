@@ -21,12 +21,12 @@ export const offersEndpoints = {
     payload,
   }: {
     offerId: number;
-    payload: UpdateOfferPayload;
+    payload?: UpdateOfferPayload;
   }) =>
     fetchHandler(`${API_URL}company/dashboard/offers/${offerId}`, {
       method: "PATCH",
       auth: true,
-      body: JSON.stringify(payload),
+      body: payload ? JSON.stringify(payload) : undefined,
     }),
 
   delete: ({ payload }: { payload: DeleteOffersPayload }) =>

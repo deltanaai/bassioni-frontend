@@ -15,7 +15,16 @@ export default function RolesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const { roles, permissions, isLoading, error, refetch } = useGetRoles();
+  const {
+    roles,
+    permissions,
+    regularPermissions,
+    featuredPermission,
+    isLoading,
+    error,
+    refetch,
+  } = useGetRoles();
+  console.log(permissions, "permissionsss");
 
   const handleEdit = async (roleId: number) => {
     try {
@@ -84,7 +93,8 @@ export default function RolesPage() {
         <AddRoleDialog
           open={isAddDialogOpen}
           onOpenChange={setIsAddDialogOpen}
-          permissions={permissions}
+          permissions={regularPermissions}
+          featuredPermission={featuredPermission}
         />
       </div>
 
@@ -185,7 +195,8 @@ export default function RolesPage() {
           setIsEditDialogOpen(open);
           if (!open) setSelectedRole(null);
         }}
-        permissions={permissions}
+        permissions={regularPermissions}
+        featuredPermission={featuredPermission}
       />
     </div>
   );

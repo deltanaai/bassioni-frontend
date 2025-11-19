@@ -51,7 +51,6 @@ export function formatDateForBackend(dateInput: string | Date): string {
   return `${day}-${month}-${year}`; // d-m-Y as required by backend
 }
 
-
 // utils/formatArabicDate.ts
 
 export function formatArabicDate(dateString: string | undefined): string {
@@ -103,6 +102,54 @@ export function formatIsoToArabicDate(dateString: string): string {
       month: "long",
       day: "numeric",
     }).format(parsedDate);
+
+    // Ensure RTL direction markers
+    return `\u202B${formattedDate}\u202C`;
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return dateString;
+  }
+}
+
+/**
+ * Converts backend date format (e.g., "18-Nov-2025 20:12 PM") to Arabic date format
+ * @param dateString - Date string in format "dd-MMM-yyyy HH:mm AM/PM"
+ * @param includeTime - Whether to include time in the output (default: true)
+ * @returns Formatted Arabic date string
+ */
+export function formatBackendDateToArabic(
+  dateString: string,
+  includeTime: boolean = true
+): string {
+  if (!dateString) return "";
+
+  try {
+    // Parse the backend format: "18-Nov-2025 20:12 PM"
+    // Replace the first dash with space to help parsing
+    const normalized = dateString.replace(/^(\d{1,2})-/, "$1 ");
+    const parsedDate = new Date(normalized);
+
+    if (isNaN(parsedDate.getTime())) {
+      console.warn("Invalid date string:", dateString);
+      return dateString;
+    }
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+
+    if (includeTime) {
+      options.hour = "2-digit";
+      options.minute = "2-digit";
+      options.hour12 = true;
+    }
+
+    // Format to Arabic
+    const formattedDate = new Intl.DateTimeFormat("ar-EG", options).format(
+      parsedDate
+    );
 
     // Ensure RTL direction markers
     return `\u202B${formattedDate}\u202C`;

@@ -49,31 +49,41 @@ export const GetOffersSchema = z.object({
 
 export const UpdateOfferSchema = z.object({
   offerId: z.number("معرف العرض مطلوب").int().positive(),
-  warehouseProductId: z.number("معرف منتج المستودع مطلوب").int().positive(),
+  warehouseProductId: z
+    .number("معرف منتج المستودع مطلوب")
+    .int()
+    .positive()
+    .optional(),
   discount: z
     .number("الخصم مطلوب")
     .min(0, "الخصم يجب أن يكون أكبر من %0")
     .max(100, "الخصم لا يمكن أن يتجاوز %100"),
-  active: z.boolean().default(true),
+  active: z.boolean().default(true).optional(),
   minQuantity: z
     .number("الكمية الدنيا مطلوبة")
     .int()
-    .min(1, "الكمية الدنيا يجب أن تكون على الأقل 1"),
+    .min(1, "الكمية الدنيا يجب أن تكون على الأقل 1")
+    .optional(),
   totalQuantity: z
     .number("الكمية الإجمالية مطلوبة")
     .int()
-    .min(1, "الكمية الإجمالية يجب أن تكون على الأقل 1"),
+    .min(1, "الكمية الإجمالية يجب أن تكون على الأقل 1")
+    .optional(),
   description: z
     .string()
     .min(3, "الوصف يجب أن يكون على الأقل 3 أحرف")
     .max(500, "الوصف لا يمكن أن يتجاوز 500 حرف")
     .optional(),
   startDate: z
-    .date("تاريخ البدء مطلوب")
-    .transform((date) => formatDateForBackend(date)),
+    .string("تاريخ البدء مطلوب")
+    .nonempty("تاريخ البدء مطلوب")
+    .transform((date) => formatDateForBackend(date))
+   ,
   endDate: z
-    .date("تاريخ الانتهاء مطلوب")
-    .transform((date) => formatDateForBackend(date)),
+    .string("تاريخ الانتهاء مطلوب")
+    .nonempty("تاريخ الانتهاء مطلوب")
+    .transform((date) => formatDateForBackend(date))
+    .optional(),
 });
 
 export const DeleteOfferSchema = z.object({

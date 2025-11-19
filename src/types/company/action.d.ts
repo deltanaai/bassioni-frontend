@@ -130,7 +130,7 @@ interface UpdateWarehouseParams {
   warehouseId: number;
   name?: string;
   code?: string;
-  locationId?: number;
+  location?: string;
   active?: boolean;
 }
 
@@ -203,11 +203,11 @@ interface CreateOfferParams {
 
 interface UpdateOfferParams {
   offerId: number;
-  warehouseProductId: number;
-  discount: number;
-  active: boolean;
-  minQuantity: number;
-  totalQuantity: number;
+  warehouseProductId?: number;
+  discount?: number;
+  active?: boolean;
+  minQuantity?: number;
+  totalQuantity?: number;
   description?: string | null;
   startDate?: string;
   endDate?: string;

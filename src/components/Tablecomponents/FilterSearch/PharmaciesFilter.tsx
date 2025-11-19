@@ -133,7 +133,7 @@ export default function PharmaciesFilter() {
         </div>
 
         {/* Owner Email Filter */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">
             البريد الإلكتروني للمالك
           </label>
@@ -148,7 +148,7 @@ export default function PharmaciesFilter() {
               className="pr-10"
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Sorting Section */}

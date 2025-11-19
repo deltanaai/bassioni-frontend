@@ -6,6 +6,7 @@ import {
   getAllPermissions,
 } from "@/lib/actions/owner/roles.actions";
 
+
 export function useGetRoles() {
   const rolesQuery = useQuery({
     queryKey: ["roles"],
@@ -19,9 +20,18 @@ export function useGetRoles() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  const allPermissions = permissionsQuery.data?.data || []
+
+  const SPECIAL_PERMISSION_ID = 1; //اداره الموقع
+
+  const featuredPermission = allPermissions.find(p => p.id === SPECIAL_PERMISSION_ID);
+  const regularPermissions = allPermissions.filter(p => p.id !== SPECIAL_PERMISSION_ID);
+
   return {
     roles: rolesQuery.data?.data || [],
-    permissions: permissionsQuery.data?.data || [],
+    permissions: allPermissions,
+    featuredPermission: featuredPermission,
+    regularPermissions:regularPermissions,
     isLoading: rolesQuery.isLoading || permissionsQuery.isLoading,
     error: rolesQuery.error || permissionsQuery.error,
     refetch: () => {

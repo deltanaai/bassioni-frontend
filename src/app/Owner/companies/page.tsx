@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Edit, Trash2, MapPin, Phone, Building, Mail } from "lucide-react";
+import { Edit, Trash2, MapPin, Phone, Building } from "lucide-react";
 import { useGetCompanies } from "@/hooks/owner/useGetCompanies";
 import CompaniesFilter from "@/components/Tablecomponents/FilterSearch/CompaniesFilter";
 import AddCompanyDialog from "@/components/modals/AddCompanyDialog";
@@ -158,10 +158,8 @@ export default function CompaniesPage() {
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center gap-2 justify-center">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      <p className="text-sm text-gray-700">
-                        {company.owner_email}
-                      </p>
+                      {/* <Mail className="h-4 w-4 text-gray-400" /> */}
+                      <p className="text-sm text-gray-700">{company.email}</p>
                     </div>
                   </div>
 

@@ -1,6 +1,6 @@
 import { FiEye, FiDollarSign, FiPackage } from "react-icons/fi";
 
-import { ProductTableProps, Product } from "../_types/product.types";
+import { ProductTableProps } from "../_types/product.types";
 
 export default function ProductTable({
   products,
@@ -59,7 +59,7 @@ export default function ProductTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {products.map((product: Product, index: number) => (
+            {products.map((product: MasterProduct, index: number) => (
               <tr
                 key={product.id}
                 className="border-b border-gray-100 transition-all duration-200 hover:bg-gray-50"
