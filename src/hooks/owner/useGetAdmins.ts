@@ -13,6 +13,7 @@ function useGetAdmins() {
     | "asc"
     | "desc";
   const page = searchParams.get("page") || "1";
+  const deleted = searchParams.get("deleted");
 
   // بناء الفلاتر
   const filters: Record<string, string> = {};
@@ -24,6 +25,7 @@ function useGetAdmins() {
     orderBy,
     orderByDirection,
     page: Number(page),
+    deleted: deleted ==="true",
   };
 
   const {

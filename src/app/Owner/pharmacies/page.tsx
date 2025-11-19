@@ -365,7 +365,7 @@ export default function PharmaciesPage() {
         onConfirm={handleDeletePharmacy}
         message={`هل أنت متأكد من حذف الصيدلية "${
           pharmacies.find((p) => p.id === deletingPharmacyId)?.name
-        }"؟ لا يمكن التراجع عن هذا الإجراء.`}
+        }"؟  يمكن الاستعادة لاحقا  .`}
       />
     </div>
   );

@@ -1,18 +1,29 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { Edit, Trash2, User, Mail, Shield, ShieldCheck } from "lucide-react";
+import {
+  Edit,
+  Trash2,
+  User,
+  Mail,
+  Shield,
+  ShieldCheck,
+  RefreshCw,
+} from "lucide-react";
 import useGetAdmins from "@/hooks/owner/useGetAdmins";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
 import AdminsFilter from "@/components/Tablecomponents/FilterSearch/AdminsFilter";
 import Pagination from "@/components/custom/pagination";
 import AddAdminDialog from "@/components/modals/AddAdminDialog";
 import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
-import { deleteAdmin } from "@/lib/actions/owner/admins.action";
+import { deleteAdmin, restoreAdmins } from "@/lib/actions/owner/admins.action";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
 
 export default function AdminsPage() {
   const searchParams = useSearchParams();
+  const showDeleted = searchParams.get("deleted") === "true";
+
   const queryClient = useQueryClient();
 
   // قراءة القيم من URL للعرض في رسائل الخطأ
@@ -27,7 +38,6 @@ export default function AdminsPage() {
 
   const admins = adminsData?.data;
   const paginationData = adminsData?.meta;
-  // console.log(adminsData);
 
   const handleDeleteAdmin = async (adminId: number, adminName: string) => {
     try {
@@ -48,6 +58,21 @@ export default function AdminsPage() {
     } catch (error) {
       console.error("Error deleting admin:", error);
       toast.error("حدث خطأ غير متوقع أثناء الحذف");
+    }
+  };
+
+  const handleRestoreAdmin = async (adminId: number, adminName: string) => {
+    try {
+      const response = await restoreAdmins({ items: [adminId] });
+      if (response && response.success) {
+        queryClient.invalidateQueries({ queryKey: ["admins"] });
+        toast.success(`تم استعادة ${adminName} بنجاح`);
+      } else {
+        toast.error("حدث خطأ أثناء الاستعادة");
+      }
+    } catch (error) {
+      console.error("Error restoring admin:", error);
+      toast.error("حدث خطأ غير متوقع");
     }
   };
 
@@ -148,29 +173,47 @@ export default function AdminsPage() {
 
                     <div className="col-span-1 text-center">
                       <div className="flex items-center justify-center gap-1">
-                        <AddAdminDialog
-                          admin={admin}
-                          trigger={
-                            <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                              <Edit className="w-4 h-4" />
-                            </button>
-                          }
-                        />
-                        <DeleteConfirmModal
-                          trigger={
-                            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          }
-                          message={`هل أنت متأكد من حذف ${
-                            admin.superAdmin ? "المدير" : "المشرف"
-                          } "${
-                            admin.name
-                          }"؟ لن تتمكن من التراجع عن هذا الإجراء.`}
-                          onConfirm={() =>
-                            handleDeleteAdmin(admin.id!, admin.name)
-                          }
-                        />
+                        {showDeleted ? (
+                          <RestoreConfirmModal
+                            trigger={
+                              <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                <RefreshCw className="w-4 h-4" />
+                              </button>
+                            }
+                            message={`هل أنت متأكد من استعادة المشرف "${admin.name}"؟`}
+                            itemName={`المشرف "${admin.name}"`}
+                            onConfirm={() =>
+                              admin.id &&
+                              handleRestoreAdmin(admin.id, admin.name)
+                            }
+                          />
+                        ) : (
+                          <>
+                            <AddAdminDialog
+                              admin={admin}
+                              trigger={
+                                <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                              }
+                            />
+                            <DeleteConfirmModal
+                              trigger={
+                                <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              }
+                              message={`هل أنت متأكد من حذف ${
+                                admin.superAdmin ? "المدير" : "المشرف"
+                              } "${
+                                admin.name
+                              }"؟يمكنك استعادتة لاحقا من المحذوفين.`}
+                              onConfirm={() =>
+                                handleDeleteAdmin(admin.id!, admin.name)
+                              }
+                            />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

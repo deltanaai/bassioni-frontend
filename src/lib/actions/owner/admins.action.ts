@@ -110,3 +110,30 @@ export async function deleteAdmin(ids: adminsIdsPayload) {
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function restoreAdmins(ids: adminsIdsPayload) {
+  const validationResult = await action({
+    params: ids,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    const response = await api.owner.admins.restoreEmployees({
+      payload: validationResult.params!,
+    });
+
+    if (!response || response.result !== "Success") {
+      throw new Error("فشل في استعادة المسؤول, لم يتم تلقي بيانات صالحة من الخادم");
+    }
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

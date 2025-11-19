@@ -12,6 +12,7 @@ export default function AdminsFilter() {
   const urlName = searchParams.get("name") || "";
   const urlEmail = searchParams.get("email") || "";
   const orderBy = searchParams.get("orderBy") || "id";
+  const urlDeleted = searchParams.get("deleted") || "false";
   const orderByDirection = (searchParams.get("orderByDirection") || "desc") as
     | "asc"
     | "desc";
@@ -19,6 +20,7 @@ export default function AdminsFilter() {
   // Local state للبحث
   const [nameSearch, setNameSearch] = useState(urlName);
   const [emailSearch, setEmailSearch] = useState(urlEmail);
+  const [deletedFilter, setDeletedFilter] = useState(urlDeleted); // ⬅️ state جديد
 
   // دالة لتطبيق الفلاتر
   const handleSearch = () => {
@@ -36,6 +38,8 @@ export default function AdminsFilter() {
       params.delete("email");
     }
 
+    params.set("deleted", deletedFilter);
+
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -43,9 +47,11 @@ export default function AdminsFilter() {
   const handleClearFilters = () => {
     setNameSearch("");
     setEmailSearch("");
+    setDeletedFilter("false");
     const params = new URLSearchParams(searchParams.toString());
     params.delete("name");
     params.delete("email");
+    params.set("deleted", "false");
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -95,6 +101,17 @@ export default function AdminsFilter() {
               className="w-full pr-12 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
             />
           </div>
+          <div className="relative">
+            <select
+              value={deletedFilter}
+              onChange={(e) => setDeletedFilter(e.target.value)}
+              className="w-full pr-12 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+            >
+              <option value="false">المشرفين المتاحين</option>
+              <option value="true">المشرفين المحذوفين</option>
+            </select>
+          </div>
+
           {/* الفلاتر والترتيب */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
