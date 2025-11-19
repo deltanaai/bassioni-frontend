@@ -1,10 +1,21 @@
 "use client";
 import { useState } from "react";
-import { Edit, Trash2, MapPin, Phone, Building } from "lucide-react";
+import {
+  Edit,
+  Trash2,
+  MapPin,
+  Phone,
+  Building,
+  RefreshCw,
+  Mail,
+} from "lucide-react";
 import { useGetCompanies } from "@/hooks/owner/useGetCompanies";
 import CompaniesFilter from "@/components/Tablecomponents/FilterSearch/CompaniesFilter";
 import AddCompanyDialog from "@/components/modals/AddCompanyDialog";
-import { deleteCompanies } from "@/lib/actions/owner/compnay.actions";
+import {
+  deleteCompanies,
+  restoreCompanies,
+} from "@/lib/actions/owner/compnay.actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import SpinnerMini from "@/components/custom/SpinnerMini";
@@ -22,6 +33,8 @@ export default function CompaniesPage() {
 
   const companies = companiesResponse?.data || [];
   const meta = companiesResponse?.meta;
+
+  console.log(companies, "companiess");
 
   const handleEdit = (company: CompanyViewT) => {
     setSelectedCompany(company);
@@ -46,6 +59,23 @@ export default function CompaniesPage() {
       }
     } catch (error) {
       console.error("Error deleting company:", error);
+      toast.error("حدث خطأ غير متوقع");
+    }
+  };
+
+  const handleRestore = async (companyId: number) => {
+    if (!confirm("هل أنت متأكد من استعادة هذه الشركة؟")) return;
+
+    try {
+      const response = await restoreCompanies({ items: [companyId] });
+      if (response && response.success) {
+        queryClient.invalidateQueries({ queryKey: ["companies"] });
+        toast.success("تم استعادة الشركة بنجاح");
+      } else {
+        toast.error("حدث خطأ أثناء استعادة الشركة");
+      }
+    } catch (error) {
+      console.error("Error restoring company:", error);
       toast.error("حدث خطأ غير متوقع");
     }
   };
@@ -158,28 +188,44 @@ export default function CompaniesPage() {
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center gap-2 justify-center">
-                      {/* <Mail className="h-4 w-4 text-gray-400" /> */}
-                      <p className="text-sm text-gray-700">{company.email}</p>
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-700">
+                        {company.email || "---"}
+                      </p>
                     </div>
                   </div>
 
                   <div className="col-span-1 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleEdit(company)}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="تعديل"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
+                      {company.deletedAt ? (
+                        // الشركة المحذوفه نحط ريستور بس
+                        <button
+                          onClick={() => handleRestore(company.id)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="استعادة"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        // الشركة المتاحه التعديل والحذف
+                        <>
+                          <button
+                            onClick={() => handleEdit(company)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="تعديل"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
 
-                      <button
-                        onClick={() => handleDelete(company.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="حذف"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                          <button
+                            onClick={() => handleDelete(company.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="حذف"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

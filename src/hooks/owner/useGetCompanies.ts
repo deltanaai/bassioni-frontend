@@ -22,16 +22,14 @@ export function useGetCompanies() {
   const owner_email = searchParams.get("owner_email");
   if (owner_email) filters.owner_email = owner_email;
 
-   const deleted = searchParams.get("deleted");
-  if (deleted) {
-    filters.deleted = deleted === "true";
-  } 
 
   // Get pagination and sorting params
   const page = searchParams.get("page");
   const perPage = searchParams.get("perPage");
   const orderBy = searchParams.get("orderBy");
   const orderByDirection = searchParams.get("orderByDirection");
+
+  const deleted = searchParams.get("deleted");
 
   const queryParams = {
     filters: Object.keys(filters).length > 0 ? filters : undefined,
@@ -40,7 +38,11 @@ export function useGetCompanies() {
     orderBy: orderBy || undefined,
     orderByDirection: (orderByDirection as "asc" | "desc") || undefined,
     paginate: true,
+    deleted: deleted === "true",
+
   };
+
+
 
   return useQuery({
     queryKey: ["companies", queryParams],

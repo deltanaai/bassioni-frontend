@@ -136,3 +136,29 @@ export async function deleteCompanies(ids: companiesIdsPayload) {
     return handleError(error) as ErrorResponse;
   }
 }
+export async function restoreCompanies(ids: companiesIdsPayload) {
+  const validationResult = await action({
+    params: ids,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    const response = await api.owner.company.restoreCompany({
+      payload: validationResult.params!,
+    });
+
+    if (!response || response.result !== "Success") {
+      throw new Error("فشل في استعادة الشركات, لم يتم تلقي بيانات صالحة من الخادم");
+    }
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

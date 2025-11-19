@@ -57,10 +57,10 @@ export default function CompaniesFilter() {
     params.delete("phone");
     params.delete("address");
     params.delete("email");
-    params.delete("deleted");
     params.delete("orderBy");
     params.delete("orderByDirection");
     params.set("page", "1");
+    params.set("deleted", "false");
     router.push(`?${params.toString()}`);
   };
 
@@ -149,10 +149,10 @@ export default function CompaniesFilter() {
             <select
               value={filters.deleted}
               onChange={(e) => handleFilterChange("deleted", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
-              <option value="false">المتاحة فقط</option>
-              <option value="true">المحذوفة فقط</option>
+              <option value="false">الشركات المتاحة</option>
+              <option value="true">الشركات المحذوفة</option>
             </select>
           </div>
         </div>
