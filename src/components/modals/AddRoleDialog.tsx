@@ -36,6 +36,7 @@ interface AddRoleDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   permissions?: PermissionT[];
+  featuredPermission?: PermissionT;
 }
 
 export default function AddRoleDialog({
@@ -46,6 +47,7 @@ export default function AddRoleDialog({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   permissions = [],
+  featuredPermission,
 }: AddRoleDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
 
@@ -112,6 +114,16 @@ export default function AddRoleDialog({
 
   const handlePermissionChange = (permissionId: number, checked: boolean) => {
     const currentPermissions = form.getValues("permissions") || [];
+
+    if (featuredPermission && permissionId === featuredPermission.id) {
+      if (checked) {
+        form.setValue("permissions", [permissionId]);
+      } else {
+        form.setValue("permissions", []);
+      }
+      return;
+    }
+
     if (checked) {
       form.setValue("permissions", [...currentPermissions, permissionId]);
     } else {
@@ -169,6 +181,42 @@ export default function AddRoleDialog({
               <FormLabel className="text-base font-semibold">
                 الأذونات
               </FormLabel>
+
+              {/* الصلاحية الكبيره */}
+              {featuredPermission && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <input
+                      type="checkbox"
+                      id={`permission-${featuredPermission.id}`}
+                      checked={
+                        form
+                          .watch("permissions")
+                          ?.includes(featuredPermission.id) || false
+                      }
+                      onChange={(e) =>
+                        handlePermissionChange(
+                          featuredPermission.id,
+                          e.target.checked
+                        )
+                      }
+                      className=" w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <label
+                      htmlFor={`permission-${featuredPermission.id}`}
+                      className="mr-1 text-sm font-medium leading-none cursor-pointer text-blue-800"
+                    >
+                      {PERMISSION_LABELS[featuredPermission.name] ||
+                        featuredPermission.name}
+                    </label>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-2">
+                    هذه الصلاحية تمنح جميع الصلاحيات الأخرى
+                  </p>
+                </div>
+              )}
+
+              {/* الصلاحيات العادية */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4">
                 {permissions.length > 0 ? (
                   permissions.map((permission) => (
@@ -189,11 +237,26 @@ export default function AddRoleDialog({
                             e.target.checked
                           )
                         }
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                        disabled={form
+                          .watch("permissions")
+                          ?.includes(featuredPermission?.id || 0)}
+                        className={`w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 ${
+                          form
+                            .watch("permissions")
+                            ?.includes(featuredPermission?.id || 0)
+                            ? "bg-gray-200 cursor-not-allowed"
+                            : "bg-gray-100"
+                        }`}
                       />
                       <label
                         htmlFor={`permission-${permission.id}`}
-                        className="text-sm font-medium leading-none cursor-pointer"
+                        className={`mr-1 text-sm font-medium leading-none cursor-pointer ${
+                          form
+                            .watch("permissions")
+                            ?.includes(featuredPermission?.id || 0)
+                            ? "text-gray-400 cursor-not-allowed"
+                            : ""
+                        }`}
                       >
                         {PERMISSION_LABELS[permission.name] || permission.name}
                       </label>
