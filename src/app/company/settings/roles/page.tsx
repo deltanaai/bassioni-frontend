@@ -1,459 +1,275 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   Users,
   Plus,
-  Trash2,
   ArrowLeft,
-  X,
-  Edit,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES_COMPANY } from "@/constants/routes";
 import { getPermissions } from "@/lib/actions/company/permissions.action";
 import {
   addNewRole,
   deleteRoles,
   getAllRoles,
+  getRoleById,
   updateRole,
 } from "@/lib/actions/company/role.action";
-import { AddNewRoleSchema, UpdateRoleSchema } from "@/schemas/company/role";
-import { roleCreateInput, UpdateRoleInput } from "@/types/company/uiProps";
 
-import PermissionsSelector from "./components/PermissionsSelector";
+import AddRoleForm from "./_components/AddRoleForm";
+import DeleteRoleModal from "./_components/DeleteRoleModal";
+import EditRoleModal from "./_components/EditRoleModal";
+import RoleCard from "./_components/RoleCard";
 
 export default function RolesManagementPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<CompanyRole | null>(null);
   const [roleToUpdate, setRoleToUpdate] = useState<CompanyRole | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const queryClient = useQueryClient();
-
-  // roles
-  const { data: rolesData } = useQuery({
+  // Fetch roles
+  const { data: rolesData, isLoading: isLoadingRoles } = useQuery({
     queryKey: ["roles", currentPage],
     queryFn: () =>
       getAllRoles({
         page: currentPage,
-        perPage: 5,
+        perPage: 10,
         deleted: false,
         paginate: true,
       }),
   });
-  const roles = rolesData?.data || [];
-  // console.log(roles);
 
-  // permissions
+  // Fetch permissions
   const { data: permissionsData } = useQuery({
     queryKey: ["permissions"],
     queryFn: getPermissions,
   });
-  const permissions = permissionsData?.data || [];
-  // console.log("PERMISSIONS",permissions);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    getValues
-  } = useForm<roleCreateInput>({
-    resolver: zodResolver(AddNewRoleSchema),
-    defaultValues: {
-      name: "",
-      permissions: [],
-    },
+  const roles = rolesData?.data || [];
+  const permissions = permissionsData?.data || [];
+
+  // Fetch detailed role data for correct permissions count
+  const roleDetailsQueries = useQueries({
+    queries: Array.isArray(roles)
+      ? roles.map((role: CompanyRole) => ({
+          queryKey: ["role", role.id],
+          queryFn: () => getRoleById({ roleId: role.id }),
+          enabled: !!role.id,
+        }))
+      : [],
   });
 
-  //   الاضافه
-  const mutation = useMutation({
+  const rolesWithDetails = roleDetailsQueries
+    .map((query) => (query.data?.success ? query.data.data : null))
+    .filter((role): role is CompanyRole => role !== null);
+
+  // Add role mutation
+  const addMutation = useMutation({
     mutationFn: addNewRole,
     onSuccess: async (res) => {
       if (!res.success) {
-        toast.error(res.error?.message ?? "حدث خطأ أثناء اضافه الدور ");
+        toast.error(res.error?.message ?? "حدث خطأ أثناء إضافة الدور");
         return;
       }
       await queryClient.invalidateQueries({ queryKey: ["roles"] });
-
+      await queryClient.invalidateQueries({ queryKey: ["role"] });
+      toast.success("تم إضافة الدور بنجاح");
       setShowAddForm(false);
-      reset();
-
-      toast.success(`تم إضافه الدور بنجاح`);
     },
   });
 
-  const onSubmit = (data: roleCreateInput) => {
-    console.log("DATA: ", data);
+  // Update role mutation
+  const updateMutation = useMutation({
+    mutationFn: updateRole,
+    onSuccess: async (res) => {
+      if (res.success === true) {
+        await queryClient.invalidateQueries({ queryKey: ["roles"] });
+        await queryClient.invalidateQueries({ queryKey: ["role"] });
+        toast.success("تم تعديل الدور بنجاح");
+        setRoleToUpdate(null);
+      } else {
+        toast.error(res.error?.message ?? "حدث خطأ أثناء تعديل الدور");
+      }
+    },
+    onError: (error: unknown) => {
+      toast.error("حدث خطأ أثناء تعديل الدور");
+      console.error(error);
+    },
+  });
 
-    mutation.mutate(data);
-  };
-
-  //   الحذف
+  // Delete role mutation
   const deleteMutation = useMutation({
     mutationFn: deleteRoles,
     onSuccess: async (res) => {
       if (!res.success) {
-        toast.error(res.error?.message ?? "حدث خطأ أثناء حذف الدور ");
+        toast.error(res.error?.message ?? "حدث خطأ أثناء حذف الدور");
         return;
       }
       await queryClient.invalidateQueries({ queryKey: ["roles"] });
-      setShowDeleteModal(false);
-
+      await queryClient.invalidateQueries({ queryKey: ["role"] });
       toast.success("تم حذف الدور بنجاح");
+      setRoleToDelete(null);
     },
   });
-
-  const handleDelete = () => {
-    deleteMutation.mutate({
-      itemsIds: roleToDelete?.id !== undefined ? [roleToDelete.id] : [],
-    });
-  };
-
-  // التعديل
-  const {
-    register: registerEdit,
-    handleSubmit: handleEditSubmit,
-    formState: { errors: editErrors },
-    reset: resetEdit,
-  } = useForm<UpdateRoleInput>({
-    resolver: zodResolver(UpdateRoleSchema),
-  });
-
-  useEffect(() => {
-    if (showEditModal && roleToUpdate) {
-      resetEdit({
-        roleId: roleToUpdate.id,
-        name: roleToUpdate.name,
-      });
-    }
-  }, [showEditModal, roleToUpdate, resetEdit]);
-
-  // التعديل
-  const editMutation = useMutation({
-    mutationFn: updateRole,
-    onSuccess: async (res) => {
-      if (!res.success) {
-        toast.error(res.error?.message ?? "حدث خطأ أثناء تعديل الدور ");
-        return;
-      }
-      await queryClient.invalidateQueries({ queryKey: ["roles"] });
-      setShowEditModal(false);
-
-      toast.success("تم تعديل الدور بنجاح");
-    },
-  });
-  const onSubmitEdit = (data: UpdateRoleInput) => {
-    editMutation.mutate(data);
-  };
-
-  useEffect(() => {
-    console.log("ERRRROOORRS",errors);
-    console.log("VALUES", getValues());
-    
-  }, [errors, getValues]);
 
   return (
-    <div className="min-h-screen space-y-6 bg-gray-50 p-6 text-gray-800">
-      {/* الهيدر */}
+    <div className="min-h-screen space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button
+          <Button
             onClick={() => router.push(ROUTES_COMPANY.SETTINGS)}
-            className="rounded-lg p-2 transition hover:bg-gray-200"
+            variant="ghost"
+            size="sm"
+            className="rounded-lg"
           >
             <ArrowLeft className="h-5 w-5" />
-          </button>
+          </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">إدارة الأدوار</h1>
-            <p className="text-gray-600">إدارة أدوار المستخدمين في النظام</p>
+            <h1 className="text-3xl font-bold text-gray-900">إدارة الأدوار</h1>
+            <p className="mt-1 text-gray-600">
+              إدارة أدوار المستخدمين والصلاحيات في النظام
+            </p>
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
-        >
-          <Plus className="h-5 w-5" />
-          إضافة دور جديد
-        </button>
-      </div>
-
-      {/* نموذج إضافة دور جديد */}
-      {showAddForm && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
-          <h3 className="mb-4 text-lg font-semibold text-indigo-600">
-            إضافة دور جديد
-          </h3>
-
-          <div className="space-y-4">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  اسم الدور
-                </label>
-                <input
-                  type="text"
-                  placeholder="أدخل اسم الدور"
-                  {...register("name")}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 transition focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
-
-              <PermissionsSelector
-                permissions={permissions}
-                register={register}
-                errors={errors}
-              />
-
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="submit"
-                  className="rounded-lg bg-indigo-600 px-6 py-2 text-white transition hover:bg-indigo-700 disabled:bg-gray-400"
-                >
-                  {mutation.isPending ? "جار الاضافه" : "اضافه "}
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAddForm(false);
-                  }}
-                  className="rounded-lg bg-gray-500 px-6 py-2 text-white transition hover:bg-gray-600"
-                >
-                  إلغاء
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* قائمة الأدوار */}
-      <div className="grid gap-4">
-        {(Array.isArray(roles) ? roles : []).map((role: CompanyRole) => (
-          <div
-            key={role.id}
-            className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+        {!showAddForm && (
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="rounded-lg bg-indigo-100 p-3">
-                  <Users className="h-6 w-6 text-indigo-600" />
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 capitalize">
-                    {role.name}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Guard: {role.guard_name}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex">
-                <button className=" rounded-lg p-2 text-blue-600 transition hover:bg-blue-50">
-                  <Edit
-                    onClick={() => {
-                      setRoleToUpdate(role);
-                      setShowEditModal(true);
-                    }}
-                    className="h-5 w-5"
-                  />
-                </button>
-                <button
-                  onClick={() => {
-                    setRoleToDelete(role);
-                    setShowDeleteModal(true);
-                  }}
-                  className="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+            <Plus className="ml-2 h-5 w-5" />
+            إضافة دور جديد
+          </Button>
+        )}
       </div>
 
-      {/* رسالة عندما لا توجد أدوار */}
-      {Array.isArray(roles) && roles.length === 0 && (
-        <div className="py-12 text-center">
-          <Users className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-          <h3 className="mb-2 text-lg font-medium text-gray-900">
-            لا توجد أدوار
+      {/* Add Role Form */}
+      {showAddForm && (
+        <AddRoleForm
+          permissions={permissions}
+          mutation={addMutation}
+          onCancel={() => setShowAddForm(false)}
+          onSuccess={() => setShowAddForm(false)}
+        />
+      )}
+
+      {/* Roles List */}
+      {isLoadingRoles ? (
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      ) : Array.isArray(rolesWithDetails) && rolesWithDetails.length > 0 ? (
+        <div className="grid gap-4">
+          {rolesWithDetails.map((role) => (
+            <RoleCard
+              key={role.id}
+              role={role}
+              onEdit={setRoleToUpdate}
+              onDelete={setRoleToDelete}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-purple-100">
+            <Users className="h-10 w-10 text-indigo-600" />
+          </div>
+          <h3 className="mb-2 text-lg font-semibold text-gray-900">
+            لا توجد أدوار بعد
           </h3>
-          <p className="mb-4 text-gray-600">ابدأ بإضافة أول دور في النظام</p>
+          <p className="mb-6 text-gray-600">ابدأ بإضافة أول دور في النظام</p>
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+          >
+            <Plus className="ml-2 h-5 w-5" />
+            إضافة دور جديد
+          </Button>
         </div>
       )}
 
-      {/* Pagination بس لما يكون فيه اكتر من صفحة */}
+      {/* Pagination */}
       {rolesData?.meta && rolesData.meta.last_page > 1 && (
-        <div className="mt-6 flex items-center justify-center space-x-4">
-          {/* السهم اليسار */}
-          <button
+        <div className="flex items-center justify-center gap-2">
+          <Button
             onClick={() => setCurrentPage((prev) => prev - 1)}
             disabled={currentPage === 1}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 transition-all hover:bg-indigo-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+            variant="outline"
+            size="sm"
+            className="h-9 w-9 p-0"
           >
-            <ChevronRight size={16} />
-          </button>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
 
-          {/* أرقام الصفحات */}
-          <div className="flex space-x-1">
+          <div className="flex gap-1">
             {Array.from(
               { length: rolesData.meta.last_page },
               (_, i) => i + 1
             ).map((page) => (
-              <button
+              <Button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-all ${
+                variant={currentPage === page ? "default" : "outline"}
+                size="sm"
+                className={`h-9 w-9 p-0 ${
                   currentPage === page
-                    ? "bg-indigo-600 text-white shadow-md"
-                    : "border border-indigo-600 text-indigo-600 hover:bg-indigo-100"
+                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                    : ""
                 }`}
               >
                 {page}
-              </button>
+              </Button>
             ))}
           </div>
 
-          {/* السهم اليمين */}
-          <button
+          <Button
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === rolesData.meta.last_page}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-600 text-indigo-600 transition-all hover:bg-indigo-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+            variant="outline"
+            size="sm"
+            className="h-9 w-9 p-0"
           >
-            <ChevronLeft size={16} />
-          </button>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
         </div>
       )}
 
-      {/* مودال التعديل */}
-      {showEditModal && roleToUpdate && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-blue-600">
-                تعديل الدور
-              </h3>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="rounded-lg p-1 transition hover:bg-gray-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <form
-              onSubmit={handleEditSubmit(onSubmitEdit)}
-              className="space-y-4"
-            >
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  اسم الدور
-                </label>
-                <input type="hidden" {...registerEdit("roleId")} />
-                <input
-                  type="text"
-                  {...registerEdit("name")}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 transition focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                  placeholder="أدخل اسم الدور"
-                />
-                {editErrors.name && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {editErrors.name.message}
-                  </p>
-                )}
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="submit"
-                  disabled={editMutation.isPending}
-                  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:bg-gray-400"
-                >
-                  {editMutation.isPending ? "جاري التعديل..." : "حفظ التعديلات"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 rounded-lg bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600"
-                >
-                  إلغاء
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* Edit Modal */}
+      {roleToUpdate && (
+        <EditRoleModal
+          role={roleToUpdate}
+          permissions={permissions}
+          mutation={updateMutation}
+          onClose={() => setRoleToUpdate(null)}
+        />
       )}
 
-      {/* مودال تأكيد الحذف */}
-      {showDeleteModal && roleToDelete && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            {/* الهيدر */}
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
-                تأكيد الحذف
-              </h3>
-              <button
-                onClick={() => {
-                  setRoleToDelete(null);
-                  setShowDeleteModal(false);
-                }}
-                className="rounded-lg p-1 transition hover:bg-gray-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* المحتوى */}
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                هل أنت متأكد من حذف دور{" "}
-                <span className="font-semibold text-red-600 capitalize">
-                  {roleToDelete.name}
-                </span>
-                ؟
-              </p>
-              <p className="text-sm text-gray-500">
-                يمكنك استعادة الدور في أي وقت من خلال سلة المحذوفات
-              </p>
-
-              {/* الأزرار */}
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={handleDelete}
-                  disabled={deleteMutation.isPending}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700"
-                >
-                  {deleteMutation.isPending ? "جاري الحذف..." : "احذف الدور"}
-                </button>
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 rounded-lg bg-gray-500 px-4 py-2 text-white transition hover:bg-gray-600"
-                >
-                  إلغاء
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Delete Modal */}
+      {roleToDelete && (
+        <DeleteRoleModal
+          role={roleToDelete}
+          mutation={deleteMutation}
+          onClose={() => setRoleToDelete(null)}
+        />
       )}
     </div>
   );
