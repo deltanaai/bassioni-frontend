@@ -1,48 +1,50 @@
 "use client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AlertCircle, Send, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  FiShoppingCart,
-  FiTrash2,
-  FiSend,
-  FiPlus,
-  FiMinus,
-} from "react-icons/fi";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ROUTES_PHARMA } from "@/constants/routes";
 import { usePharmacySession } from "@/hooks/usePharmacySession";
 import {
   addToCart,
-  getCart,
   deleteCartItem,
+  getCart,
   sendToOrder,
 } from "@/lib/actions/pharma/cart.action";
 import { queryClient } from "@/lib/queryClient";
 
+import CartItemCard from "./_components/CartItemCard";
+import CartSummary from "./_components/CartSummary";
+import EmptyCart from "./_components/EmptyCart";
+
 export default function CartPage() {
+  const router = useRouter();
   const session = usePharmacySession();
   const pharmacyId = session.pharmacist!.pharmacy.id;
 
-  console.log("iddd", pharmacyId);
   const [quantityUpdates, setQuantityUpdates] = useState<{
     [key: string]: number;
   }>({});
 
-  // جلب محتويات السلة
+  // Fetch cart items
   const {
-    data: cartRespnse,
+    data: cartResponse,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["cart", pharmacyId],
     queryFn: () => getCart({ pharmacyId }),
-
     enabled: !!pharmacyId,
   });
-  const cartItems = cartRespnse?.data || [];
-  console.log("dataaa", cartItems);
 
-  //  بحتاجها عشان وانا بعمل + لمنتج عندي
+  const cartItems = cartResponse?.data || [];
+
+  // Add to cart mutation
   const addToCartMutation = useMutation({
     mutationFn: addToCart,
     onSuccess: () => {
@@ -50,28 +52,30 @@ export default function CartPage() {
     },
   });
 
-  //  لحذف منتج
+  // Delete cart item mutation
   const deleteCartItemMutation = useMutation({
     mutationFn: deleteCartItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
+      toast.success("تم حذف المنتج من السلة");
     },
   });
 
-  //  لإرسال الطلب
+  // Send to order mutation
   const sendToOrderMutation = useMutation({
     mutationFn: sendToOrder,
     onSuccess: (res) => {
       if (res.success === true) {
         queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
         toast.success("تم إرسال الطلب بنجاح!");
+        router.push(ROUTES_PHARMA.MY_ORDERS);
       } else {
         toast.error("فشل في إرسال الطلب. حاول مرة أخرى.");
       }
     },
   });
 
-  // زيادة كمية المنتج
+  // Handlers
   const handleIncreaseQuantity = (
     productId: number,
     currentQuantity: number
@@ -86,7 +90,6 @@ export default function CartPage() {
     });
   };
 
-  // تقليل كمية المنتج
   const handleDecreaseQuantity = (
     productId: number,
     currentQuantity: number
@@ -106,38 +109,49 @@ export default function CartPage() {
     });
   };
 
-  // حذف منتج من السلة
   const handleRemoveItem = (productId: number) => {
-    if (confirm("هل تريد حذف هذا المنتج من السلة؟")) {
-      deleteCartItemMutation.mutate({
-        pharmacyId,
-        productId,
-      });
-    }
+    deleteCartItemMutation.mutate({
+      pharmacyId,
+      productId,
+    });
   };
 
-  // إرسال السلة كطلب
   const handleSendToOrder = () => {
     if (cartItems.length === 0) {
       toast.error("السلة فارغة");
       return;
     }
 
-    if (confirm("هل تريد إرسال هذا الطلب؟")) {
-      sendToOrderMutation.mutate({ pharmacyId });
-   
-    }
+    sendToOrderMutation.mutate({ pharmacyId });
   };
+
+  const handleBrowseProducts = () => {
+    router.push(ROUTES_PHARMA.COMPANIESPRODUCTS);
+  };
+
+  // Calculate totals
+  const totalPrice = cartItems.reduce((total, item) => {
+    const displayQuantity = quantityUpdates[item.product.id] || item.quantity;
+    return total + item.product.price * displayQuantity;
+  }, 0);
+
+  const totalItems = cartItems.reduce((total, item) => {
+    const displayQuantity = quantityUpdates[item.product.id] || item.quantity;
+    return total + displayQuantity;
+  }, 0);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen space-y-6 bg-gray-900 p-4 text-gray-100">
-        <div className="animate-pulse">
-          <div className="mb-6 h-8 w-1/4 rounded bg-gray-700"></div>
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-20 rounded-lg bg-gray-800"></div>
-            ))}
+      <div className="min-h-screen bg-gray-950 p-6">
+        <div className="mx-auto max-w-7xl space-y-6">
+          <Skeleton className="h-20 w-full bg-gray-700" />
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="space-y-4 lg:col-span-2">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-40 bg-gray-700" />
+              ))}
+            </div>
+            <Skeleton className="h-80 bg-gray-700" />
           </div>
         </div>
       </div>
@@ -146,213 +160,85 @@ export default function CartPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen space-y-6 bg-gray-900 p-4 text-gray-100">
-        <div className="rounded-lg border border-red-700 bg-red-900 p-4 text-red-100">
-          خطأ في تحميل السلة: {(error as Error).message}
+      <div className="min-h-screen bg-gray-950 p-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6">
+            <div className="flex items-center gap-3 text-red-400">
+              <AlertCircle className="h-6 w-6" />
+              <div>
+                <h3 className="font-semibold">خطأ في تحميل السلة</h3>
+                <p className="text-sm">{(error as Error).message}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  const totalPrice = cartItems.reduce((total, item) => {
-    const displayQuantity = quantityUpdates[item.product.id] || item.quantity;
-    const productPrice = item.product.price;
-    return total + productPrice * displayQuantity;
-  }, 0);
-
-  // عدد المنتجات الكلي مع التحديثات
-  const totalItems = cartItems.reduce((total, item) => {
-    const displayQuantity = quantityUpdates[item.product.id] || item.quantity;
-    return total + displayQuantity;
-  }, 0);
-
   return (
-    <div className="min-h-screen space-y-6 bg-gray-900 p-4 text-gray-100">
-      {/* Header */}
-      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        <div className="flex items-center gap-3">
-          <FiShoppingCart className="h-8 w-8 text-emerald-400" />
-          <h1 className="text-2xl font-bold text-white">عربة التسوق</h1>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="text-lg font-semibold text-white">
-            الإجمالي:
-            <span className="text-emerald-400">
-              {totalPrice.toFixed(2)} ج.م
-            </span>
+    <div className="min-h-screen bg-gray-950 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* Page Header */}
+        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+              <ShoppingCart className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">عربة التسوق</h1>
+              <p className="text-gray-400">
+                {cartItems.length > 0
+                  ? `${totalItems} منتج في السلة`
+                  : "لا توجد منتجات"}
+              </p>
+            </div>
           </div>
 
-          <button
-            onClick={handleSendToOrder}
-            disabled={sendToOrderMutation.isPending || cartItems.length === 0}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2 text-white transition-colors hover:bg-emerald-700 disabled:bg-gray-600"
-          >
-            <FiSend className="h-4 w-4" />
-            {sendToOrderMutation.isPending ? "جاري الإرسال..." : "إرسال الطلب"}
-          </button>
+          {cartItems.length > 0 && (
+            <Button
+              onClick={handleSendToOrder}
+              disabled={sendToOrderMutation.isPending}
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+              size="lg"
+            >
+              <Send className="ml-2 h-5 w-5" />
+              {sendToOrderMutation.isPending
+                ? "جاري الإرسال..."
+                : "إرسال الطلب"}
+            </Button>
+          )}
         </div>
-      </div>
 
-      {/* Cart Items */}
-      <div className="space-y-4">
+        {/* Main Content */}
         {cartItems.length === 0 ? (
-          <div className="rounded-lg border border-gray-700 bg-gray-800 p-12 text-center">
-            <FiShoppingCart className="mx-auto mb-4 h-16 w-16 text-gray-500" />
-            <h3 className="mb-2 text-xl font-semibold text-gray-400">
-              السلة فارغة
-            </h3>
-            <p className="text-gray-500">
-              لم تقم بإضافة أي منتجات إلى السلة بعد
-            </p>
-          </div>
+          <EmptyCart onBrowseProducts={handleBrowseProducts} />
         ) : (
-          cartItems.map((item) => {
-            const displayQuantity =
-              quantityUpdates[item.product.id] || item.quantity;
-            const product = item.product;
-            const totalPrice = product.price * displayQuantity;
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Cart Items */}
+            <div className="space-y-4 lg:col-span-2">
+              {cartItems.map((item) => (
+                <CartItemCard
+                  key={item.id}
+                  item={item}
+                  onIncreaseQuantity={handleIncreaseQuantity}
+                  onDecreaseQuantity={handleDecreaseQuantity}
+                  onRemoveItem={handleRemoveItem}
+                  isUpdating={
+                    addToCartMutation.isPending ||
+                    deleteCartItemMutation.isPending
+                  }
+                />
+              ))}
+            </div>
 
-            return (
-              <div
-                key={item.id}
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-gray-600"
-              >
-                <div className="flex items-center justify-between">
-                  {/* المعلومات الأساسية */}
-                  <div className="flex-1">
-                    <h3 className="mb-2 text-lg font-semibold text-white">
-                      {product.name}
-                    </h3>
-
-                    <div className="mb-2 flex items-center gap-3 text-sm text-gray-400">
-                      <span>#{product.id}</span>
-                      {product.brand && (
-                        <span className="rounded-full bg-blue-900 px-2 py-1 text-xs text-blue-300">
-                          {product.brand}
-                        </span>
-                      )}
-                      {product.category && (
-                        <span className="rounded-full bg-purple-900 px-2 py-1 text-xs text-purple-300">
-                          {product.category.name}
-                        </span>
-                      )}
-                    </div>
-
-                    {product.description && (
-                      <p className="mb-2 text-sm text-gray-400">
-                        {product.description}
-                      </p>
-                    )}
-
-                    {/* معلومات إضافية */}
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      {/* <span>الدفعة: {product.}</span> */}
-                      {/* <span>
-                        ينتهي:{" "}
-                        {new Date(product.expiry_date).toLocaleDateString(
-                          "ar-EG"
-                        )}
-                      </span> */}
-                    </div>
-                  </div>
-
-                  {/* السعر والكمية */}
-                  <div className="flex items-center gap-6">
-                    {/* السعر للوحدة */}
-                    <div className="text-right">
-                      <div className="text-sm text-gray-400">سعر الوحدة</div>
-                      <div className="text-lg font-bold text-emerald-400">
-                        {product.price.toFixed(2)} ج.م
-                      </div>
-                    </div>
-
-                    {/* التحكم في الكمية */}
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() =>
-                          handleDecreaseQuantity(product.id, displayQuantity)
-                        }
-                        disabled={
-                          addToCartMutation.isPending || displayQuantity <= 1
-                        }
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600 disabled:bg-gray-800"
-                      >
-                        <FiMinus className="h-4 w-4" />
-                      </button>
-
-                      <span className="w-12 text-center text-lg font-semibold text-white">
-                        {displayQuantity}
-                      </span>
-
-                      <button
-                        onClick={() =>
-                          handleIncreaseQuantity(product.id, displayQuantity)
-                        }
-                        // disabled={
-                        //   addToCartMutation.isPending ||
-                        //   displayQuantity >= product.stock
-                        // }
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600 disabled:bg-gray-800"
-                      >
-                        <FiPlus className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    {/* الإجمالي والحذف */}
-                    <div className="min-w-[140px] text-right">
-                      <div className="mb-1 text-sm text-gray-400">الإجمالي</div>
-                      <div className="mb-2 text-lg font-bold text-white">
-                        {totalPrice.toFixed(2)} ج.م
-                      </div>
-                      <button
-                        onClick={() => handleRemoveItem(product.id)}
-                        disabled={deleteCartItemMutation.isPending}
-                        className="flex items-center justify-end gap-1 text-sm text-red-400 transition-colors hover:text-red-300"
-                      >
-                        <FiTrash2 className="h-4 w-4" />
-                        حذف
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
+            {/* Cart Summary */}
+            <div>
+              <CartSummary totalItems={totalItems} totalPrice={totalPrice} />
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Order Summary */}
-      {cartItems.length > 0 && (
-        <div className="rounded-lg border border-gray-700 bg-gray-800 p-6">
-          <h3 className="mb-4 text-lg font-semibold text-white">ملخص الطلب</h3>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">عدد المنتجات:</span>
-              <span className="font-semibold text-white">{totalItems}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">إجمالي المنتجات:</span>
-              <span className="font-semibold text-white">
-                {totalPrice.toFixed(2)} ج.م
-              </span>
-            </div>
-
-            <div className="mt-2 border-t border-gray-700 pt-2">
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-semibold text-white">
-                  الإجمالي النهائي:
-                </span>
-                <span className="text-xl font-bold text-emerald-400">
-                  {totalPrice.toFixed(2)} ج.م
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

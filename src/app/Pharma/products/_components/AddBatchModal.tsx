@@ -49,6 +49,13 @@ export default function AddBatchModal({
         onSuccess: (res) => {
           if (res.success === true) {
             toast.success("تمت إضافة الدفعة بنجاح");
+            // Invalidate all queries related to this product
+            queryClient.invalidateQueries({
+              queryKey: ["branchProductDetails", branchId, productId],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["productDetails", productId],
+            });
             queryClient.invalidateQueries({
               queryKey: ["warehouseProductDetails", branchId, productId],
             });

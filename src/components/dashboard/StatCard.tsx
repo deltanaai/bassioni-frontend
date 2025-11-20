@@ -1,63 +1,59 @@
-import React from "react";
-import {
-  FiBarChart2,
-  FiShoppingCart,
-  FiTrendingUp,
-  FiUsers,
-} from "react-icons/fi";
+import { LucideIcon } from "lucide-react";
+import Link from "next/link";
 
 interface StatCardProps {
   title: string;
-  value: string;
-  change: string;
-  icon: "cart" | "users" | "chart";
+  value: string | number;
+  icon: LucideIcon;
+  href: string;
   gradient: string;
-  bgColor: string;
+  isLoading?: boolean;
 }
 
-const iconMap = {
-  cart: FiShoppingCart,
-  users: FiUsers,
-  chart: FiBarChart2,
-};
-
-const textColorMap = {
-  "from-blue-600 to-blue-500": "text-blue-100",
-  "from-green-600 to-green-500": "text-green-100",
-  "from-purple-600 to-purple-500": "text-purple-100",
-};
-
-export function StatCard({
+export default function StatCard({
   title,
   value,
-  change,
-  icon,
+  icon: Icon,
+  href,
   gradient,
-  bgColor,
+  isLoading = false,
 }: StatCardProps) {
-  const Icon = iconMap[icon];
-  const textColor =
-    textColorMap[gradient as keyof typeof textColorMap] || "text-white";
-
   return (
-    <div className={`rounded-2xl bg-gradient-to-br ${gradient} p-6 shadow-lg`}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className={`font-medium ${textColor}`}>{title}</p>
-          <h3 className="mt-2 text-3xl font-bold text-white">{value}</h3>
-          <div className="mt-3 flex items-center">
-            <span
-              className={`flex items-center rounded-full ${bgColor} px-2 py-1 text-xs ${textColor}`}
-            >
-              <FiTrendingUp className="ml-1" />
-              {change}
-            </span>
-          </div>
+    <Link
+      href={href}
+      className="group relative overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/30 p-6 backdrop-blur-xl transition-all hover:scale-105 hover:border-gray-700/50 hover:shadow-xl hover:shadow-emerald-500/10"
+    >
+      {/* Background Gradient */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 transition-opacity group-hover:opacity-10`}
+      />
+
+      {/* Content */}
+      <div className="relative flex flex-col items-center text-center">
+        {/* Icon */}
+        <div
+          className={`mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} shadow-lg`}
+        >
+          <Icon className="h-7 w-7 text-white" />
         </div>
-        <div className="rounded-xl bg-white/20 p-3">
-          <Icon className="h-6 w-6 text-white" />
-        </div>
+
+        {/* Value */}
+        <h3 className="mb-1 text-3xl font-bold text-white">
+          {isLoading ? (
+            <span className="inline-block h-9 w-16 animate-pulse rounded bg-gray-700" />
+          ) : (
+            value
+          )}
+        </h3>
+
+        {/* Title */}
+        <p className="text-sm font-medium text-gray-400">{title}</p>
       </div>
-    </div>
+
+      {/* Hover Effect Border */}
+      <div
+        className={`absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r ${gradient} transition-all duration-300 group-hover:w-full`}
+      />
+    </Link>
   );
 }
