@@ -8,17 +8,22 @@ import {
   XCircle,
   Tags,
   Tag,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import useGetCategories from "@/hooks/owner/useGetCategories";
 import CategoriesFilter from "@/components/Tablecomponents/FilterSearch/CategoriesFilter";
 import AddCategoryDialog from "@/components/modals/AddCategoryDialog";
 import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
-import { deleteCategories } from "@/lib/actions/owner/categories.actions";
+import {
+  deleteCategories,
+  restoreCategories,
+} from "@/lib/actions/owner/categories.actions";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import Pagination from "@/components/custom/pagination";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
+import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
 
 function CategoriesPageContent() {
   const { categoriesData, isLoadingCategories } = useGetCategories();
@@ -45,6 +50,26 @@ function CategoriesPageContent() {
       }
     } catch (error) {
       console.error("Error deleting category:", error);
+      toast.error("حدث خطأ غير متوقع");
+    }
+  };
+
+  const handleRestoreCategory = async (categoryId: number) => {
+    try {
+      const response = await restoreCategories({ items: [categoryId] });
+      if (response && response.success) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey.some(
+              (key) => typeof key === "string" && key.includes("categories")
+            ),
+        });
+        toast.success("تم استعادة الفئة بنجاح");
+      } else {
+        toast.error("حدث خطأ أثناء استعادة الفئة");
+      }
+    } catch (error) {
+      console.error("Error restoring category:", error);
       toast.error("حدث خطأ غير متوقع");
     }
   };
@@ -191,26 +216,43 @@ function CategoriesPageContent() {
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleEditClick(category)}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="تعديل"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-
-                      <DeleteConfirmModal
-                        trigger={
+                      {category.deletedAt ? (
+                        <RestoreConfirmModal
+                          trigger={
+                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                              <RefreshCw className="w-4 h-4" />
+                            </button>
+                          }
+                          message={`هل أنت متأكد من استعادة الفئة "${category.name}"؟`}
+                          itemName={`الفئة "${category.name}"`}
+                          onConfirm={() =>
+                            category.id && handleRestoreCategory(category.id)
+                          }
+                        />
+                      ) : (
+                        <>
                           <button
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="حذف"
+                            onClick={() => handleEditClick(category)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="تعديل"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Edit className="h-4 w-4" />
                           </button>
-                        }
-                        onConfirm={() => handleDeleteCategory(category.id)}
-                        message={`هل أنت متأكد من حذف الفئة "${category.name}"؟`}
-                      />
+
+                          <DeleteConfirmModal
+                            trigger={
+                              <button
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="حذف"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            }
+                            onConfirm={() => handleDeleteCategory(category.id)}
+                            message={`هل أنت متأكد من حذف الفئة "${category.name}"؟`}
+                          />
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -13,6 +13,7 @@ export default function CategoriesFilter() {
   const urlShowHome = searchParams.get("showHome") || "";
   const urlActive = searchParams.get("active") || "";
   const orderBy = searchParams.get("orderBy") || "id";
+  const urlDeleted = searchParams.get("deleted") || "false";
   const orderByDirection = (searchParams.get("orderByDirection") || "desc") as
     | "asc"
     | "desc";
@@ -21,6 +22,7 @@ export default function CategoriesFilter() {
   const [nameSearch, setNameSearch] = useState(urlName);
   const [showHomeFilter, setShowHomeFilter] = useState(urlShowHome);
   const [activeFilter, setActiveFilter] = useState(urlActive);
+  const [deletedFilter, setDeletedFilter] = useState(urlDeleted);
 
   // Function to apply filters
   const handleSearch = () => {
@@ -43,6 +45,7 @@ export default function CategoriesFilter() {
     } else {
       params.delete("active");
     }
+    params.set("deleted", deletedFilter);
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
@@ -52,10 +55,12 @@ export default function CategoriesFilter() {
     setNameSearch("");
     setShowHomeFilter("");
     setActiveFilter("");
+    setDeletedFilter("false");
     const params = new URLSearchParams(searchParams.toString());
     params.delete("name");
     params.delete("showHome");
     params.delete("active");
+    params.set("deleted", "false");
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -117,6 +122,16 @@ export default function CategoriesFilter() {
               <option value="">الكل (الحالة)</option>
               <option value="true">نشط</option>
               <option value="false">غير نشط</option>
+            </select>
+          </div>
+          <div className="relative">
+            <select
+              value={deletedFilter}
+              onChange={(e) => setDeletedFilter(e.target.value)}
+              className="w-full pr-12 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+            >
+              <option value="false">الفئات المتاحة</option>
+              <option value="true">الفئات المحذوفة</option>
             </select>
           </div>
         </div>
