@@ -1,17 +1,4 @@
 "use client";
-import { useState } from "react";
-import {
-  Building,
-  Users,
-  Store,
-  Package,
-  Tag,
-  Shield,
-  Layers,
-  Bell,
-  Crown,
-} from "lucide-react";
-
 import { ROUTES_OWNER } from "@/constants/routes";
 import { useGetSession } from "@/hooks/useGetSession";
 import useGetAdmins from "@/hooks/owner/useGetAdmins";
@@ -21,15 +8,20 @@ import { useGetCompanies } from "@/hooks/owner/useGetCompanies";
 import { useGetPharmacies } from "@/hooks/owner/useGetPharmacies";
 import useGetProducts from "@/hooks/owner/useGetProducts";
 import { useGetRoles } from "@/hooks/owner/useGetRoles";
-
-import StatCard from "@/components/dashboard/StatCard";
-import NotificationCard from "@/components/dashboard/NotificationCard";
-import QuickActionCard from "@/components/dashboard/QuickActionCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Building,
+  Users,
+  Store,
+  Package,
+  BarChart3,
+  Tag,
+  Shield,
+  Layers,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function OwnerDashboard() {
   const { isLoadingSession, session } = useGetSession();
-  const [showAllNotifications, setShowAllNotifications] = useState(false);
 
   // Fetch data from all hooks
   const { data: companiesData, isLoading: isLoadingCompanies } =
@@ -60,7 +52,72 @@ export default function OwnerDashboard() {
     isLoadingProducts ||
     isLoadingRoles;
 
-  // Notifications data
+  if (isLoadingSession) {
+    return (
+      <div className="w-full h-64 bg-gray-200 rounded-lg relative overflow-hidden animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 bg-red-600 rounded-full opacity-90"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const quickStats = [
+    {
+      title: "الشركات",
+      value: isLoadingData ? "..." : companiesCount.toString(),
+      icon: Building,
+      color: "text-blue-600",
+      href: ROUTES_OWNER.COMPANIES,
+    },
+    {
+      title: "الصيدليات",
+      value: isLoadingData ? "..." : pharmaciesCount.toString(),
+      icon: Store,
+      color: "text-green-600",
+      href: ROUTES_OWNER.PHARMACIES,
+    },
+    {
+      title: "المشرفين",
+      value: isLoadingData ? "..." : adminsCount.toString(),
+      icon: Users,
+      color: "text-purple-600",
+      href: ROUTES_OWNER.ADMINS,
+    },
+    {
+      title: "المنتجات",
+      value: isLoadingData ? "..." : productsCount.toString(),
+      icon: Package,
+      color: "text-orange-600",
+      href: ROUTES_OWNER.PRODUCTS,
+    },
+  ];
+
+  const additionalStats = [
+    {
+      title: "العلامات التجارية",
+      value: isLoadingData ? "..." : brandsCount.toString(),
+      icon: Tag,
+      color: "text-indigo-600",
+      href: ROUTES_OWNER.BRANDS,
+    },
+    {
+      title: "الفئات",
+      value: isLoadingData ? "..." : categoriesCount.toString(),
+      icon: Layers,
+      color: "text-teal-600",
+      href: ROUTES_OWNER.CATEGORIES,
+    },
+    {
+      title: "الأدوار",
+      value: isLoadingData ? "..." : rolesCount.toString(),
+      icon: Shield,
+      color: "text-red-600",
+      href: ROUTES_OWNER.ROLES,
+    },
+  ];
+
+  // Dummy notifications data
   const notifications = [
     {
       id: 1,
@@ -68,7 +125,7 @@ export default function OwnerDashboard() {
       title: "طلب جديد من صيدلية النور",
       message: "تم استلام طلب جديد بقيمة 2,450 ريال",
       time: "منذ 5 دقائق",
-      priority: "high" as const,
+      priority: "high",
       icon: "📦",
       unread: true,
     },
@@ -78,7 +135,7 @@ export default function OwnerDashboard() {
       title: "تنبيه انخفاض المخزون",
       message: "منتج 'أموكسيسيلين 500 مجم' أقل من الحد الأدنى",
       time: "منذ 15 دقيقة",
-      priority: "medium" as const,
+      priority: "medium",
       icon: "⚠️",
       unread: true,
     },
@@ -88,7 +145,7 @@ export default function OwnerDashboard() {
       title: "تسجيل صيدلية جديدة",
       message: "صيدلية 'الصحة والعافية' انضمت للمنصة",
       time: "منذ ساعة",
-      priority: "low" as const,
+      priority: "low",
       icon: "🏥",
       unread: false,
     },
@@ -98,7 +155,7 @@ export default function OwnerDashboard() {
       title: "دفعة مالية جديدة",
       message: "تم استلام دفعة من شركة الأدوية بقيمة 15,000 ريال",
       time: "منذ ساعتين",
-      priority: "high" as const,
+      priority: "high",
       icon: "💰",
       unread: false,
     },
@@ -108,226 +165,213 @@ export default function OwnerDashboard() {
       title: "تحديث النظام",
       message: "تم تحديث النظام بنجاح - الإصدار 3.1 متاح الآن",
       time: "منذ يوم",
-      priority: "low" as const,
+      priority: "low",
       icon: "🔄",
       unread: false,
     },
   ];
 
-  const displayedNotifications = showAllNotifications
-    ? notifications
-    : notifications.slice(0, 4);
+  return (
+    <div className="space-y-6">
+      {/* العنوان */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <span className="bg-gradient-to-r from-blue-400 to-blue-700 bg-clip-text text-transparent">
+            لوحة التحكم
+          </span>
+          <span className="hidden text-xs px-2 py-1 bg-blue-100 text-blue-900 rounded-full">
+            الإصدار 3.0
+          </span>
+        </h1>
+        <p className="text-gray-500 mt-1">
+          مرحبًا بعودتك، دكتور {session?.user?.name} 👋
+        </p>
+      </div>
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+      {/* الإحصائيات السريعة */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
+        {[...quickStats, ...additionalStats].map((stat, index) => (
+          <Link
+            key={index}
+            href={stat.href}
+            className="bg-white rounded-xl border border-gray-200 p-4 text-center hover:shadow-md transition-all hover:scale-105 block"
+          >
+            <div
+              className={`mx-auto mb-3 rounded-full bg-gray-50 p-3 w-12 h-12 flex items-center justify-center`}
+            >
+              <stat.icon className={`h-6 w-6 ${stat.color}`} />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
+            <p className="text-gray-600 text-sm">{stat.title}</p>
+          </Link>
+        ))}
+      </div>
 
-  if (isLoadingSession) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 md:p-6">
-        <div className="mx-auto max-w-7xl space-y-6">
-          <Skeleton className="h-24 w-full bg-gray-800" />
-          <div className="grid gap-6 md:grid-cols-4 xl:grid-cols-7">
-            {[...Array(7)].map((_, i) => (
-              <Skeleton key={i} className="h-40 bg-gray-800" />
+      {/* صفين جانبيين */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* الإشعارات والرسائل */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">
+                    {notifications.filter((n) => n.unread).length}
+                  </span>
+                </span>
+              </div>
+              <h2 className="text-lg font-semibold">الإشعارات والرسائل</h2>
+            </div>
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+              عرض الكل
+            </button>
+          </div>
+          <div className="space-y-3">
+            {notifications.slice(0, 5).map((notification) => (
+              <div
+                key={notification.id}
+                className={`relative p-4 rounded-lg border transition-all hover:shadow-md cursor-pointer ${
+                  notification.unread
+                    ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                    : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Notification Icon */}
+                  <div
+                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                      notification.priority === "high"
+                        ? "bg-red-100 text-red-600"
+                        : notification.priority === "medium"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : "bg-green-100 text-green-600"
+                    }`}
+                  >
+                    {notification.icon}
+                  </div>
+
+                  {/* Notification Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4
+                          className={`text-sm font-semibold ${
+                            notification.unread
+                              ? "text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {notification.title}
+                        </h4>
+                        <p
+                          className={`text-sm mt-1 ${
+                            notification.unread
+                              ? "text-gray-700"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {notification.message}
+                        </p>
+                      </div>
+                      {notification.unread && (
+                        <div className="flex-shrink-0 ml-2">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Time and Actions */}
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-xs text-gray-500">
+                        {notification.time}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                          عرض
+                        </button>
+                        {!notification.unread && (
+                          <button className="text-xs text-gray-500 hover:text-gray-700">
+                            حذف
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      </div>
-    );
-  }
 
-  const stats = [
-    {
-      title: "الشركات",
-      value: companiesCount,
-      icon: Building,
-      href: ROUTES_OWNER.COMPANIES,
-      gradient: "from-blue-500 to-cyan-600",
-    },
-    {
-      title: "الصيدليات",
-      value: pharmaciesCount,
-      icon: Store,
-      href: ROUTES_OWNER.PHARMACIES,
-      gradient: "from-emerald-500 to-teal-600",
-    },
-    {
-      title: "المشرفين",
-      value: adminsCount,
-      icon: Users,
-      href: ROUTES_OWNER.ADMINS,
-      gradient: "from-purple-500 to-pink-600",
-    },
-    {
-      title: "المنتجات",
-      value: productsCount,
-      icon: Package,
-      href: ROUTES_OWNER.PRODUCTS,
-      gradient: "from-orange-500 to-red-600",
-    },
-    {
-      title: "العلامات التجارية",
-      value: brandsCount,
-      icon: Tag,
-      href: ROUTES_OWNER.BRANDS,
-      gradient: "from-indigo-500 to-blue-600",
-    },
-    {
-      title: "الفئات",
-      value: categoriesCount,
-      icon: Layers,
-      href: ROUTES_OWNER.CATEGORIES,
-      gradient: "from-teal-500 to-emerald-600",
-    },
-    {
-      title: "الأدوار",
-      value: rolesCount,
-      icon: Shield,
-      href: ROUTES_OWNER.ROLES,
-      gradient: "from-rose-500 to-pink-600",
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "إدارة المشرفين",
-      href: ROUTES_OWNER.ADMINS,
-      icon: Users,
-      gradient: "from-purple-500 to-pink-600",
-    },
-    {
-      title: "عرض الصيدليات",
-      href: ROUTES_OWNER.PHARMACIES,
-      icon: Store,
-      gradient: "from-emerald-500 to-teal-600",
-    },
-    {
-      title: "الشركات المتعاقدة",
-      href: ROUTES_OWNER.COMPANIES,
-      icon: Building,
-      gradient: "from-blue-500 to-cyan-600",
-    },
-    {
-      title: "إدارة المنتجات",
-      href: ROUTES_OWNER.PRODUCTS,
-      icon: Package,
-      gradient: "from-orange-500 to-red-600",
-    },
-    {
-      title: "إدارة الأدوار",
-      href: ROUTES_OWNER.ROLES,
-      icon: Shield,
-      gradient: "from-rose-500 to-pink-600",
-    },
-    {
-      title: "العلامات التجارية",
-      href: ROUTES_OWNER.BRANDS,
-      icon: Tag,
-      gradient: "from-indigo-500 to-blue-600",
-    },
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 md:p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        {/* Page Header */}
-        <div className="rounded-2xl border border-gray-800/50 bg-gradient-to-r from-gray-900/50 to-gray-800/30 p-6 backdrop-blur-xl md:p-8">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/25 md:h-20 md:w-20">
-              <Crown className="h-8 w-8 text-white md:h-10 md:w-10" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-white md:text-3xl">
-                لوحة تحكم المالك
-              </h1>
-              <p className="mt-1 text-sm text-gray-400 md:text-base">
-                مرحبًا بعودتك، {session?.user?.name || "المدير"} 👋
-              </p>
-            </div>
+          {/* View All Button */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <button className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium py-2 hover:bg-blue-50 rounded-lg transition-colors">
+              عرض جميع الإشعارات ({notifications.length})
+            </button>
           </div>
         </div>
 
-        {/* Statistics Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-          {stats.map((stat, index) => (
-            <StatCard
-              key={index}
-              title={stat.title}
-              value={stat.value}
-              icon={stat.icon}
-              href={stat.href}
-              gradient={stat.gradient}
-              isLoading={isLoadingData}
-            />
-          ))}
-        </div>
-
-        {/* Two Column Layout */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Notifications Section */}
-          <div className="rounded-2xl border border-gray-800/50 bg-gray-900/30 p-6 backdrop-blur-xl lg:col-span-2">
-            <div className="mb-6 flex items-center justify-between">
+        {/* الإجراءات السريعة */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 className="h-5 w-5 text-blue-600" />
+            <h2 className="text-lg font-semibold">إجراءات سريعة</h2>
+          </div>
+          <div className="space-y-4">
+            <Link
+              href={ROUTES_OWNER.ADMINS}
+              className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors block"
+            >
               <div className="flex items-center gap-3">
-                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-                  <Bell className="h-5 w-5 text-white" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg">
-                      {unreadCount}
-                    </span>
-                  )}
-                </div>
-                <h2 className="text-xl font-semibold text-white">
-                  الإشعارات والرسائل
-                </h2>
+                <Users className="h-5 w-5 text-blue-600" />
+                <span>إدارة المشرفين</span>
               </div>
-              <button
-                onClick={() => setShowAllNotifications(!showAllNotifications)}
-                className="text-sm font-medium text-emerald-400 transition-colors hover:text-emerald-300"
-              >
-                {showAllNotifications ? "عرض أقل" : "عرض الكل"}
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {displayedNotifications.map((notification) => (
-                <NotificationCard
-                  key={notification.id}
-                  {...notification}
-                  onView={() => console.log("View:", notification.id)}
-                  onDelete={() => console.log("Delete:", notification.id)}
-                />
-              ))}
-            </div>
-
-            {notifications.length === 0 && (
-              <div className="rounded-xl border border-gray-800/50 bg-gray-900/20 p-12 text-center">
-                <Bell className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-                <p className="text-sm text-gray-400">لا توجد إشعارات جديدة</p>
+            </Link>
+            <Link
+              href={ROUTES_OWNER.PHARMACIES}
+              className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-green-50 hover:border-green-300 transition-colors block"
+            >
+              <div className="flex items-center gap-3">
+                <Store className="h-5 w-5 text-green-600" />
+                <span>عرض الصيدليات</span>
               </div>
-            )}
-          </div>
-
-          {/* Quick Actions Section */}
-          <div className="rounded-2xl border border-gray-800/50 bg-gray-900/30 p-6 backdrop-blur-xl">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600">
-                <Package className="h-5 w-5 text-white" />
+            </Link>
+            <Link
+              href={ROUTES_OWNER.COMPANIES}
+              className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-colors block"
+            >
+              <div className="flex items-center gap-3">
+                <Building className="h-5 w-5 text-purple-600" />
+                <span>الشركات المتعاقدة</span>
               </div>
-              <h2 className="text-xl font-semibold text-white">
-                إجراءات سريعة
-              </h2>
-            </div>
-
-            <div className="space-y-3">
-              {quickActions.map((action, index) => (
-                <QuickActionCard
-                  key={index}
-                  title={action.title}
-                  href={action.href}
-                  icon={action.icon}
-                  gradient={action.gradient}
-                />
-              ))}
-            </div>
+            </Link>
+            <Link
+              href={ROUTES_OWNER.PRODUCTS}
+              className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-colors block"
+            >
+              <div className="flex items-center gap-3">
+                <Package className="h-5 w-5 text-orange-600" />
+                <span>إدارة المنتجات</span>
+              </div>
+            </Link>
+            <Link
+              href={ROUTES_OWNER.ROLES}
+              className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-300 transition-colors block"
+            >
+              <div className="flex items-center gap-3">
+                <Shield className="h-5 w-5 text-red-600" />
+                <span>إدارة الأدوار</span>
+              </div>
+            </Link>
+            <Link
+              href={ROUTES_OWNER.BRANDS}
+              className="w-full text-right p-4 border-2 border-gray-200 rounded-xl hover:bg-indigo-50 hover:border-indigo-300 transition-colors block"
+            >
+              <div className="flex items-center gap-3">
+                <Tag className="h-5 w-5 text-indigo-600" />
+                <span>العلامات التجارية</span>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
