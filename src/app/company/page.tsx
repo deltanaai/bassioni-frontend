@@ -5,9 +5,9 @@ import { FiTrendingUp, FiUsers } from "react-icons/fi";
 
 import {
   ChartCard,
+  CompanyStatCard,
   DashboardHeader,
   RecentOrdersTable,
-  StatCard,
 } from "@/components/dashboard";
 import { dashboardStats, recentOrders } from "@/constants/dashboardData";
 
@@ -51,7 +51,7 @@ export default function ModernDashboard() {
         {/* Quick Stats */}
         <div className="space-y-6">
           {dashboardStats.map((stat, index) => (
-            <StatCard
+            <CompanyStatCard
               key={index}
               title={stat.title}
               value={stat.value}
