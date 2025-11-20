@@ -4,6 +4,7 @@ import { Search, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAllCategories } from "@/lib/actions/owner/categories.actions";
 import { getAllBrands } from "@/lib/actions/owner/brands.actions";
+import qs from "qs";
 
 export default function ProductsFilter() {
   const searchParams = useSearchParams();
@@ -16,6 +17,7 @@ export default function ProductsFilter() {
   const urlBrandId = searchParams.get("brand_id") || "";
   const urlShowHome = searchParams.get("show_home") || "";
   const urlActive = searchParams.get("active") || "";
+  const urlDeleted = searchParams.get("deleted") || "false";
   const orderBy = searchParams.get("orderBy") || "id";
   const orderByDirection = (searchParams.get("orderByDirection") || "desc") as
     | "asc"
@@ -27,6 +29,7 @@ export default function ProductsFilter() {
   const [brandFilter, setBrandFilter] = useState(urlBrandId);
   const [showHomeFilter, setShowHomeFilter] = useState(urlShowHome);
   const [activeFilter, setActiveFilter] = useState(urlActive);
+  const [deletedFilter, setDeletedFilter] = useState(urlDeleted);
 
   // Categories and brands data
   const [categories, setCategories] = useState<CategoryViewT[]>([]);
@@ -52,67 +55,119 @@ export default function ProductsFilter() {
   }, []);
 
   // Function to apply filters
+  // const handleSearch = () => {
+  //   const params = new URLSearchParams(searchParams.toString());
+
+  //   if (nameSearch) {
+  //     params.set("name", nameSearch);
+  //   } else {
+  //     params.delete("name");
+  //   }
+
+  //   if (categoryFilter) {
+  //     params.set("category_id", categoryFilter);
+  //   } else {
+  //     params.delete("category_id");
+  //   }
+
+  //   if (brandFilter) {
+  //     params.set("brand_id", brandFilter);
+  //   } else {
+  //     params.delete("brand_id");
+  //   }
+
+  //   if (showHomeFilter) {
+  //     params.set("show_home", showHomeFilter);
+  //   } else {
+  //     params.delete("show_home");
+  //   }
+
+  //   if (activeFilter) {
+  //     params.set("active", activeFilter);
+  //   } else {
+  //     params.delete("active");
+  //   }
+  //   params.set("deleted", deletedFilter);
+
+  //   router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  // };
+
   const handleSearch = () => {
-    const params = new URLSearchParams(searchParams.toString());
+    const current = qs.parse(searchParams.toString());
 
-    if (nameSearch) {
-      params.set("name", nameSearch);
-    } else {
-      params.delete("name");
-    }
+    const updated = {
+      ...current,
+      name: nameSearch || undefined,
+      category_id: categoryFilter || undefined,
+      brand_id: brandFilter || undefined,
+      show_home: showHomeFilter || undefined,
+      active: activeFilter || undefined,
+      deleted: deletedFilter,
+      page: 1, ////////////
+    };
 
-    if (categoryFilter) {
-      params.set("category_id", categoryFilter);
-    } else {
-      params.delete("category_id");
-    }
+    // امسحي أي key قيمته undefined
+    Object.keys(updated).forEach(
+      (key) => updated[key] === undefined && delete updated[key]
+    );
 
-    if (brandFilter) {
-      params.set("brand_id", brandFilter);
-    } else {
-      params.delete("brand_id");
-    }
+    const query = qs.stringify(updated);
 
-    if (showHomeFilter) {
-      params.set("show_home", showHomeFilter);
-    } else {
-      params.delete("show_home");
-    }
-
-    if (activeFilter) {
-      params.set("active", activeFilter);
-    } else {
-      params.delete("active");
-    }
-
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    router.replace(`${pathname}?${query}`, { scroll: false });
   };
 
   // Function to clear filters
+  // const handleClearFilters = () => {
+  //   setNameSearch("");
+  //   setCategoryFilter("");
+  //   setBrandFilter("");
+  //   setShowHomeFilter("");
+  //   setActiveFilter("");
+  //   setDeletedFilter("false");
+
+  //   const params = new URLSearchParams(searchParams.toString());
+  //   params.delete("name");
+  //   params.delete("category_id");
+  //   params.delete("brand_id");
+  //   params.delete("show_home");
+  //   params.delete("active");
+  //   params.set("deleted", "false");
+  //   router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  // };
+
   const handleClearFilters = () => {
     setNameSearch("");
     setCategoryFilter("");
     setBrandFilter("");
     setShowHomeFilter("");
     setActiveFilter("");
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("name");
-    params.delete("category_id");
-    params.delete("brand_id");
-    params.delete("show_home");
-    params.delete("active");
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    setDeletedFilter("false");
+
+    const query = qs.stringify({ deleted: "false", page: 1 });
+
+    router.replace(`${pathname}?${query}`, { scroll: false });
   };
 
   // Function to update URL search params for sorting
+  // const updateSearchParams = (key: string, value: string) => {
+  //   const params = new URLSearchParams(searchParams.toString());
+  //   if (value) {
+  //     params.set(key, value);
+  //   } else {
+  //     params.delete(key);
+  //   }
+  //   router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  // };
+
   const updateSearchParams = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const current = qs.parse(searchParams.toString());
+
+    if (value) current[key] = value;
+    else delete current[key];
+
+    const query = qs.stringify(current);
+
+    router.replace(`${pathname}?${query}`, { scroll: false });
   };
 
   const toggleSortDirection = () => {
@@ -198,6 +253,16 @@ export default function ProductsFilter() {
               <option value="">الكل (الحالة)</option>
               <option value="true">نشط</option>
               <option value="false">غير نشط</option>
+            </select>
+          </div>
+          <div className="relative">
+            <select
+              value={deletedFilter}
+              onChange={(e) => setDeletedFilter(e.target.value)}
+              className="w-full pr-12 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+            >
+              <option value="false">المنتجات المتاحة</option>
+              <option value="true">المنتجات المحذوفة</option>
             </select>
           </div>
 

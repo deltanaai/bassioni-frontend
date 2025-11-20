@@ -11,6 +11,7 @@ import {
   CheckCircle,
   XCircle,
   Eye,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,11 +19,15 @@ import useGetProducts from "@/hooks/owner/useGetProducts";
 import ProductsFilter from "@/components/Tablecomponents/FilterSearch/ProductsFilter";
 import AddProductDialog from "@/components/modals/AddProductDialog";
 import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
-import { deleteProducts } from "@/lib/actions/owner/products.actions";
+import {
+  deleteProducts,
+  restoreproducts,
+} from "@/lib/actions/owner/products.actions";
 import { toast } from "sonner";
 import Pagination from "@/components/custom/pagination";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
 import { useQueryClient } from "@tanstack/react-query";
+import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
 
 function ProductsPageContent() {
   const { productsData, isLoadingProducts } = useGetProducts();
@@ -51,6 +56,26 @@ function ProductsPageContent() {
       }
     } catch (error) {
       console.error("Error deleting product:", error);
+      toast.error("حدث خطأ غير متوقع");
+    }
+  };
+
+  const handleRestoreproduct = async (productId: number) => {
+    try {
+      const response = await restoreproducts({ items: [productId] });
+      if (response && response.success) {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey.some(
+              (key) => typeof key === "string" && key.includes("products")
+            ),
+        });
+        toast.success("تم استعادة المنتج بنجاح");
+      } else {
+        toast.error("حدث خطأ أثناء استعادة المنتج");
+      }
+    } catch (error) {
+      console.error("Error restoring product:", error);
       toast.error("حدث خطأ غير متوقع");
     }
   };
@@ -250,34 +275,51 @@ function ProductsPageContent() {
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Link
-                        href={`/Owner/products/${product.id}`}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="عرض التفاصيل"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Link>
-
-                      <button
-                        onClick={() => handleEditClick(product)}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="تعديل"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-
-                      <DeleteConfirmModal
-                        trigger={
-                          <button
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="حذف"
+                      {product.deletedAt ? (
+                        <RestoreConfirmModal
+                          trigger={
+                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                              <RefreshCw className="w-4 h-4" />
+                            </button>
+                          }
+                          message={`هل أنت متأكد من استعادة منتج "${product.name}"؟`}
+                          itemName={`المنتج "${product.name}"`}
+                          onConfirm={() =>
+                            product.id && handleRestoreproduct(product.id)
+                          }
+                        />
+                      ) : (
+                        <>
+                          <Link
+                            href={`/Owner/products/${product.id}`}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="عرض التفاصيل"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
+                          </Link>
+
+                          <button
+                            onClick={() => handleEditClick(product)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="تعديل"
+                          >
+                            <Edit className="h-4 w-4" />
                           </button>
-                        }
-                        onConfirm={() => handleDeleteProduct(product.id)}
-                        message={`هل أنت متأكد من حذف المنتج "${product.name}"؟`}
-                      />
+
+                          <DeleteConfirmModal
+                            trigger={
+                              <button
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="حذف"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            }
+                            onConfirm={() => handleDeleteProduct(product.id)}
+                            message={`هل أنت متأكد من حذف المنتج "${product.name}"؟`}
+                          />
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -49,7 +49,7 @@ export const ownerProductsEndpoints = {
     }),
 
   restoreProducts: ({ payload }: { payload: productsIdsPayload }) =>
-    fetchHandler(`${API_URL}products/restore`, {
+    fetchHandler(`${API_URL}product/restore`, {
       method: "POST",
       auth: true,
       body: JSON.stringify(payload),

@@ -12,25 +12,31 @@ function useGetProducts() {
   const show_home = searchParams.get("show_home") || undefined;
   const active = searchParams.get("active") || undefined;
   const orderBy = searchParams.get("orderBy") || "id";
+  const deleted = searchParams.get("deleted");
   const orderByDirection = (searchParams.get("orderByDirection") || "desc") as
     | "asc"
     | "desc";
   const page = searchParams.get("page") || "1";
 
+
   // Build filters
-  const filters: Record<string, string> = {};
+  const filters: Record<string, string | number | boolean> = {};
   if (name) filters.name = name;
   if (category_id) filters.category_id = category_id;
   if (brand_id) filters.brand_id = brand_id;
-  if (show_home) filters.show_home = show_home;
-  if (active) filters.active = active;
+  if (show_home) filters.show_home = show_home === "true"; 
+  if (active) filters.active = active === "true"; 
+
+
 
   const params: GetAllProductsPayload = {
     filters: Object.keys(filters).length > 0 ? filters : undefined,
     orderBy,
     orderByDirection,
     page: Number(page),
+    deleted:deleted==="true"
   };
+  console.log(params,"paramss")
 
   const {
     data: productsData,
