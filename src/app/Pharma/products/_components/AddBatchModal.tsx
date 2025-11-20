@@ -25,7 +25,6 @@ export default function AddBatchModal({
     batchNumber: "",
     quantity: 0,
     expiryDate: "",
-    reservedStock: 0,
   });
 
   const { mutate: storeBatchMutation, isPending } = useMutation({
@@ -77,7 +76,6 @@ export default function AddBatchModal({
       batchNumber: "",
       quantity: 0,
       expiryDate: "",
-      reservedStock: 0,
     });
     onClose();
   };
@@ -153,30 +151,6 @@ export default function AddBatchModal({
                 }
                 className="w-full rounded-xl border border-gray-600 bg-gray-700 p-3 text-right text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
               />
-            </div>
-
-            {/* Reserved Stock (Optional) */}
-            <div>
-              <label className="mb-2 block text-right text-sm font-medium text-gray-300">
-                الكمية المحجوزة{" "}
-                <span className="text-xs text-gray-500">(اختياري)</span>
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={formData.reservedStock}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    reservedStock: parseInt(e.target.value) || 0,
-                  })
-                }
-                className="w-full rounded-xl border border-gray-600 bg-gray-700 p-3 text-right text-white placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
-                placeholder="0"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                القيمة الافتراضية: 0 إذا لم يتم التحديد
-              </p>
             </div>
           </div>
 

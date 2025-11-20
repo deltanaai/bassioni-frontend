@@ -5,6 +5,7 @@ import {
   Building2,
   Calendar,
   ChevronDown,
+  Lock,
   Package,
   Plus,
   X,
@@ -15,10 +16,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { indexBranches } from "@/lib/actions/pharma/branches.action";
-import { showBranchProductDetails } from "@/lib/actions/pharma/branchProducts.action";
+import {
+  branchProductsIndex,
+  showBranchProductDetails,
+} from "@/lib/actions/pharma/branchProducts.action";
 import { pharmaMasterProductDetails } from "@/lib/actions/pharma/masterProducts";
 
 import AddBatchModal from "./AddBatchModal";
+import SetReservedStockModal from "./SetReservedStockModal";
 
 interface ProductWithBranches extends MasterProduct {
   branches?: Branch[];
@@ -42,9 +47,12 @@ export default function ProductDetailsModal({
 }: ProductDetailsModalProps) {
   const [expandedBranch, setExpandedBranch] = useState<number | null>(null);
   const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
+  const [isSetReservedStockOpen, setIsSetReservedStockOpen] = useState(false);
   const [selectedBranchForBatch, setSelectedBranchForBatch] = useState<
     number | null
   >(null);
+  const [selectedBranchForReservedStock, setSelectedBranchForReservedStock] =
+    useState<{ id: number; name: string } | null>(null);
 
   const { data: productDetails, isLoading } = useQuery({
     queryKey: ["productDetails", product?.id],
@@ -60,6 +68,28 @@ export default function ProductDetailsModal({
   });
 
   const branches = (allBranches?.data || []) as BranchWithStats[];
+
+  // Fetch branch products data to get reserved stock for each branch
+  const branchProductsQueries = useQueries({
+    queries: branches.map((branch) => ({
+      queryKey: ["branchProducts", branch.id, product?.id],
+      queryFn: async () => {
+        const result = await branchProductsIndex({
+          branchId: branch.id,
+          filters: {
+            id: product!.id,
+          },
+          paginate: false,
+        });
+        console.log(`Branch ${branch.id} Products Result:`, result);
+        if (!result.success) {
+          console.error(`Branch ${branch.id} Error:`, result.error);
+        }
+        return result;
+      },
+      enabled: isOpen && !!product && branches.length > 0,
+    })),
+  });
 
   // Fetch batch data for all branches to show badges
   const branchBatchQueries = useQueries({
@@ -93,20 +123,30 @@ export default function ProductDetailsModal({
     const branchIndex = branches.findIndex((b) => b.id === branchId);
     if (branchIndex === -1) return { batches: 0, quantity: 0, reserved: 0 };
 
-    const queryResult = branchBatchQueries[branchIndex];
-    if (!queryResult?.data?.data)
+    const batchQueryResult = branchBatchQueries[branchIndex];
+    const productQueryResult = branchProductsQueries[branchIndex];
+
+    if (!batchQueryResult?.data?.data)
       return { batches: 0, quantity: 0, reserved: 0 };
 
-    const batches = queryResult.data.data;
+    const batches = batchQueryResult.data.data;
     const batchCount = batches.length;
     const totalQuantity = batches.reduce(
       (sum, batch) => sum + (batch.stock || 0),
       0
     );
-    const reservedStock = batches.reduce(
-      (sum, batch) => sum + (batch.reserved_stock || 0),
-      0
-    );
+
+    // Get reserved stock from branchProducts query
+    const branchProducts = productQueryResult?.data?.data || [];
+
+    // Debug logging
+    if (branchProducts.length > 0) {
+      console.log("Branch Products Data:", branchProducts);
+      console.log("Reserved Stock:", branchProducts[0].reserved_stock);
+    }
+
+    const reservedStock =
+      branchProducts.length > 0 ? branchProducts[0].reserved_stock || 0 : 0;
 
     return {
       batches: batchCount,
@@ -131,16 +171,20 @@ export default function ProductDetailsModal({
     if (!query?.data?.data) return sum;
     return sum + query.data.data.length;
   }, 0);
-  const totalReservedStock = branchBatchQueries.reduce((sum, query) => {
+  const totalReservedStock = branchProductsQueries.reduce((sum, query) => {
     if (!query?.data?.data) return sum;
+    const branchProducts = query.data.data;
+
+    // Debug logging
+    console.log("Total Reserved Stock Query:", query.data);
+
     return (
       sum +
-      query.data.data.reduce(
-        (batchSum, batch) => batchSum + (batch.reserved_stock || 0),
-        0
-      )
+      (branchProducts.length > 0 ? branchProducts[0].reserved_stock || 0 : 0)
     );
   }, 0);
+
+  console.log("Final Total Reserved Stock:", totalReservedStock);
 
   const toggleBranch = (branchId: number) => {
     setExpandedBranch(expandedBranch === branchId ? null : branchId);
@@ -149,6 +193,11 @@ export default function ProductDetailsModal({
   const handleAddBatch = (branchId: number) => {
     setSelectedBranchForBatch(branchId);
     setIsAddBatchOpen(true);
+  };
+
+  const handleSetReservedStock = (branchId: number, branchName: string) => {
+    setSelectedBranchForReservedStock({ id: branchId, name: branchName });
+    setIsSetReservedStockOpen(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -372,14 +421,28 @@ export default function ProductDetailsModal({
                                 </div>
                               )}
 
-                              {/* Add Batch Button */}
-                              <Button
-                                onClick={() => handleAddBatch(branch.id)}
-                                className="mt-4 w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
-                              >
-                                <Plus className="ml-2 h-4 w-4" />
-                                إضافة دفعة جديدة
-                              </Button>
+                              {/* Action Buttons */}
+                              <div className="mt-4 flex gap-3">
+                                <Button
+                                  onClick={() => handleAddBatch(branch.id)}
+                                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+                                >
+                                  <Plus className="ml-2 h-4 w-4" />
+                                  إضافة دفعة جديدة
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    handleSetReservedStock(
+                                      branch.id,
+                                      branch.name
+                                    )
+                                  }
+                                  className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700"
+                                >
+                                  <Lock className="ml-2 h-4 w-4" />
+                                  تعيين المخزون المحجوز
+                                </Button>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -403,6 +466,20 @@ export default function ProductDetailsModal({
           }}
           branchId={selectedBranchForBatch}
           productId={product.id}
+        />
+      )}
+
+      {/* Set Reserved Stock Modal */}
+      {selectedBranchForReservedStock && product && (
+        <SetReservedStockModal
+          isOpen={isSetReservedStockOpen}
+          onClose={() => {
+            setIsSetReservedStockOpen(false);
+            setSelectedBranchForReservedStock(null);
+          }}
+          branchId={selectedBranchForReservedStock.id}
+          productId={product.id}
+          branchName={selectedBranchForReservedStock.name}
         />
       )}
     </>
