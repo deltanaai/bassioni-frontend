@@ -10,6 +10,7 @@ function useGetBrands() {
   const showHome = searchParams.get("showHome") || undefined;
   const active = searchParams.get("active") || undefined;
   const orderBy = searchParams.get("orderBy") || "id";
+  const deleted = searchParams.get("deleted") || "false";
   const orderByDirection = (searchParams.get("orderByDirection") || "desc") as
     | "asc"
     | "desc";
@@ -25,6 +26,7 @@ function useGetBrands() {
     orderBy,
     orderByDirection,
     page: Number(page),
+    deleted: deleted==="true",
   };
 
   const {
