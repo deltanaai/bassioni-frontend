@@ -68,7 +68,7 @@ export default function CartPage() {
       if (res.success === true) {
         queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
         toast.success("تم إرسال الطلب بنجاح!");
-        router.push(ROUTES_PHARMA.SENT_ORDERS);
+        router.push(ROUTES_PHARMA.MY_ORDERS);
       } else {
         toast.error("فشل في إرسال الطلب. حاول مرة أخرى.");
       }
