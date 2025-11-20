@@ -135,7 +135,7 @@
         </div>
 
         {/* Add Request Button */}
-        <div className="flex justify-end">
+        {/* <div className="flex justify-end">
             <button
             onClick={() => {
                 setRequestType(activeTab === 'brands' ? 'brand' : 'product');
@@ -145,7 +145,7 @@
             >
             <FiPlus /> طلب {activeTab === 'brands' ? 'براند جديد' : 'صنف جديد'}
             </button>
-        </div>
+        </div> */}
 
         {/* Brands Table */}
         {activeTab === 'brands' && (
@@ -212,7 +212,7 @@
         )}
 
         {/* Request Modal */}
-        {showRequestModal && (
+        {/* {showRequestModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full max-w-md">
                 <div className="p-6">
@@ -261,7 +261,7 @@
                 </div>
             </div>
             </div>
-        )}
+        )} */}
         </div>
     );
     }

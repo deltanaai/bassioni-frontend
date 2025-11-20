@@ -1,263 +1,150 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { FiPackage, FiSearch, FiFilter, FiEye } from "react-icons/fi";
+import { Package } from "lucide-react";
+import { useMemo, useState } from "react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { pharmaMasterProducts } from "@/lib/actions/pharma/masterProducts";
 
 import ProductDetailsModal from "./_components/ProductDetailsModal";
+import ProductFilters from "./_components/ProductFilters";
+import ProductSearch from "./_components/ProductSearch";
+import ProductsTable from "./_components/ProductsTable";
 
 export default function PharmaProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState<MasterProduct | null>(
     null
   );
-  const [expandedWarehouses, setExpandedWarehouses] = useState<number[]>([]);
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ["masterProducts"],
     queryFn: () => pharmaMasterProducts({}),
   });
 
-  const products = productsData?.data || [];
-  console.log("PRODUCTS", products);
+  const products = useMemo(() => productsData?.data || [], [productsData]);
 
-  // فلترة المنتجات
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      searchTerm === "" ||
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+  // Extract unique categories and brands
+  const { categories, brands } = useMemo(() => {
+    const categorySet = new Set<string>();
+    const brandSet = new Set<string>();
 
-    const matchesCategory =
-      filterCategory === "all" || product.category.name === filterCategory;
+    products.forEach((product) => {
+      if (product.category?.name) {
+        categorySet.add(product.category.name);
+      }
+      if (product.brand) {
+        brandSet.add(product.brand);
+      }
+    });
 
-    const matchesBrand = filterBrand === "all" || product.brand === filterBrand;
+    return {
+      categories: Array.from(categorySet),
+      brands: Array.from(brandSet),
+    };
+  }, [products]);
 
-    return matchesSearch && matchesCategory && matchesBrand;
-  });
+  // Filter products
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchesSearch =
+        searchTerm === "" ||
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-  const categories = [
-    ...new Set(
-      products
-        .map((p) => {
-          // إذا category كان object ناخد الـ name منه، إذا كان string ناخده مباشر
-          if (typeof p.category === "object" && p.category !== null) {
-            return p.category.name || String(p.category);
-          }
-          return String(p.category);
-        })
-        .filter(Boolean)
-    ),
-  ];
+      const matchesCategory =
+        filterCategory === "all" || product.category?.name === filterCategory;
 
-  const brands = [
-    ...new Set(
-      products
-        .map((p) => p.brand)
-        .filter(Boolean)
-        .map((brand) => String(brand)) // تأكد أن كل العناصر strings
-    ),
-  ];
+      const matchesBrand =
+        filterBrand === "all" || product.brand === filterBrand;
 
-  // Modal functions
-  const openProductDetails = (product: MasterProduct) => {
-    setSelectedProduct(product);
-  };
+      const matchesStatus =
+        filterStatus === "all" ||
+        (filterStatus === "active" && product.active) ||
+        (filterStatus === "inactive" && !product.active) ||
+        (filterStatus === "featured" && product.show_home);
 
-  const closeProductDetails = () => {
-    setSelectedProduct(null);
-    setExpandedWarehouses([]);
-  };
+      return matchesSearch && matchesCategory && matchesBrand && matchesStatus;
+    });
+  }, [products, searchTerm, filterCategory, filterBrand, filterStatus]);
 
-  const toggleWarehouse = (index: number) => {
-    setExpandedWarehouses((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setFilterCategory("all");
+    setFilterBrand("all");
+    setFilterStatus("all");
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 p-6">
-        <div className="flex min-h-96 items-center justify-center">
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-400"></div>
-            <p className="text-gray-400">جاري تحميل المنتجات...</p>
-          </div>
+      <div className="min-h-screen bg-gray-950 p-6">
+        <div className="mb-8">
+          <Skeleton className="mb-2 h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
         </div>
+
+        <div className="mb-6 flex flex-col gap-4 md:flex-row">
+          <Skeleton className="h-10 flex-1" />
+          <Skeleton className="h-10 w-full md:w-96" />
+        </div>
+
+        <Skeleton className="h-96 w-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
-      {/* الهيدر */}
-      <div className="mb-8 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+    <div className="min-h-screen bg-gray-950 p-6">
+      {/* Header */}
+      <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 p-2">
-            <FiPackage className="h-6 w-6 text-white" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+            <Package className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">المنتجات المتاحة</h1>
-            <p className="text-sm text-gray-400">
-              استعرض جميع المنتجات من الشركات
+            <h1 className="text-3xl font-bold text-white">المنتجات الرئيسية</h1>
+            <p className="mt-1 text-sm text-gray-400">
+              إدارة جميع المنتجات والدفعات
             </p>
           </div>
         </div>
       </div>
 
-      {/* الفلترات */}
-      <div className="mb-8 flex flex-wrap items-center gap-4 rounded-2xl border border-gray-700 bg-gray-800 p-6">
-        <div className="flex items-center gap-2">
-          <FiFilter className="text-emerald-400" />
-          <span className="font-medium text-gray-300">تصفية النتائج:</span>
+      {/* Search & Filters */}
+      <div className="mb-6 flex flex-col gap-4 md:flex-row">
+        <div className="flex-1">
+          <ProductSearch onSearch={setSearchTerm} />
         </div>
-
-        <div className="relative min-w-[300px] flex-1">
-          <FiSearch className="absolute top-3 right-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="ابحث باسم المنتج أو البراند..."
-            className="w-full rounded-xl border border-gray-600 bg-gray-700 py-3 pr-10 pl-4 text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <select
-          className="min-w-[180px] rounded-xl border border-gray-600 bg-gray-700 px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="all">جميع الفئات</option>
-          {categories.map((category, index) => (
-            <option key={`category-${index}-${category}`} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-
-        <select
-          className="min-w-[180px] rounded-xl border border-gray-600 bg-gray-700 px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-          value={filterBrand}
-          onChange={(e) => setFilterBrand(e.target.value)}
-        >
-          <option value="all">جميع البراندات</option>
-          {brands.map((brand, index) => (
-            <option key={`brand-${index}-${brand}`} value={brand}>
-              {brand}
-            </option>
-          ))}
-        </select>
-
-        <div className="rounded-full border border-emerald-700 bg-emerald-900 px-3 py-1 text-sm font-semibold text-emerald-400">
-          {filteredProducts.length} منتج
-        </div>
+        <ProductFilters
+          categories={categories}
+          brands={brands}
+          selectedCategory={filterCategory}
+          selectedBrand={filterBrand}
+          selectedStatus={filterStatus}
+          onCategoryChange={setFilterCategory}
+          onBrandChange={setFilterBrand}
+          onStatusChange={setFilterStatus}
+          onClearFilters={handleClearFilters}
+          totalProducts={filteredProducts.length}
+        />
       </div>
 
-      {/* جدول المنتجات */}
-      <div className="overflow-hidden rounded-2xl border border-gray-700 bg-gray-800">
-        {products.length === 0 ? (
-          <div className="p-8 text-center">
-            <div className="flex flex-col items-center gap-4 text-gray-400">
-              <FiPackage className="h-16 w-16" />
-              <div>
-                <p className="text-xl font-semibold">لا توجد منتجات</p>
-                <p className="mt-2">لم يتم العثور على منتجات متطابقة مع بحثك</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-750 border-b border-gray-700">
-                <tr>
-                  <th className="px-4 py-4 text-center text-sm font-semibold tracking-wider text-gray-300 uppercase">
-                    #
-                  </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold tracking-wider text-gray-300 uppercase">
-                    المنتج
-                  </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold tracking-wider text-gray-300 uppercase">
-                    الفئة
-                  </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold tracking-wider text-gray-300 uppercase">
-                    البراند
-                  </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold tracking-wider text-gray-300 uppercase">
-                    السعر
-                  </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold tracking-wider text-gray-300 uppercase">
-                    الإجراءات
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
-                {products.map((product, index) => (
-                  <tr
-                    key={product.id}
-                    className="hover:bg-gray-750 transition-colors"
-                  >
-                    <td className="px-4 py-4 text-center text-sm text-gray-300">
-                      {index + 1}
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-center font-semibold  text-white">
-                        {product.name}
-                      </div>
-                      <div className="mt-1 text-center text-sm text-gray-400">
-                        {product.description}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <span className="inline-flex rounded-full bg-purple-900 px-3 py-1 text-xs font-medium text-purple-300">
-                        {typeof product.category === "object"
-                          ? product.category.name
-                          : String(product.category)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-center text-sm text-gray-300">
-                      {/* فيه هنا ايرور ف استدعاء اسم البراند لانه ليس object */}
-                      {product.brand}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="text-sm font-bold text-emerald-400">
-                          {product.price.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-gray-400">ج.م</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <div className="flex justify-center">
-                        <button
-                          onClick={() => openProductDetails(product)}
-                          className="flex items-center gap-2 rounded-lg bg-blue-900 px-3 py-2 text-sm text-blue-300 transition-colors hover:bg-blue-800"
-                        >
-                          <FiEye className="h-4 w-4" />
-                          التفاصيل
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Products Table */}
+      <ProductsTable
+        products={filteredProducts}
+        onViewDetails={setSelectedProduct}
+      />
 
-      {/* مودال التفاصيل */}
+      {/* Product Details Modal */}
       <ProductDetailsModal
         isOpen={!!selectedProduct}
-        onClose={closeProductDetails}
-        selectedProduct={selectedProduct}
-        expandedBranches={expandedWarehouses}
-        onToggleWarehouse={toggleWarehouse}
+        onClose={() => setSelectedProduct(null)}
+        product={selectedProduct}
       />
     </div>
   );
