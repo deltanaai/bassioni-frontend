@@ -94,7 +94,7 @@ interface CompanyOfferResponse {
   company_offer_id: number;
   quantity: number;
   item_price: string;
-  total_price: number;
+  total_price: string;
   status: string;
   offer: CompanyOffer;
   createdAt: string;

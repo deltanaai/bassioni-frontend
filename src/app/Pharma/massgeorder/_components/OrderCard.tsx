@@ -109,8 +109,8 @@ export default function OrderCard({
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-gray-400">الإجمالي</p>
-                <p className="truncate text-base font-bold text-emerald-400 lg:text-lg">
-                  {order.totalPrice} ج.م
+                <p className="text-base font-bold text-emerald-400 lg:text-lg">
+                  {order.totalPrice.toFixed(2)} ج.م
                 </p>
               </div>
             </div>

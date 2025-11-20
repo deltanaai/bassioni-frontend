@@ -65,6 +65,8 @@ export default function MyOrdersPage() {
     const orders = ordersResponse?.data || [];
     const requests = requestsData?.data || [];
 
+    console.log("Raw requests data:", requests);
+
     const defaultOrders: UnifiedOrder[] = orders.map((order) => ({
       id: order.order_id,
       type: "default",
@@ -79,15 +81,24 @@ export default function MyOrdersPage() {
       items: order.items,
     }));
 
-    const offerOrders: UnifiedOrder[] = requests.map((req) => ({
-      id: req.id,
-      type: "offer",
-      quantity: req.quantity,
-      totalPrice: req.total_price,
-      status: req.status,
-      createdAt: req.createdAt,
-      referenceId: req.offer.id,
-    }));
+    const offerOrders: UnifiedOrder[] = requests.map((req) => {
+      console.log("Offer request:", {
+        id: req.id,
+        quantity: req.quantity,
+        total_price: req.total_price,
+        item_price: req.item_price,
+        offer: req.offer,
+      });
+      return {
+        id: req.id,
+        type: "offer",
+        quantity: req.quantity,
+        totalPrice: Number(req.total_price) || 0,
+        status: req.status,
+        createdAt: req.createdAt,
+        referenceId: req.offer.id,
+      };
+    });
 
     return [...defaultOrders, ...offerOrders].sort(
       (a, b) =>
