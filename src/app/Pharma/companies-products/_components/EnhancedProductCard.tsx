@@ -24,6 +24,7 @@ export default function EnhancedProductCard({
   const { pharmacist } = usePharmacySession();
   const [showCounter, setShowCounter] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [imageError, setImageError] = useState(false);
 
   const pharmacyId = pharmacist?.pharmacy.id;
 
@@ -61,12 +62,13 @@ export default function EnhancedProductCard({
       <CardContent className="p-0">
         {/* Product Image */}
         <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800">
-          {product.imageUrl ? (
+          {product.imageUrl && !imageError ? (
             <Image
               src={product.imageUrl}
               alt={product.name}
               fill
               className="object-cover transition-transform group-hover:scale-105"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center">
