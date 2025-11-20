@@ -20,7 +20,7 @@ export default function AdminsFilter() {
   // Local state للبحث
   const [nameSearch, setNameSearch] = useState(urlName);
   const [emailSearch, setEmailSearch] = useState(urlEmail);
-  const [deletedFilter, setDeletedFilter] = useState(urlDeleted); // ⬅️ state جديد
+  const [deletedFilter, setDeletedFilter] = useState(urlDeleted);
 
   // دالة لتطبيق الفلاتر
   const handleSearch = () => {

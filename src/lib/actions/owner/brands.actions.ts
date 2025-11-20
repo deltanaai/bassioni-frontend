@@ -111,3 +111,31 @@ export async function deleteBrands(ids: brandsIdsPayload) {
     return handleError(error) as ErrorResponse;
   }
 }
+export async function restoreBrands(ids: brandsIdsPayload) {
+  const validationResult = await action({
+    params: ids,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    const response = await api.owner.brands.restoreBrands({
+      payload: validationResult.params!,
+    });
+
+    if (!response || response.result !== "Success") {
+      throw new Error(
+        "فشل في استعادة العلامات التجارية, لم يتم تلقي بيانات صالحة من الخادم"
+      );
+    }
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
