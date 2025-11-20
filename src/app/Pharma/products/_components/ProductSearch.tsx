@@ -20,14 +20,14 @@ export default function ProductSearch({
   };
 
   return (
-    <div className="relative">
-      <Search className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
+    <div className="group relative w-full">
+      <Search className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-emerald-400 md:right-4 md:h-5 md:w-5" />
       <input
         type="text"
         placeholder={placeholder}
         value={searchTerm}
         onChange={(e) => handleSearch(e.target.value)}
-        className="h-10 w-full rounded-lg border border-gray-700 bg-gray-800 pr-10 text-sm text-white placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        className="h-10 w-full rounded-lg border border-gray-800/50 bg-gray-900/50 pr-10 text-sm text-white backdrop-blur-xl transition-all duration-200 placeholder:text-gray-500 hover:border-gray-700 focus:border-emerald-500/50 focus:bg-gray-900/70 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none md:h-12 md:pr-12"
       />
     </div>
   );

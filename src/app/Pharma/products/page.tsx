@@ -82,70 +82,85 @@ export default function PharmaProductsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
-        <div className="mb-8">
-          <Skeleton className="mb-2 h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8">
+            <Skeleton className="mb-2 h-10 w-64 rounded-xl" />
+            <Skeleton className="h-5 w-80 rounded-lg" />
+          </div>
 
-        <div className="mb-6 flex flex-col gap-4 md:flex-row">
-          <Skeleton className="h-10 flex-1" />
-          <Skeleton className="h-10 w-full md:w-96" />
-        </div>
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center">
+            <Skeleton className="h-12 flex-1 rounded-xl" />
+            <Skeleton className="h-12 w-full rounded-xl md:w-96" />
+          </div>
 
-        <Skeleton className="h-96 w-full" />
+          <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/30 backdrop-blur-xl">
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-            <Package className="h-6 w-6 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 md:p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 shadow-lg shadow-emerald-500/20">
+            <Package className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">المنتجات الرئيسية</h1>
-            <p className="mt-1 text-sm text-gray-400">
-              إدارة جميع المنتجات والدفعات
+            <h1 className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-2xl font-bold text-transparent md:text-4xl">
+              المنتجات الرئيسية
+            </h1>
+            <p className="mt-1 text-xs text-gray-400 md:text-sm">
+              إدارة جميع المنتجات والدفعات بسهولة
             </p>
           </div>
         </div>
-      </div>
 
-      {/* Search & Filters */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row">
-        <div className="flex-1">
-          <ProductSearch onSearch={setSearchTerm} />
+        {/* Search & Filters Container */}
+        <div className="rounded-2xl border border-gray-800/50 bg-gray-900/30 p-4 backdrop-blur-xl md:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+            {/* Search Bar */}
+            <div className="flex-1">
+              <ProductSearch onSearch={setSearchTerm} />
+            </div>
+
+            {/* Filters */}
+            <div className="flex-shrink-0">
+              <ProductFilters
+                categories={categories}
+                brands={brands}
+                selectedCategory={filterCategory}
+                selectedBrand={filterBrand}
+                selectedStatus={filterStatus}
+                onCategoryChange={setFilterCategory}
+                onBrandChange={setFilterBrand}
+                onStatusChange={setFilterStatus}
+                onClearFilters={handleClearFilters}
+                totalProducts={filteredProducts.length}
+              />
+            </div>
+          </div>
         </div>
-        <ProductFilters
-          categories={categories}
-          brands={brands}
-          selectedCategory={filterCategory}
-          selectedBrand={filterBrand}
-          selectedStatus={filterStatus}
-          onCategoryChange={setFilterCategory}
-          onBrandChange={setFilterBrand}
-          onStatusChange={setFilterStatus}
-          onClearFilters={handleClearFilters}
-          totalProducts={filteredProducts.length}
+
+        {/* Products Table Container */}
+        <div className="overflow-hidden rounded-2xl border border-gray-800/50 bg-gray-900/30 shadow-2xl backdrop-blur-xl">
+          <ProductsTable
+            products={filteredProducts}
+            onViewDetails={setSelectedProduct}
+          />
+        </div>
+
+        {/* Product Details Modal */}
+        <ProductDetailsModal
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          product={selectedProduct}
         />
       </div>
-
-      {/* Products Table */}
-      <ProductsTable
-        products={filteredProducts}
-        onViewDetails={setSelectedProduct}
-      />
-
-      {/* Product Details Modal */}
-      <ProductDetailsModal
-        isOpen={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-        product={selectedProduct}
-      />
     </div>
   );
 }
