@@ -8,6 +8,7 @@ import {
   Shield,
   ShieldCheck,
   RefreshCw,
+  Award,
 } from "lucide-react";
 import useGetAdmins from "@/hooks/owner/useGetAdmins";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
@@ -19,10 +20,13 @@ import { deleteAdmin, restoreAdmins } from "@/lib/actions/owner/admins.action";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
+import { useGetRoles } from "@/hooks/owner/useGetRoles";
 
 export default function AdminsPage() {
   const searchParams = useSearchParams();
   const showDeleted = searchParams.get("deleted") === "true";
+
+  const { roles } = useGetRoles();
 
   const queryClient = useQueryClient();
 
@@ -116,7 +120,7 @@ export default function AdminsPage() {
                   <div className="col-span-4 text-center">
                     البريد الإلكتروني
                   </div>
-                  <div className="col-span-2 text-center">النوع</div>
+                  <div className="col-span-2 text-center">الدور</div>
                   <div className="col-span-1 text-center">الإجراءات</div>
                 </div>
               </div>
@@ -151,23 +155,12 @@ export default function AdminsPage() {
 
                     <div className="col-span-2 text-center">
                       <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                          admin.superAdmin
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium 
+                   bg-purple-100 text-purple-800"
                       >
-                        {admin.superAdmin ? (
-                          <>
-                            <ShieldCheck className="w-3 h-3" />
-                            مدير
-                          </>
-                        ) : (
-                          <>
-                            <Shield className="w-3 h-3" />
-                            مشرف
-                          </>
-                        )}
+                        <Award className="w-3 h-3" />
+                        {roles.find((r) => r.id === admin.role_id)?.name ||
+                          "لا يوجد"}
                       </span>
                     </div>
 

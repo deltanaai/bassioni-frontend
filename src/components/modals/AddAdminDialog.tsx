@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/Switch";
 import z from "zod";
 import { addOrUpdateAdmin } from "@/lib/actions/owner/admins.action";
 import { useQueryClient } from "@tanstack/react-query";
@@ -240,7 +239,7 @@ export default function AddAdminDialog({
             />
 
             {/* Super Admin Switch */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="superAdmin"
               render={({ field }) => (
@@ -259,7 +258,7 @@ export default function AddAdminDialog({
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
 
             <DialogFooter className="gap-3">
               <button

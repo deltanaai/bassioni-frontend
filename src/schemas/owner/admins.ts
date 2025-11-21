@@ -18,10 +18,10 @@ export const GetAdminsSchema = z.object({
 export const adminSchema = z.object({
   id: z.number().int().optional(),
   name: z.string().trim(),
-  email: z.string().trim().email(),
+  email: z.string().trim().email("يرجي ادخال الemail"),
   password: z.string().trim(),
   superAdmin: z.boolean(),
-  role_id: z.number().int().positive(),
+  role_id: z.number("يرجي اختيار دور").int().positive(),
 });
 
 export const adminsIdsListSchema = z.object({

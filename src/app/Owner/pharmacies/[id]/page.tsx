@@ -9,6 +9,7 @@ import {
   Trash2,
   Calendar,
   Clock,
+  BadgeCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -184,6 +185,18 @@ export default function PharmacyDetailPage() {
                     <Phone className="w-5 h-5 text-purple-500" />
                     <span className="text-lg font-medium text-gray-900">
                       {pharmacy.phone}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    رقم الترخيص
+                  </label>
+                  <div className="mt-2 flex items-center gap-3">
+                    <BadgeCheck className="w-5 h-5 text-yellow-600" />
+                    <span className="text-lg font-medium text-gray-900">
+                      {pharmacy.license_number}
                     </span>
                   </div>
                 </div>

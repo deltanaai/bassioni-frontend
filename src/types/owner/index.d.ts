@@ -73,6 +73,7 @@ declare global {
   type PharmacyViewT = {
     id: number;
     name: string;
+    license_number:string;
     address: string;
     phone: string;
     email: string;

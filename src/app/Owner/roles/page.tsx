@@ -8,14 +8,10 @@ import { deleteRole, getRoleDetails } from "@/lib/actions/owner/roles.actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import SpinnerMini from "@/components/custom/SpinnerMini";
-import { useSearchParams } from "next/navigation";
 import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
 
 export default function RolesPage() {
   const queryClient = useQueryClient();
-  //بنحدد احنا في المحذوفين ولا المتاحين
-  const searchParams = useSearchParams();
-  const showDeleted = searchParams.get("deleted") === "true";
 
   const [selectedRole, setSelectedRole] = useState<RoleViewT | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -110,19 +106,6 @@ export default function RolesPage() {
           </div>
         </div>
       </div>
-      {/* <div className="mb-4 flex items-center gap-4">
-        <label className="text-sm font-medium text-gray-700">
-          شكلهاااا هتتشاللل*******:
-        </label>
-        <select
-          value={deletedFilter}
-          onChange={(e) => setDeletedFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-        >
-          <option value="false"> الادوار المتاحة</option>
-          <option value="true">الادوار المحذوفة</option>
-        </select>
-      </div> */}
 
       {/* الجدول */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -170,42 +153,24 @@ export default function RolesPage() {
 
                   <div className="col-span-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      {showDeleted ? (
-                        // <RestoreConfirmModal
-                        //   trigger={
-                        //     <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                        //       <RefreshCw className="w-4 h-4" />
-                        //     </button>
-                        //   }
-                        //   message={`هل أنت متأكد من استعادة الدور "${role.name}"؟`}
-                        //   itemName={`الدور "${role.name}"`}
-                        //   onConfirm={() =>
-                        //     role.id && handleRestoreRole(role.id)
-                        //   }
-                        // />
-                        <div>هتتمسحححح شكلهااا</div>
-                      ) : (
-                        <>
-                          <RoleDetailsDialog roleId={role.id} />
-                          <button
-                            onClick={() => handleEdit(role.id)}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="تعديل"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
+                      <RoleDetailsDialog roleId={role.id} />
+                      <button
+                        onClick={() => handleEdit(role.id)}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="تعديل"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
 
-                          <DeleteConfirmModal
-                            trigger={
-                              <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            }
-                            message={`هل أنت متأكد من حذف ${role.name} هذا الاجراء لا يمكن التراجع فيه `}
-                            onConfirm={() => handleDelete(role.id)}
-                          />
-                        </>
-                      )}
+                      <DeleteConfirmModal
+                        trigger={
+                          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        }
+                        message={`هل أنت متأكد من حذف ${role.name} هذا الاجراء لا يمكن التراجع فيه `}
+                        onConfirm={() => handleDelete(role.id)}
+                      />
                     </div>
                   </div>
                 </div>
