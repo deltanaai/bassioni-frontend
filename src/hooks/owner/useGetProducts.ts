@@ -21,7 +21,7 @@ function useGetProducts() {
 
   // Build filters
   const filters: Record<string, string | number | boolean> = {};
-  if (name) filters.name = name;
+   if (name) filters.search_index = name;
   if (category_id) filters.category_id = category_id;
   if (brand_id) filters.brand_id = brand_id;
   if (show_home) filters.show_home = show_home === "true"; 

@@ -43,6 +43,8 @@ declare global {
   type ProductViewT = {
     id: number;
     name: string;
+    name_ar: string;
+    name_en: string;
     scientific_name?: string | null;
     active_ingredients?: string | null;
     dosage_form?: string | null;

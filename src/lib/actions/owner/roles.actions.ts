@@ -159,3 +159,4 @@ export async function deleteRole(ids: rolesIdsPayload) {
     return handleError(error) as ErrorResponse;
   }
 }
+

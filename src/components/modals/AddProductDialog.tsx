@@ -112,8 +112,8 @@ export default function AddProductDialog({
 
       form.reset({
         id: product.id,
-        name_ar: "", // These might need to be populated from API if available
-        name_en: product.name, // Using the current name as English name for now
+        name_ar: product.name_ar,
+        name_en: product.name_en,
         gtin: product.gtin || "",
         bar_code: product.bar_code || "",
         qr_code: product.qr_code || "",

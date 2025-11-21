@@ -106,7 +106,6 @@ export default function ProductsFilter() {
       page: 1, ////////////
     };
 
-    // امسحي أي key قيمته undefined
     Object.keys(updated).forEach(
       (key) => updated[key] === undefined && delete updated[key]
     );
@@ -282,7 +281,8 @@ export default function ProductsFilter() {
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 >
                   <option value="id">الافتراضي</option>
-                  <option value="name">الاسم</option>
+                  <option value="name_en">الاسم (بالانجليزية)</option>
+                  <option value="name_ar">الاسم (بالعربية)</option>
                   <option value="position">الترتيب</option>
                   <option value="price">السعر</option>
                   <option value="rating">التقييم</option>

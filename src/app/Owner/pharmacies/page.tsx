@@ -26,6 +26,7 @@ import { ROUTES_OWNER } from "@/constants/routes";
 import { toast } from "sonner";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
 import { queryClient } from "@/lib/queryClient";
+import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
 
 export default function PharmaciesPage() {
   const router = useRouter();
@@ -95,8 +96,6 @@ export default function PharmaciesPage() {
   };
 
   const handleRestore = async (deletingPharmacyId: number) => {
-    if (!confirm("هل أنت متأكد من استعادة هذه الصيدلية")) return;
-
     try {
       const response = await restorepharmacies({ items: [deletingPharmacyId] });
       if (response && response.success) {
@@ -257,13 +256,18 @@ export default function PharmaciesPage() {
                     <div className="flex items-center justify-center gap-2">
                       {pharmacy.deletedAt ? (
                         // الصيدليات المحذوفه نحط ريستور بس
-                        <button
-                          onClick={() => handleRestore(pharmacy.id)}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="استعادة"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </button>
+                        <RestoreConfirmModal
+                          trigger={
+                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                              <RefreshCw className="w-4 h-4" />
+                            </button>
+                          }
+                          message={`هل أنت متأكد من استعادة الشركة "${pharmacy.name}"؟`}
+                          itemName={`الشركة "${pharmacy.name}"`}
+                          onConfirm={() =>
+                            pharmacy.id && handleRestore(pharmacy.id)
+                          }
+                        />
                       ) : (
                         <>
                           <Link

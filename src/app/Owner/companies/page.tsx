@@ -20,6 +20,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import SpinnerMini from "@/components/custom/SpinnerMini";
 import Pagination from "@/components/custom/pagination";
+import DeleteConfirmModal from "@/components/custom/modals/DeleteConfirmModal";
+import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
 
 export default function CompaniesPage() {
   const queryClient = useQueryClient();
@@ -29,7 +31,17 @@ export default function CompaniesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const { data: companiesResponse, isLoading, error } = useGetCompanies();
+  const {
+    data: companiesResponse,
+    isLoading,
+    error,
+    refetch,
+  } = useGetCompanies();
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingCompanyId, setDeletingCompanyId] = useState<number | null>(
+    null
+  );
 
   const companies = companiesResponse?.data || [];
   const meta = companiesResponse?.meta;
@@ -41,11 +53,11 @@ export default function CompaniesPage() {
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = async (companyId: number) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الشركة؟")) return;
+  const handleDelete = async () => {
+    if (!deletingCompanyId) return;
 
     try {
-      const response = await deleteCompanies({ items: [companyId] });
+      const response = await deleteCompanies({ items: [deletingCompanyId] });
       if (response && response.success) {
         queryClient.invalidateQueries({
           predicate: (query) =>
@@ -54,18 +66,20 @@ export default function CompaniesPage() {
             ),
         });
         toast.success("تم حذف الشركة بنجاح");
+        refetch();
       } else {
         toast.error("حدث خطأ أثناء حذف الشركة");
       }
     } catch (error) {
       console.error("Error deleting company:", error);
       toast.error("حدث خطأ غير متوقع");
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingCompanyId(null);
     }
   };
 
   const handleRestore = async (companyId: number) => {
-    if (!confirm("هل أنت متأكد من استعادة هذه الشركة؟")) return;
-
     try {
       const response = await restoreCompanies({ items: [companyId] });
       if (response && response.success) {
@@ -199,13 +213,18 @@ export default function CompaniesPage() {
                     <div className="flex items-center justify-center gap-2">
                       {company.deletedAt ? (
                         // الشركة المحذوفه نحط ريستور بس
-                        <button
-                          onClick={() => handleRestore(company.id)}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="استعادة"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </button>
+                        <RestoreConfirmModal
+                          trigger={
+                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                              <RefreshCw className="w-4 h-4" />
+                            </button>
+                          }
+                          message={`هل أنت متأكد من استعادة الشركة "${company.name}"؟`}
+                          itemName={`الشركة "${company.name}"`}
+                          onConfirm={() =>
+                            company.id && handleRestore(company.id)
+                          }
+                        />
                       ) : (
                         // الشركة المتاحه التعديل والحذف
                         <>
@@ -218,7 +237,10 @@ export default function CompaniesPage() {
                           </button>
 
                           <button
-                            onClick={() => handleDelete(company.id)}
+                            onClick={() => {
+                              setDeletingCompanyId(company.id);
+                              setShowDeleteModal(true);
+                            }}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="حذف"
                           >
@@ -255,6 +277,17 @@ export default function CompaniesPage() {
           setIsEditDialogOpen(open);
           if (!open) setSelectedCompany(null);
         }}
+      />
+
+      {/* Delete Confirmation */}
+      <DeleteConfirmModal
+        trigger={<></>}
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        onConfirm={handleDelete}
+        message={`هل أنت متأكد من حذف الشركة "${
+          companies.find((p) => p.id === deletingCompanyId)?.name
+        }"؟  يمكن الاستعادة لاحقا  .`}
       />
     </div>
   );
