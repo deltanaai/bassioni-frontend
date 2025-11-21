@@ -28,6 +28,7 @@ import Pagination from "@/components/custom/pagination";
 import SuspenseContainer from "@/components/custom/SuspenseContainer";
 import { useQueryClient } from "@tanstack/react-query";
 import RestoreConfirmModal from "@/components/custom/modals/RestoreConfirmModal";
+import ImportModalButton from "@/components/ProductsImportModalButton/ProductsImportModalButton";
 
 function ProductsPageContent() {
   const { productsData, isLoadingProducts } = useGetProducts();
@@ -116,7 +117,10 @@ function ProductsPageContent() {
             <p className="text-gray-600">إدارة وتنظيم المنتجات</p>
           </div>
         </div>
-        <AddProductDialog />
+        <div className="flex gap-2">
+          <ImportModalButton />
+          <AddProductDialog />
+        </div>
       </div>
 
       {/* الفلاتر */}
