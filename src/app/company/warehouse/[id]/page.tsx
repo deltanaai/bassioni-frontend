@@ -1,22 +1,26 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import AddWarehouseProductModal from "@/components/warehouse/AddWarehouseProductModal";
 import DeleteWarehouseModal from "@/components/warehouse/DeleteWarehouseModal";
 import DeleteWarehouseProductModal from "@/components/warehouse/DeleteWarehouseProductModal";
-import WarehouseInfoCard from "@/components/warehouse/details/WarehouseInfoCard";
-import WarehouseProductsTable from "@/components/warehouse/details/WarehouseProductsTable";
 import EditWarehouseModal from "@/components/warehouse/EditWarehouseModal";
 import useWarehouseDetails from "@/hooks/warehouse/useWarehouseDetails";
 import { UpdateWarehouseSchema } from "@/schemas/company/warehouse";
 import { StoreWarehouseProductSchema } from "@/schemas/company/warehouseProducts";
 import { ProductInput } from "@/types/company/uiProps";
+
+import ProductFilters from "./_components/ProductFilters";
+import ProductSearch from "./_components/ProductSearch";
+import ProductsTable from "./_components/ProductsTable";
+import WarehouseInfoCard from "./_components/WarehouseInfoCard";
+import WarehouseStats from "./_components/WarehouseStats";
 
 export default function WarehouseDetailsPage() {
   // local ui state
@@ -26,14 +30,17 @@ export default function WarehouseDetailsPage() {
     null
   );
 
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedExpiryStatus, setSelectedExpiryStatus] =
+    useState<string>("all");
+  const [selectedStockStatus, setSelectedStockStatus] = useState<string>("all");
+
   // products
   const [showProductModal, setShowProductModel] = useState(false);
   const [showDeleteProductModal, setShowDeleteProductModal] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<{
-    id: number;
-    name: string;
-    batch_number: string;
-  } | null>(null);
+  const [productToDelete, setProductToDelete] =
+    useState<WarehouseProduct | null>(null);
 
   const params = useParams();
   const warehouseId = Number(params.id) || 0;
@@ -53,8 +60,57 @@ export default function WarehouseDetailsPage() {
   const isLoading = warehouseQuery.isLoading;
   const error = warehouseQuery.error;
 
-  const products = productsQuery.data?.data || [];
+  const allProducts = useMemo(
+    () => productsQuery.data?.data || [],
+    [productsQuery.data?.data]
+  );
   const masterProductsArray = (masterQuery.data?.data as MasterProduct[]) || [];
+
+  // Helper function to get expiry status
+  const getExpiryStatus = (expiryDate: string) => {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const daysUntilExpiry = Math.ceil(
+      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysUntilExpiry < 0) return "expired";
+    if (daysUntilExpiry <= 30) return "expiring_soon";
+    return "good";
+  };
+
+  // Client-side filtering with useMemo
+  const filteredProducts = useMemo(() => {
+    return allProducts.filter((product) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.batch_number
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        product.expiry_date.includes(searchQuery);
+
+      const expiryStatus = getExpiryStatus(product.expiry_date);
+      const matchesExpiryStatus =
+        selectedExpiryStatus === "all" || expiryStatus === selectedExpiryStatus;
+
+      const matchesStockStatus =
+        selectedStockStatus === "all" ||
+        (selectedStockStatus === "in_stock" && product.available_stock > 10) ||
+        (selectedStockStatus === "low_stock" &&
+          product.available_stock > 0 &&
+          product.available_stock <= 10) ||
+        (selectedStockStatus === "out_of_stock" &&
+          product.available_stock === 0);
+
+      return matchesSearch && matchesExpiryStatus && matchesStockStatus;
+    });
+  }, [allProducts, searchQuery, selectedExpiryStatus, selectedStockStatus]);
+
+  const handleClearFilters = () => {
+    setSelectedExpiryStatus("all");
+    setSelectedStockStatus("all");
+  };
 
   // نموذج تعديل المخزن
   const editForm = useForm({
@@ -211,26 +267,90 @@ export default function WarehouseDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 text-gray-900">
-      {/* الأزرار العلوية */}
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Back Button */}
+      <div className="mb-6">
         <button
           onClick={() => window.history.back()}
-          className="order-2 inline-flex items-center gap-2 rounded-xl bg-gray-200 px-4 py-2 transition duration-200 hover:bg-gray-300 sm:order-1"
+          className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md"
         >
-          <ArrowLeft className="h-5 w-5 text-emerald-600" /> العودة
+          <ArrowLeft className="h-5 w-5 text-emerald-600" />
+          العودة
         </button>
       </div>
 
-      {/* معلومات المخزن */}
-      <WarehouseInfoCard
-        warehouse={warehouse}
-        onEdit={handleEditWarehouse}
-        onDelete={() => setShowDeleteModal(true)}
-        editing={editMutation.isPending}
-        deleting={deleteMutation.isPending}
-      />
+      {/* Warehouse Info Card */}
+      <div className="mb-6">
+        <WarehouseInfoCard
+          warehouse={warehouse}
+          onEdit={handleEditWarehouse}
+          onDelete={() => setShowDeleteModal(true)}
+          editing={editMutation.isPending}
+          deleting={deleteMutation.isPending}
+        />
+      </div>
 
+      {/* Warehouse Stats */}
+      <div className="mb-6">
+        <WarehouseStats products={allProducts} />
+      </div>
+
+      {/* Products Section */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100">
+              <Plus className="h-6 w-6 text-emerald-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-emerald-600">
+                منتجات المخزن
+              </h2>
+              <p className="text-sm text-gray-500">إدارة وتتبع منتجات المخزن</p>
+            </div>
+          </div>
+          {/* <button
+            onClick={() => setShowProductModel(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg"
+          >
+            <Plus className="h-5 w-5" />
+            إضافة منتج
+          </button> */}
+        </div>
+
+        {/* Search and Filters */}
+        <div className="mb-6 space-y-4">
+          <ProductSearch value={searchQuery} onChange={setSearchQuery} />
+          <ProductFilters
+            selectedExpiryStatus={selectedExpiryStatus}
+            selectedStockStatus={selectedStockStatus}
+            onExpiryStatusChange={setSelectedExpiryStatus}
+            onStockStatusChange={setSelectedStockStatus}
+            onClearFilters={handleClearFilters}
+            totalProducts={filteredProducts.length}
+          />
+        </div>
+
+        {/* Products Table */}
+        {productsQuery.isLoading ? (
+          <div className="flex min-h-[40vh] items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-600"></div>
+              <p className="text-gray-600">جاري تحميل المنتجات...</p>
+            </div>
+          </div>
+        ) : (
+          <ProductsTable
+            products={filteredProducts}
+            onDelete={(product) => {
+              setShowDeleteProductModal(true);
+              setProductToDelete(product);
+            }}
+          />
+        )}
+      </div>
+
+      {/* Modals */}
       <EditWarehouseModal
         show={showEditModal}
         onClose={() => setShowEditModal(false)}
@@ -238,26 +358,6 @@ export default function WarehouseDetailsPage() {
         editForm={editForm}
         saving={editMutation.isPending}
       />
-
-      {/* قسم المنتجات */}
-      <div className="overflow-x-auto rounded-2xl bg-white p-6 shadow-md">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-emerald-600">🛒 المنتجات</h2>
-        </div>
-
-        <WarehouseProductsTable
-          products={products as unknown as Record<string, unknown>[]}
-          onEdit={() => {
-            // open edit product flow if needed
-          }}
-          onDelete={(p) => {
-            setShowDeleteProductModal(true);
-            setProductToDelete(
-              p as unknown as { id: number; name: string; batch_number: string }
-            );
-          }}
-        />
-      </div>
 
       <DeleteWarehouseModal
         show={showDeleteModal}
