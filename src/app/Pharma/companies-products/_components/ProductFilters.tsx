@@ -101,7 +101,7 @@ export default function ProductFilters({
           placeholder="ابحث عن منتج..."
           value={searchTerm}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="border-gray-300 bg-white pr-10 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500/20"
+          className="border-gray-700 bg-gray-900 pr-10 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:bg-gray-850 focus:ring-emerald-500/20"
         />
       </div>
 

@@ -103,7 +103,7 @@ export default function CompanySearchBar({
               setIsOpen(true);
             }}
             onFocus={() => setIsOpen(true)}
-            className="h-12 border-gray-700 bg-white pr-10 pl-4 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500/20"
+            className="h-12 border-gray-700 bg-gray-800 pr-10 pl-4 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:bg-gray-750 focus:ring-emerald-500/20"
           />
           <ChevronDown
             className={`absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400 transition-transform ${
