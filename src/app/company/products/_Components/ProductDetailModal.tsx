@@ -1,10 +1,23 @@
-'use client";';
+"use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import {
+  Building2,
+  Calendar,
+  ChevronDown,
+  Lock,
+  Package,
+  Warehouse,
+  X,
+} from "lucide-react";
+import { useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
 import { showMasterProduct } from "@/lib/actions/company/masterProducts";
 import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
+import { getAllWarehouseProducts } from "@/lib/actions/company/warehouseProducts.action";
 
 import WarehouseCard from "./WarehouseCard";
 import { ProductDetailsModalProps } from "../_types/product.types";
@@ -18,6 +31,9 @@ export default function ProductDetailsModal({
   onToggleWarehouse,
 }: Omit<ProductDetailsModalProps, "warehouses">) {
   const numericProductId = Number(productId);
+  const [localExpandedWarehouses, setLocalExpandedWarehouses] = useState<
+    number[]
+  >([]);
 
   const { data: MasterProductInfo } = useQuery({
     queryKey: ["MasterproductInfo", numericProductId],
@@ -32,57 +48,115 @@ export default function ProductDetailsModal({
   const totalBatches = MasterProductDetail?.total_batches || 0;
   const totalStock = MasterProductDetail?.total_stock || 0;
 
-  // جلب بيانات المنتج الرئيسي
   const { data: productDetails, isLoading: productLoading } = useQuery({
     queryKey: ["productDetails", numericProductId],
     queryFn: () => showMasterProduct({ id: numericProductId }),
     enabled: !!numericProductId && isOpen && !isNaN(numericProductId),
   });
 
-  // جلب جميع المخازن
   const { data: warehousesResponse, isLoading: warehousesLoading } = useQuery({
     queryKey: ["warehouses"],
     queryFn: () => getAllWarehouses(),
     enabled: isOpen,
   });
 
-  // بناخد البيانات لو الداتا راجعه مباشر و احتايطي ب paginate لو عملته
-  const warehouses = warehousesResponse?.data;
+  const warehouses = warehousesResponse?.data || [];
 
-  // ? (warehousesResponse?.data as Warehouse[])
-  // : (warehousesResponse?.data as unknown as PaginatedResponse<Warehouse>)
-  //     ?.data || [];
-
-  console.log("WAREHOUSE RESPONSE:", warehousesResponse?.data);
+  // Fetch warehouse products data to get stats for each warehouse
+  const warehouseProductsQueries = useQueries({
+    queries: warehouses.map((warehouse) => ({
+      queryKey: ["warehouseProductStats", warehouse.id, numericProductId],
+      queryFn: async () => {
+        const result = await getAllWarehouseProducts({
+          warehouseId: warehouse.id,
+          filters: { id: numericProductId },
+          paginate: false,
+        });
+        return result;
+      },
+      enabled: isOpen && !!numericProductId && warehouses.length > 0,
+    })),
+  });
 
   if (!isOpen) return null;
 
   const displayProductDetails = productDetails?.data;
 
+  const toggleWarehouse = (warehouseId: number) => {
+    if (onToggleWarehouse) {
+      onToggleWarehouse(warehouseId);
+    } else {
+      setLocalExpandedWarehouses((prev) =>
+        prev.includes(warehouseId)
+          ? prev.filter((id) => id !== warehouseId)
+          : [...prev, warehouseId]
+      );
+    }
+  };
+
+  const isWarehouseExpanded = (warehouseId: number) => {
+    return expandedWarehouses
+      ? expandedWarehouses.includes(warehouseId)
+      : localExpandedWarehouses.includes(warehouseId);
+  };
+
+  // Helper function to get warehouse stats from queries
+  const getWarehouseStats = (warehouseId: number) => {
+    const warehouseIndex = warehouses.findIndex((w) => w.id === warehouseId);
+    if (warehouseIndex === -1) return { batches: 0, quantity: 0, reserved: 0 };
+
+    const queryResult = warehouseProductsQueries[warehouseIndex];
+
+    if (!queryResult?.data?.data || !Array.isArray(queryResult.data.data))
+      return { batches: 0, quantity: 0, reserved: 0 };
+
+    const warehouseProduct = queryResult.data.data[0];
+    if (!warehouseProduct) return { batches: 0, quantity: 0, reserved: 0 };
+
+    return {
+      batches: warehouseProduct.total_batches || 0,
+      quantity: warehouseProduct.total_stock || 0,
+      reserved: warehouseProduct.reserved_stock || 0,
+    };
+  };
+
+  // Calculate total reserved stock across all warehouses
+  const totalReservedStock = warehouseProductsQueries.reduce((sum, query) => {
+    if (!query?.data?.data || !Array.isArray(query.data.data)) return sum;
+    const warehouseProduct = query.data.data[0];
+    return sum + (warehouseProduct?.reserved_stock || 0);
+  }, 0);
+
   if (productLoading || warehousesLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-        <div className="rounded-2xl bg-white p-8">
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600"></div>
-            جاري تحميل بيانات المنتج والمخازن...
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
+        <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-lg">
+          <div className="space-y-4 text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600"></div>
+            <p className="text-gray-600">
+              جاري تحميل بيانات المنتج والمخازن...
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  // إذا لم يتم العثور على المنتج
   if (!displayProductDetails) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-        <div className="w-full max-w-md rounded-2xl bg-white p-8">
-          <div className="text-center text-red-600">
-            <div className="mb-2 text-xl font-bold">المنتج غير موجود</div>
-            <p>تعذر العثور على بيانات المنتج</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
+        <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-8 shadow-lg">
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+              <Package className="h-8 w-8 text-red-500" />
+            </div>
+            <div className="mb-2 text-xl font-bold text-gray-900">
+              المنتج غير موجود
+            </div>
+            <p className="mb-4 text-gray-600">تعذر العثور على بيانات المنتج</p>
             <button
               onClick={onClose}
-              className="mt-4 rounded-xl bg-gray-500 px-6 py-2 text-white transition-colors hover:bg-gray-600"
+              className="rounded-lg bg-gray-100 px-6 py-2 text-gray-900 transition-colors hover:bg-gray-200"
             >
               إغلاق
             </button>
@@ -93,93 +167,160 @@ export default function ProductDetailsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-2xl">
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+          <h2 className="text-xl font-bold text-gray-900">تفاصيل المنتج</h2>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
         <div className="p-6">
-          {/* Header */}
-          <div className="mb-6 flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
+          <div className="space-y-6">
+            {/* Product Info Summary */}
+            <div className="rounded-lg border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-4">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">
                 {displayProductDetails.name ?? productName}
-              </h2>
-              <p className="mt-1 text-gray-600">
-                {displayProductDetails.description || "تفاصيل المخزون والدفعات"}
-              </p>
+              </h3>
 
-              {/* معلومات إضافية عن المنتج */}
-              <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
-                {displayProductDetails.brand && (
-                  <span className="rounded bg-gray-100 px-2 py-1">
-                    البراند: {displayProductDetails.brand}
-                  </span>
-                )}
-                {displayProductDetails.category?.name && (
-                  <span className="rounded bg-gray-100 px-2 py-1">
-                    الفئة: {displayProductDetails.category.name}
-                  </span>
-                )}
-                {displayProductDetails.price && (
-                  <span className="rounded bg-gray-100 px-2 py-1">
-                    السعر: {displayProductDetails.price} ج.م
-                  </span>
-                )}
+              {/* Stats Grid - 4 columns like pharmacy */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="flex items-center gap-3 rounded-lg border border-emerald-100 bg-emerald-50 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+                    <Building2 className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">عدد المخازن</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {warehouses?.length || 0}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-lg border border-blue-100 bg-blue-50 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                    <Package className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">إجمالي الكمية</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {totalStock}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-lg border border-orange-100 bg-orange-50 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
+                    <Lock className="h-5 w-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">المخزون المحجوز</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {totalReservedStock}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-lg border border-purple-100 bg-purple-50 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
+                    <Calendar className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">عدد الدفعات</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {totalBatches}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 text-xl text-gray-400 transition-colors hover:text-gray-600"
-            >
-              ✕
-            </button>
-          </div>
 
-          {/* Total Summary */}
-          <div className="mt-6 rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-6">
-            <div className="grid grid-cols-1 gap-4 text-center md:grid-cols-3">
-              <div>
-                <div className="text-sm text-gray-600">عدد المخازن</div>
-                <div className="text-lg font-bold text-gray-900">
-                  {warehouses?.length}
+            {/* Warehouses Section */}
+            <div>
+              <h3 className="mb-3 text-lg font-semibold text-gray-900">
+                المخازن
+              </h3>
+
+              {warehouses?.length === 0 ? (
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+                  <Warehouse className="mx-auto mb-2 h-12 w-12 text-gray-400" />
+                  <p className="mb-1 text-lg font-semibold text-gray-900">
+                    لا توجد مخازن تحتوي على هذا المنتج
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    هذا المنتج غير متوفر في أي مخزن حالياً
+                  </p>
                 </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">إجمالي الدفعات</div>
-                <div className="text-lg font-bold text-gray-900">
-                  {totalBatches}
+              ) : (
+                <div className="space-y-2">
+                  {warehouses?.map((warehouse) => (
+                    <div
+                      key={warehouse.id}
+                      className="overflow-hidden rounded-lg border border-gray-200 bg-white"
+                    >
+                      {/* Warehouse Header */}
+                      <button
+                        onClick={() => toggleWarehouse(warehouse.id)}
+                        className="flex w-full items-center justify-between p-4 text-right transition-colors hover:bg-gray-50"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Building2 className="h-5 w-5 text-emerald-600" />
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {warehouse.name}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          {/* Warehouse Stats Badges */}
+                          <div className="flex items-center gap-2">
+                            <Badge className="border-blue-200 bg-blue-50 text-blue-700">
+                              <Package className="ml-1 h-3 w-3" />
+                              {getWarehouseStats(warehouse.id).quantity}
+                            </Badge>
+                            <Badge className="border-orange-200 bg-orange-50 text-orange-700">
+                              <Lock className="ml-1 h-3 w-3" />
+                              {getWarehouseStats(warehouse.id).reserved}
+                            </Badge>
+                            <Badge className="border-purple-200 bg-purple-50 text-purple-700">
+                              <Calendar className="ml-1 h-3 w-3" />
+                              {getWarehouseStats(warehouse.id).batches}
+                            </Badge>
+                          </div>
+
+                          <ChevronDown
+                            className={`h-5 w-5 text-gray-400 transition-transform ${
+                              isWarehouseExpanded(warehouse.id)
+                                ? "rotate-180"
+                                : ""
+                            }`}
+                          />
+                        </div>
+                      </button>
+
+                      {/* Warehouse Content */}
+                      {isWarehouseExpanded(warehouse.id) && (
+                        <div className="border-t border-gray-200 bg-gray-50 p-4">
+                          <WarehouseCard
+                            id={warehouse.id}
+                            name={warehouse.name}
+                            productId={numericProductId}
+                            expandedWarehouses={expandedWarehouses}
+                            onToggleWarehouse={onToggleWarehouse}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">إجمالي المخزون</div>
-                <div className="text-lg font-bold text-emerald-600">
-                  {totalStock} وحدة
-                </div>
-              </div>
+              )}
             </div>
-          </div>
-
-          {/* Warehouses Section */}
-          <div className="mt-6 space-y-4">
-            {warehouses?.length === 0 ? (
-              <div className="py-8 text-center text-gray-500">
-                <div className="mb-2 text-lg font-semibold">
-                  لا توجد مخازن تحتوي على هذا المنتج
-                </div>
-                <p className="text-sm">
-                  هذا المنتج غير متوفر في أي مخزن حالياً
-                </p>
-              </div>
-            ) : (
-              warehouses?.map((warehouse) => (
-                <WarehouseCard
-                  key={warehouse.id}
-                  id={warehouse.id}
-                  name={warehouse.name}
-                  productId={numericProductId}
-                  expandedWarehouses={expandedWarehouses}
-                  onToggleWarehouse={onToggleWarehouse}
-                />
-              ))
-            )}
           </div>
         </div>
       </div>

@@ -1,17 +1,26 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Lock,
+  Package,
+  Plus,
+} from "lucide-react";
 import React, { useState } from "react";
-import { FiChevronRight } from "react-icons/fi";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getAllWarehouseProducts,
   getProductsByWarehouse,
 } from "@/lib/actions/company/warehouseProducts.action";
-import { formatIsoToArabicDate } from "@/lib/utils";
 
 import AddBatchModal from "./AddBatchModal";
+import SetReservedStockModal from "./SetReservedStockModal";
 
 interface WarehouseCardProps {
   id: number;
@@ -29,8 +38,10 @@ const WarehouseCard = ({
   onToggleWarehouse,
 }: WarehouseCardProps) => {
   const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
+  const [isSetReservedStockOpen, setIsSetReservedStockOpen] = useState(false);
+  const [showAllBatches, setShowAllBatches] = useState(false);
 
-  const { data } = useQuery({
+  const { data, isLoading: isWarehouseLoading } = useQuery({
     queryKey: ["warehouseProductDetails", id, productId],
     queryFn: () =>
       getAllWarehouseProducts({
@@ -40,131 +51,180 @@ const WarehouseCard = ({
     enabled: !!productId,
   });
 
-  console.log("WAREHOUSE PRODUCT DETAILS:", data);
-  
+  const { data: warehouseProductDetails, isLoading: isBatchesLoading } =
+    useQuery({
+      queryKey: ["warehouseProductDetailsInfo", id, productId],
+      queryFn: () =>
+        getProductsByWarehouse({
+          warehouseId: id,
+          productId,
+        }),
+      enabled: !!productId,
+    });
 
-  const { data: warehouseProductDetails } = useQuery({
-    queryKey: ["warehouseProductDetailsInfo", id, productId],
-    queryFn: () =>
-      getProductsByWarehouse({
-        warehouseId: id,
-        productId,
-      }),
-    enabled: !!productId,
-  });
-
-  const { total_batches: totalBatches, total_stock: totalStock } =
-    data?.data?.[0] || {};
+  const warehouseProduct = data?.data?.[0];
+  const totalBatches = warehouseProduct?.total_batches || 0;
+  const totalStock = warehouseProduct?.total_stock || 0;
+  const reservedStock = warehouseProduct?.reserved_stock || 0;
 
   const batchDetails = warehouseProductDetails?.data || [];
 
-  const isExpanded = expandedWarehouses.includes(id);
+  const displayedBatches = showAllBatches
+    ? batchDetails
+    : batchDetails.slice(0, 3);
+  const hasMoreBatches = batchDetails.length > 3;
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "expired":
+      case "منتهي الصلاحية":
+        return "border-red-200 bg-red-50 text-red-700";
+      case "expiring soon":
+      case "قريب الانتهاء":
+        return "border-orange-200 bg-orange-50 text-orange-700";
+      case "good":
+      case "جيد":
+        return "border-emerald-200 bg-emerald-50 text-emerald-700";
+      default:
+        return "border-gray-200 bg-gray-50 text-gray-700";
+    }
+  };
+
+  const getDaysUntilExpiry = (expiryDate: string) => {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    return Math.floor(
+      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  };
+
+  const getStatusLabel = (expiryDate: string) => {
+    const days = getDaysUntilExpiry(expiryDate);
+    if (days < 0) return "منتهي الصلاحية";
+    if (days <= 30) return "قريب الانتهاء";
+    return "جيد";
+  };
+
+  if (isWarehouseLoading || isBatchesLoading) {
+    return (
+      <div className="space-y-2">
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+      </div>
+    );
+  }
+
   return (
-    <div
-      key={id}
-      className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-    >
-      {/* Warehouse Header */}
-      <button
-        onClick={() => onToggleWarehouse(id)}
-        className="flex w-full items-center justify-between border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-4 transition-colors hover:from-gray-100 hover:to-gray-50"
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className={`transform transition-transform ${
-              isExpanded ? "rotate-90" : "rotate-0"
-            }`}
-          >
-            <FiChevronRight className="h-4 w-4 text-gray-500" />
-          </div>
-          <h3 className="text-right text-lg font-semibold text-gray-900">
-            {name}
-          </h3>
-        </div>
-
-        <div className="flex items-center gap-4 text-sm text-gray-600">
-          <span>{totalBatches || 0} دفعة</span>
-          <span className="rounded-full border border-emerald-200 bg-emerald-100 px-2 py-1 text-xs text-emerald-700">
-            {totalStock || 0} وحدة
-          </span>
-        </div>
-      </button>
-
-      {/* Warehouse Collapsible Content */}
-      {isExpanded && (
-        <div className="animate-fadeIn">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="border-l border-gray-200 px-4 py-3 text-right text-sm font-semibold text-gray-700">
-                    رقم الدفعة
-                  </th>
-                  <th className="border-l border-gray-200 px-4 py-3 text-right text-sm font-semibold text-gray-700">
-                    الكمية المتاحة
-                  </th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">
-                    تاريخ الانتهاء
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {batchDetails.map((batch) => (
-                  <tr
-                    key={batch.id}
-                    className="transition-colors hover:bg-gray-50"
-                  >
-                    <td className="border-l border-gray-200 px-4 py-3 text-gray-900">
-                      <div className="flex items-center justify-end gap-2">
-                        <span className="mx-auto rounded border border-blue-200 bg-blue-100 px-2 py-1 text-xs text-blue-700">
-                          #{batch.batch_number}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="border-l border-gray-200 px-4 py-3 text-center">
-                      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                        {batch.stock} وحدة
+    <>
+      <div className="space-y-4">
+        {/* Batches List */}
+        {batchDetails.length > 0 ? (
+          <>
+            <p className="text-sm text-gray-600">
+              {showAllBatches
+                ? `جميع الدفعات (${batchDetails.length})`
+                : `أحدث 3 دفعات`}
+            </p>
+            <div className="space-y-2">
+              {displayedBatches.map((batch, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3"
+                >
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">
+                        دفعة #{batch.batch_number}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-                          new Date(batch.expiry_date) < new Date()
-                            ? "border border-red-200 bg-red-100 text-red-700"
-                            : "border border-orange-200 bg-orange-100 text-orange-700"
-                        }`}
+                      <Badge
+                        className={getStatusColor(
+                          getStatusLabel(batch.expiry_date)
+                        )}
                       >
-                        {formatIsoToArabicDate(batch.expiry_date)}
-                        {new Date(batch.expiry_date) < new Date() && (
-                          <span className="mr-1 text-xs">منتهي</span>
+                        {getStatusLabel(batch.expiry_date)}
+                      </Badge>
+                    </div>
+                    <div className="flex gap-4 text-xs text-gray-600">
+                      <span>الكمية: {batch.stock}</span>
+                      <span>
+                        الانتهاء:{" "}
+                        {new Date(batch.expiry_date).toLocaleDateString(
+                          "ar-EG"
                         )}
                       </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="my-2 ml-5 flex justify-end">
-              <button
-                onClick={() => setIsAddBatchOpen(true)}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-2.5 text-sm text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-emerald-500 hover:to-emerald-400 hover:shadow-lg"
-              >
-                <Plus className="h-4 w-4" />
-                اضافة دفعة
-              </button>
+                      {getDaysUntilExpiry(batch.expiry_date) >= 0 && (
+                        <span>
+                          متبقي: {getDaysUntilExpiry(batch.expiry_date)} يوم
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      )}
 
-      {/*  لسا مش شغال مودال إضافة الدفعة */}
+            {/* Show More/Less Button */}
+            {hasMoreBatches && (
+              <button
+                onClick={() => setShowAllBatches(!showAllBatches)}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                {showAllBatches ? (
+                  <>
+                    <ChevronUp className="h-4 w-4" />
+                    عرض أقل
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4" />
+                    عرض المزيد ({batchDetails.length - 3} دفعات إضافية)
+                  </>
+                )}
+              </button>
+            )}
+          </>
+        ) : (
+          <div className="py-4 text-center text-sm text-gray-500">
+            لا توجد دفعات لهذا المخزن
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setIsAddBatchOpen(true)}
+            className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+          >
+            <Plus className="ml-2 h-4 w-4" />
+            إضافة دفعة جديدة
+          </Button>
+          <Button
+            onClick={() => setIsSetReservedStockOpen(true)}
+            className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700"
+          >
+            <Lock className="ml-2 h-4 w-4" />
+            تعيين المخزون المحجوز
+          </Button>
+        </div>
+      </div>
+
+      {/* Add Batch Modal */}
       <AddBatchModal
         isOpen={isAddBatchOpen}
         onClose={() => setIsAddBatchOpen(false)}
         warehouseId={id}
         productId={productId}
       />
-    </div>
+
+      {/* Set Reserved Stock Modal */}
+      <SetReservedStockModal
+        isOpen={isSetReservedStockOpen}
+        onClose={() => setIsSetReservedStockOpen(false)}
+        warehouseId={id}
+        productId={productId}
+        warehouseName={name}
+      />
+    </>
   );
 };
 

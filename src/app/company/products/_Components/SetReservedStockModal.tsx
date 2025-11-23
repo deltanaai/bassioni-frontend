@@ -1,58 +1,60 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { formatDateForBackend } from "@/lib/utils";
+import { storeWarehouseProduct } from "@/lib/actions/company/warehouseProducts.action";
 
-import { useStoreWarehouseBatch } from "../_hooks/useStoreWarehouseBatch";
-
-interface AddBatchModalProps {
+interface SetReservedStockModalProps {
   isOpen: boolean;
   onClose: () => void;
   warehouseId: number;
   productId: number;
+  warehouseName: string;
 }
 
-export default function AddBatchModal({
+export default function SetReservedStockModal({
   isOpen,
   onClose,
   warehouseId,
   productId,
-}: AddBatchModalProps) {
-  const [formData, setFormData] = useState({
-    batchNumber: "",
-    quantity: 0,
-    expiryDate: "",
-  });
+  warehouseName,
+}: SetReservedStockModalProps) {
+  const [reservedStock, setReservedStock] = useState(0);
 
-  const { mutate, isPending } = useStoreWarehouseBatch();
   const queryClient = useQueryClient();
-  const expiryDate = formatDateForBackend(formData.expiryDate);
+
+  const { mutate: setReservedStockMutation, isPending } = useMutation({
+    mutationFn: storeWarehouseProduct,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    mutate(
+    setReservedStockMutation(
       {
         warehouseId,
         productId,
-        stock: formData.quantity,
-        batchNumber: formData.batchNumber,
-        expiryDate,
+        reservedStock,
       },
       {
         onSuccess: (res) => {
           if (res.success === true) {
-            toast.success("تمت إضافة الدفعة بنجاح");
-            // Invalidate all related queries
+            toast.success("تم تعيين المخزون المحجوز بنجاح");
+            // Invalidate all queries related to reserved stock
             queryClient.invalidateQueries({
-              queryKey: ["warehouseProductDetailsInfo", warehouseId, productId],
+              queryKey: ["warehouseProducts", warehouseId, productId],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["warehouseProducts"],
             });
             queryClient.invalidateQueries({
               queryKey: ["warehouseProductDetails", warehouseId, productId],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["warehouseProductDetailsInfo", warehouseId, productId],
             });
             queryClient.invalidateQueries({
               queryKey: ["warehouseProductStats", warehouseId, productId],
@@ -65,22 +67,20 @@ export default function AddBatchModal({
             });
             handleClose();
           } else {
-            toast.error(res.error?.message || "حدث خطأ أثناء إضافة الدفعة");
+            toast.error(
+              res.error?.message || "حدث خطأ أثناء تعيين المخزون المحجوز"
+            );
           }
         },
         onError: (err) => {
-          toast.error(err.message || "حدث خطأ أثناء إضافة الدفعة");
+          toast.error(err.message || "حدث خطأ أثناء تعيين المخزون المحجوز");
         },
       }
     );
   };
 
   const handleClose = () => {
-    setFormData({
-      batchNumber: "",
-      quantity: 0,
-      expiryDate: "",
-    });
+    setReservedStock(0);
     onClose();
   };
 
@@ -91,7 +91,12 @@ export default function AddBatchModal({
       <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900">إضافة دفعة جديدة</h2>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              تعيين المخزون المحجوز
+            </h2>
+            <p className="mt-1 text-sm text-gray-600">{warehouseName}</p>
+          </div>
           <button
             onClick={handleClose}
             className="p-2 text-gray-400 transition-colors hover:text-gray-600"
@@ -103,58 +108,25 @@ export default function AddBatchModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
-            {/* Batch number */}
+            {/* Reserved Stock */}
             <div>
               <label className="mb-2 block text-right text-sm font-medium text-gray-700">
-                رقم الدفعة
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.batchNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, batchNumber: e.target.value })
-                }
-                className="w-full rounded-xl border border-gray-300 bg-white p-3 text-right text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                placeholder="أدخل رقم الدفعة"
-              />
-            </div>
-
-            {/* Quantity */}
-            <div>
-              <label className="mb-2 block text-right text-sm font-medium text-gray-700">
-                الكمية
+                المخزون المحجوز
               </label>
               <input
                 type="number"
                 required
-                min="1"
-                value={formData.quantity}
+                min="0"
+                value={reservedStock}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    quantity: parseInt(e.target.value),
-                  })
+                  setReservedStock(parseInt(e.target.value) || 0)
                 }
                 className="w-full rounded-xl border border-gray-300 bg-white p-3 text-right text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                placeholder="أدخل الكمية"
+                placeholder="أدخل المخزون المحجوز"
               />
-            </div>
-
-            {/* Expiry date */}
-            <div>
-              <label className="mb-2 block text-right text-sm font-medium text-gray-700">
-                تاريخ الصلاحية
-              </label>
-              <input
-                type="date"
-                required
-                value={formData.expiryDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, expiryDate: e.target.value })
-                }
-                className="w-full rounded-xl border border-gray-300 bg-white p-3 text-right text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-              />
+              <p className="mt-2 text-xs text-gray-500">
+                المخزون المحجوز يتم حسابه على مستوى المخزن
+              </p>
             </div>
           </div>
 
@@ -172,7 +144,7 @@ export default function AddBatchModal({
               disabled={isPending}
               className="flex-1 rounded-xl bg-emerald-500 py-3 font-medium text-white transition-colors hover:bg-emerald-600 disabled:opacity-70"
             >
-              {isPending ? "جاري الإضافة..." : "إضافة الدفعة"}
+              {isPending ? "جاري التعيين..." : "تعيين"}
             </button>
           </div>
         </form>
