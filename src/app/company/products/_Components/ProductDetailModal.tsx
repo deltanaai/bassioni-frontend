@@ -13,7 +13,6 @@ import {
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
 import { showMasterProduct } from "@/lib/actions/company/masterProducts";
 import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";

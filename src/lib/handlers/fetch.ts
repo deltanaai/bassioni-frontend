@@ -25,10 +25,17 @@ export async function fetchHandler<T>(
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
+  // Don't set Content-Type for FormData - let browser set it with boundary
+  const isFormData = restOptions.body instanceof FormData;
+
   const defaultHeaders: HeadersInit = {
-    "Content-Type": "application/json",
     Accept: "application/json",
   };
+
+  // Only add Content-Type for non-FormData requests
+  if (!isFormData) {
+    defaultHeaders["Content-Type"] = "application/json";
+  }
 
   const token = auth ? await getAuthToken() : null;
   if (token) {

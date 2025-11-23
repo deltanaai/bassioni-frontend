@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, FileSpreadsheet, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import AddWarehouseProductModal from "@/components/warehouse/AddWarehouseProduct
 import DeleteWarehouseModal from "@/components/warehouse/DeleteWarehouseModal";
 import DeleteWarehouseProductModal from "@/components/warehouse/DeleteWarehouseProductModal";
 import EditWarehouseModal from "@/components/warehouse/EditWarehouseModal";
+import ImportProductsModal from "@/components/warehouse/ImportProductsModal";
 import useWarehouseDetails from "@/hooks/warehouse/useWarehouseDetails";
 import { UpdateWarehouseSchema } from "@/schemas/company/warehouse";
 import { StoreWarehouseProductSchema } from "@/schemas/company/warehouseProducts";
@@ -26,6 +27,7 @@ export default function WarehouseDetailsPage() {
   // local ui state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
     null
   );
@@ -309,13 +311,13 @@ export default function WarehouseDetailsPage() {
               <p className="text-sm text-gray-500">إدارة وتتبع منتجات المخزن</p>
             </div>
           </div>
-          {/* <button
-            onClick={() => setShowProductModel(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg"
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg"
           >
-            <Plus className="h-5 w-5" />
-            إضافة منتج
-          </button> */}
+            <FileSpreadsheet className="h-5 w-5" />
+            إضافة رصيد أول المدة
+          </button>
         </div>
 
         {/* Search and Filters */}
@@ -387,6 +389,13 @@ export default function WarehouseDetailsPage() {
         }}
         onConfirm={handleProductDelete}
         deleting={deleteProductMutation.isPending}
+      />
+
+      <ImportProductsModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        warehouseId={warehouseId}
+        warehouseName={warehouse?.name ?? "المستودع"}
       />
     </div>
   );

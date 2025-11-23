@@ -1,5 +1,7 @@
 "use server";
 
+import logger from "@/lib/logger";
+import { getSession } from "@/lib/session";
 import {
   DeleteWarehouseProductSchema,
   GetWarehouseProductsSchema,
@@ -68,17 +70,29 @@ export async function getAllWarehouseProducts(
 export async function importWarehouseProducts(
   params: ImportWarehouseProductsParams
 ): Promise<ActionResponse<{ message: string }>> {
-  const validationResult = await action({
-    params,
-    schema: ImportWarehouseProductsSchema,
-    authorize: true,
-  });
-
-  if (validationResult instanceof Error) {
-    return handleError(validationResult) as ErrorResponse;
+  // Skip schema validation for file uploads as File objects can't be serialized properly
+  // Validate warehouseId separately
+  if (!params.warehouseId || params.warehouseId <= 0) {
+    return handleError(new Error("معرف خاطئ للفرع")) as ErrorResponse;
   }
 
-  const { warehouseId, file } = validationResult.params!;
+  if (!params.file) {
+    return handleError(new Error("الملف مطلوب")) as ErrorResponse;
+  }
+
+  if (!params.file.name.endsWith(".xlsx")) {
+    return handleError(
+      new Error("الملف يجب أن يكون بصيغة .xlsx")
+    ) as ErrorResponse;
+  }
+
+  // Check authorization
+  const session = await getSession();
+  if (!session) {
+    return handleError(new Error("غير مصرح")) as ErrorResponse;
+  }
+
+  const { warehouseId, file } = params;
 
   try {
     const response = await api.company.products.importWarehouseProducts({
@@ -87,7 +101,14 @@ export async function importWarehouseProducts(
     });
 
     if (response.result === "Error" || !response) {
-      return handleError(new Error(response.message)) as ErrorResponse;
+      logger.error(
+        `Import Warehouse Products Error: ${
+          response.message || "Unknown error"
+        }`
+      );
+      return handleError(
+        new Error(response.message || "لم يتم تلقي بيانات صالحة من الخادم")
+      ) as ErrorResponse;
     }
     return {
       success: true,
