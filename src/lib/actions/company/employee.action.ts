@@ -18,7 +18,7 @@ import { NotFoundError } from "../../http-errors";
 
 export async function getAllEmployees(
   params: PaginatedSearchParams = {}
-): Promise<IndexedActionResponse<Employee>> {
+): Promise<ActionResponse<Employee[]>> {
   const validationResult = await action({
     params,
     schema: GetEmployeesSchema,
@@ -51,7 +51,7 @@ export async function getAllEmployees(
     }
     return {
       success: true,
-      data: response.data as PaginatedResponse<Employee>,
+      data: response.data as Employee[],
       links: response.links,
       meta: response.meta,
     };

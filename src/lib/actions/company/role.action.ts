@@ -16,7 +16,7 @@ import handleError from "../../handlers/error";
 
 export async function getAllRoles(
   params?: PaginatedSearchParams
-): Promise<IndexedActionResponse<CompanyRole>> {
+): Promise<ActionResponse<CompanyRole[]>> {
   const validationResult = await action({
     params,
     schema: GetAllRolesSchema,
@@ -45,7 +45,7 @@ export async function getAllRoles(
 
     return {
       success: true,
-      data: response.data as PaginatedResponse<CompanyRole>,
+      data: response.data as CompanyRole[],
       links: response.links,
       meta: response.meta,
     };
