@@ -1,6 +1,5 @@
 "use server";
 
-import logger from "@/lib/logger";
 import {
   AddWarehouseSchema,
   DeleteWarehouseSchema,
@@ -48,7 +47,6 @@ export async function getAllWarehouses(
       );
     }
 
-    logger.info(`Fetched warehouses: ${JSON.stringify(response.data)}`);
     return {
       success: true,
       data: response.data as Warehouse[],
