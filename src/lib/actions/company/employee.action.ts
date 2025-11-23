@@ -1,5 +1,6 @@
 "use server";
 
+import logger from "@/lib/logger";
 import {
   AssignEmployeesRoleSchema,
   AssignEmployeesWarehouseSchema,
@@ -198,8 +199,11 @@ export async function updateEmployee(
       payload,
     });
 
-    if (!response) {
-      throw new Error("فشل في تحديث بيانات الموظف, لم يتم تلقي رد من الخادم");
+    if (!response || response.result !== "Success") {
+      logger.error(`Failed to update employee: ${response.message}`);
+      return handleError(
+        new Error("فشل في تحديث بيانات الموظف, لم يتم تلقي رد صالح من الخادم")
+      ) as ErrorResponse;
     }
 
     return {

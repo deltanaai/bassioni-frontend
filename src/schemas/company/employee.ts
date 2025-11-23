@@ -95,7 +95,7 @@ export const CreateEmployeeSchema = z
 
 export const UpdateEmployeeSchema = z
   .object({
-    employeeId: z.number().optional(),
+    employeeId: z.number().int().positive(),
 
     name: z
       .string()
@@ -104,15 +104,24 @@ export const UpdateEmployeeSchema = z
 
     email: z.string().email("بريد إلكتروني غير صالح").optional(),
 
-    phone: z
-      .string()
+   phone: z
+      .string({
+        error: "رقم الهاتف مطلوب",
+      })
       .refine(
-        (val) => !val || !/[\s\-\(\)\.]/.test(val),
+        (val) => !/[\s\-\(\)\.]/.test(val),
         "رقم الهاتف لا يجب أن يحتوي على مسافات أو رموز مثل - أو ( أو )"
       )
       .refine(
-        (val) => !val || /^\+?[1-9]\d{6,14}$/.test(val),
-        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا (مثال: +201000000000)"
+        (val) =>
+          // Egyptian formats
+          /^01[0-9]{9}$/.test(val) || // محلي: 01xxxxxxxxx
+          /^\+?201[0-9]{9}$/.test(val) || // دولي: +201xxxxxxxxx أو 201xxxxxxxxx
+          /^00201[0-9]{9}$/.test(val) || // دولي: 00201xxxxxxxxx
+          // Generic international formats
+          /^\+?[1-9]\d{6,14}$/.test(val) || // +14155552671 أو 14155552671
+          /^00[1-9]\d{6,14}$/.test(val), // 00441555552671
+        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا محليًا أو دوليًا (مثال: 010xxxxxxxx أو +14155552671 أو 00441555552671)"
       )
       .optional(),
 

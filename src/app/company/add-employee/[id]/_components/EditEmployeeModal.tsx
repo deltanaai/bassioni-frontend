@@ -47,6 +47,7 @@ export default function EditEmployeeModal({
   } = useForm<UpdateEmployeeParams>({
     resolver: zodResolver(UpdateEmployeeSchema),
     defaultValues: {
+      employeeId: 0,
       name: "",
       email: "",
       phone: "",
@@ -64,6 +65,7 @@ export default function EditEmployeeModal({
       const foundRole = roles.find((role) => role.name === employee.role);
 
       reset({
+        employeeId,
         name: employee.name,
         email: employee.email,
         phone: employee.phone,
@@ -75,12 +77,12 @@ export default function EditEmployeeModal({
         passwordConfirmation: "",
       });
     }
-  }, [isOpen, employee, roles, reset]);
+  }, [isOpen, employee, roles, reset, employeeId]);
 
   const mutation = useMutation({
     mutationFn: updateEmployee,
     onSuccess: (res) => {
-      if (!res.success) {
+      if (res.success !== true) {
         toast.error(res.error?.message ?? "حدث خطأ أثناء تحديث الموظف");
         return;
       }
@@ -100,10 +102,8 @@ export default function EditEmployeeModal({
   };
 
   const onSubmit = (data: UpdateEmployeeParams) => {
-    mutation.mutate({
-      employeeId,
-      ...data,
-    });
+    console.log("Form data being submitted:", data);
+    mutation.mutate(data);
   };
 
   if (!isOpen) return null;
@@ -195,7 +195,9 @@ export default function EditEmployeeModal({
                 }
                 defaultValue={employee.warehouse_id?.toString()}
               >
-                <SelectTrigger className={errors.roleId ? "border-red-500" : ""}>
+                <SelectTrigger
+                  className={errors.roleId ? "border-red-500" : ""}
+                >
                   <SelectValue placeholder="اختر الدور" />
                 </SelectTrigger>
                 <SelectContent>
@@ -225,7 +227,10 @@ export default function EditEmployeeModal({
                 <SelectContent>
                   <SelectItem value="null">بدون مستودع</SelectItem>
                   {warehouses.map((warehouse) => (
-                    <SelectItem key={warehouse.id} value={warehouse.id.toString()}>
+                    <SelectItem
+                      key={warehouse.id}
+                      value={warehouse.id.toString()}
+                    >
                       {warehouse.name}
                     </SelectItem>
                   ))}
