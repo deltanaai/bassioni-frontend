@@ -1,65 +1,45 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, X } from "lucide-react";
-import { useEffect } from "react";
+import { Plus, X } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import { CreateBranchSchema } from "@/schemas/pharma/branches";
 
-// Schema for form fields only (without branchId)
-const EditBranchFormSchema = z.object({
-  name: z.string().min(1, "اسم الفرع مطلوب"),
-  address: z.string().min(1, "الموقع مطلوب"),
-});
-
-type EditBranchFormData = z.infer<typeof EditBranchFormSchema>;
-
-interface EditBranchModalProps {
+interface AddBranchModalProps {
   isOpen: boolean;
-  branch: Branch | null;
   onClose: () => void;
-  onSubmit: (data: UpdateBranchParams) => void;
+  onSubmit: (data: CreateBranchParams) => void;
   isLoading?: boolean;
 }
 
-export default function EditBranchModal({
+export default function AddBranchModal({
   isOpen,
-  branch,
   onClose,
   onSubmit,
   isLoading,
-}: EditBranchModalProps) {
+}: AddBranchModalProps) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<EditBranchFormData>({
-    resolver: zodResolver(EditBranchFormSchema),
+  } = useForm<CreateBranchParams>({
+    resolver: zodResolver(CreateBranchSchema),
   });
-
-  useEffect(() => {
-    if (branch) {
-      reset({
-        name: branch.name,
-        address: branch.address,
-      });
-    }
-  }, [branch, reset]);
 
   const handleClose = () => {
     reset();
     onClose();
   };
 
-  const handleFormSubmit = (data: EditBranchFormData) => {
-    if (!branch) return;
-    onSubmit({ ...data, branchId: branch.id });
+  const handleFormSubmit = (data: CreateBranchParams) => {
+    onSubmit(data);
+    reset();
   };
 
-  if (!isOpen || !branch) return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
@@ -68,10 +48,10 @@ export default function EditBranchModal({
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-600/20">
-              <Edit className="h-5 w-5 text-emerald-400" />
+              <Plus className="h-5 w-5 text-emerald-400" />
             </div>
             <h2 className="text-xl font-bold text-white md:text-2xl">
-              تعديل بيانات الفرع
+              إضافة فرع جديد
             </h2>
           </div>
           <button
@@ -94,7 +74,7 @@ export default function EditBranchModal({
               type="text"
               {...register("name")}
               placeholder="أدخل اسم الفرع"
-              className="w-full rounded-lg border border-gray-800/50 bg-gray-950/50 px-4 py-2.5 text-white placeholder:text-gray-500 backdrop-blur-xl transition-all focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full rounded-lg border border-gray-800/50 bg-gray-950/50 px-4 py-2.5 text-white backdrop-blur-xl transition-all placeholder:text-gray-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
               disabled={isLoading}
             />
             {errors.name && (
@@ -111,7 +91,7 @@ export default function EditBranchModal({
               type="text"
               {...register("address")}
               placeholder="أدخل عنوان الفرع"
-              className="w-full rounded-lg border border-gray-800/50 bg-gray-950/50 px-4 py-2.5 text-white placeholder:text-gray-500 backdrop-blur-xl transition-all focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full rounded-lg border border-gray-800/50 bg-gray-950/50 px-4 py-2.5 text-white backdrop-blur-xl transition-all placeholder:text-gray-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
               disabled={isLoading}
             />
             {errors.address && (
@@ -135,7 +115,7 @@ export default function EditBranchModal({
               className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500"
               disabled={isLoading}
             >
-              {isLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
+              {isLoading ? "جاري الإضافة..." : "إضافة الفرع"}
             </Button>
           </div>
         </form>

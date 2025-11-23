@@ -1,22 +1,27 @@
 "use client";
 
-import { Building2, Edit, MapPin, Trash } from "lucide-react";
+import { Building2, Edit, Eye, MapPin, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/Card";
 
 interface BranchCardProps {
   branch: Branch;
-  onEdit: (branch: Branch) => void;
   onDelete: (branch: Branch) => void;
+  onEdit: (branch: Branch) => void;
 }
 
 export default function BranchCard({
   branch,
-  onEdit,
   onDelete,
+  onEdit,
 }: BranchCardProps) {
+  const router = useRouter();
+
+  const handleViewDetails = () => {
+    router.push(`/Pharma/branches/${branch.id}`);
+  };
+
   return (
     <Card className="group overflow-hidden border-gray-800/50 bg-gray-900/30 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10">
       <CardContent className="p-4 md:p-6">
@@ -37,7 +42,10 @@ export default function BranchCard({
               </div>
             </div>
             <button
-              onClick={() => onDelete(branch)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(branch);
+              }}
               className="shrink-0 text-red-500/50 transition-all hover:scale-110 hover:text-red-400"
               aria-label="حذف الفرع"
             >
@@ -68,16 +76,24 @@ export default function BranchCard({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end pt-2">
-            <Button
-              onClick={() => onEdit(branch)}
-              variant="outline"
-              size="sm"
-              className="border-emerald-700/50 bg-emerald-900/20 text-emerald-300 transition-all hover:border-emerald-600 hover:bg-emerald-900/40 hover:text-emerald-200"
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(branch);
+              }}
+              className="flex items-center gap-2 rounded-lg border border-blue-700/50 bg-blue-900/20 px-4 py-2 text-sm font-medium text-blue-300 transition-all hover:border-blue-600 hover:bg-blue-900/40 hover:text-blue-200"
             >
-              <Edit className="ml-2 h-4 w-4" />
+              <Edit className="h-4 w-4" />
               تعديل
-            </Button>
+            </button>
+            <button
+              onClick={handleViewDetails}
+              className="flex items-center gap-2 rounded-lg border border-emerald-700/50 bg-emerald-900/20 px-4 py-2 text-sm font-medium text-emerald-300 transition-all hover:border-emerald-600 hover:bg-emerald-900/40 hover:text-emerald-200"
+            >
+              <Eye className="h-4 w-4" />
+              عرض التفاصيل
+            </button>
           </div>
         </div>
       </CardContent>

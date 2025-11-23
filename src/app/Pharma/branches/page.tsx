@@ -21,7 +21,7 @@ import BranchSearch from "./_components/BranchSearch";
 import DeleteBranchModal from "./_components/DeleteBranchModal";
 import EditBranchModal from "./_components/EditBranchModal";
 
-export default function PharmaciesPage() {
+export default function BranchesPage() {
   // State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("all");
@@ -36,7 +36,9 @@ export default function PharmaciesPage() {
     queryFn: () => indexBranches({}),
   });
 
-  const branches = branchesResponse?.data || [];
+  const branches = useMemo(() => {
+    return branchesResponse?.data || [];
+  }, [branchesResponse?.data]);
 
   // Filter branches based on search and filters
   const filteredBranches = useMemo(() => {

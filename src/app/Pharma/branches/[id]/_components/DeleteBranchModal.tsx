@@ -1,25 +1,25 @@
 "use client";
 
-import { Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 interface DeleteBranchModalProps {
-  isOpen: boolean;
-  branch: Branch | null;
+  show: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  isLoading?: boolean;
+  deleting: boolean;
+  branchName?: string;
 }
 
 export default function DeleteBranchModal({
-  isOpen,
-  branch,
+  show,
   onClose,
   onConfirm,
-  isLoading,
+  deleting,
+  branchName,
 }: DeleteBranchModalProps) {
-  if (!isOpen || !branch) return null;
+  if (!show) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
@@ -35,7 +35,7 @@ export default function DeleteBranchModal({
           <p className="mb-3 text-base leading-relaxed text-gray-300">
             هل تريد نقل{" "}
             <span className="mx-1 font-bold text-orange-400">
-              {branch.name}
+              {branchName || "هذا الفرع"}
             </span>{" "}
             إلى سلة المحذوفات؟
           </p>
@@ -52,16 +52,16 @@ export default function DeleteBranchModal({
             onClick={onClose}
             variant="outline"
             className="flex-1 border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600 hover:bg-gray-700 hover:text-white"
-            disabled={isLoading}
+            disabled={deleting}
           >
             إلغاء
           </Button>
           <Button
             onClick={onConfirm}
             className="flex flex-1 items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25 hover:from-orange-600 hover:to-red-600 hover:shadow-orange-500/40"
-            disabled={isLoading}
+            disabled={deleting}
           >
-            {isLoading ? (
+            {deleting ? (
               "جاري الحذف..."
             ) : (
               <>
