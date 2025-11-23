@@ -268,10 +268,15 @@ export async function assignEmployeesWarehouse(
     const response = await api.company.employee.assignEmployeesWarehouse({
       payload,
     });
-    if (!response) {
-      throw new Error(
-        "فشل في تعيين المستودع للموظفين, لم يتم تلقي رد من الخادم"
+    if (!response || response.result !== "Success") {
+      logger.error(
+        `Failed to assign warehouse to employees: ${response.message}`
       );
+      return handleError(
+        new Error(
+          "فشل في تعيين المستودع للموظفين, لم يتم تلقي رد صالح من الخادم"
+        )
+      ) as ErrorResponse;
     }
     return {
       success: true,

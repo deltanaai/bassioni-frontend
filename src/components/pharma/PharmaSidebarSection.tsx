@@ -26,7 +26,7 @@ export function PharmaSidebarSection({
     <div className="space-y-1">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400 transition hover:bg-gray-700/30 hover:text-gray-300"
+        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold tracking-wider text-gray-400 uppercase transition hover:bg-gray-700/30 hover:text-gray-300"
       >
         <span>{title}</span>
         {isExpanded ? (

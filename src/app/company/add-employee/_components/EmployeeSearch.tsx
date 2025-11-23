@@ -14,7 +14,7 @@ export default function EmployeeSearch({
 }: EmployeeSearchProps) {
   return (
     <div className="relative">
-      <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+      <Search className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
       <Input
         type="text"
         placeholder="ابحث عن موظف (الاسم، البريد الإلكتروني، الهاتف)..."
@@ -25,7 +25,7 @@ export default function EmployeeSearch({
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          className="absolute top-1/2 left-3 -translate-y-1/2 rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
         >
           <X className="h-4 w-4" />
         </button>
