@@ -197,7 +197,7 @@ function ProductsPageContent() {
 
                   <div className="col-span-1 text-center">
                     <span className="font-semibold text-green-600">
-                      {product.price} ج.م
+                      {product.price?.toFixed(2) ?? 0} ج.م
                     </span>
                   </div>
 

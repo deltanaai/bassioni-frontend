@@ -79,7 +79,8 @@ export default function AddProductDialog({
       show_home: undefined,
       image: undefined,
       rating: undefined,
-      tax: undefined,
+      tax: 0,
+      // price_without_tax: undefined,
       price: undefined,
     },
   });
@@ -128,8 +129,9 @@ export default function AddProductDialog({
         show_home: product.show_home,
         image: undefined,
         rating: product.rating,
-        tax: undefined, // Tax not in ProductViewT
+        tax: product.tax,
         price: product.price,
+        // price_without_tax: product.price_without_tax,
       });
       //   setImagePreview(product.image_url || null);
     } else if (!product) {
@@ -151,6 +153,7 @@ export default function AddProductDialog({
         image: undefined,
         rating: undefined,
         tax: undefined,
+        // price_without_tax: undefined,
         price: undefined,
       });
       //   setImagePreview(null);
@@ -461,7 +464,7 @@ export default function AddProductDialog({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>السعر (ج.م)</FormLabel>
+                    <FormLabel>السعر بدون الضريبة (ج.م)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"

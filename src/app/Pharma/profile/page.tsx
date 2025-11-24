@@ -1,13 +1,12 @@
-import DashboardLayout from '../layout';
-import React from 'react';
-import Image from 'next/image';
-import { Trash2, Eye } from 'lucide-react';
+import DashboardLayout from "../layout";
+import React from "react";
+import Image from "next/image";
 
 export default function ProfilePage() {
-  const orders = [
-    { id: 1, name: 'بانادول', date: '2025-08-01', status: 'قيد التنفيذ' },
-    { id: 2, name: 'زيرتك', date: '2025-07-30', status: 'تم التوصيل' },
-  ];
+  // const orders = [
+  //   { id: 1, name: "بانادول", date: "2025-08-01", status: "قيد التنفيذ" },
+  //   { id: 2, name: "زيرتك", date: "2025-07-30", status: "تم التوصيل" },
+  // ];
 
   return (
     <div className="p-6 space-y-8 text-white">
@@ -27,13 +26,17 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-400">01012345678 - القاهرة، مصر</p>
         </div>
         <div className="flex flex-col gap-2 mt-4 md:mt-0">
-          <button className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-md text-sm">تعديل البيانات</button>
-          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm">تغيير كلمة المرور</button>
+          <button className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-md text-sm">
+            تعديل البيانات
+          </button>
+          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm">
+            تغيير كلمة المرور
+          </button>
         </div>
       </div>
 
       {/* الطلبات */}
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg p-6">
+      {/* <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg p-6">
         <h3 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">طلباتي</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-gray-300 text-right">
@@ -83,7 +86,7 @@ export default function ProfilePage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

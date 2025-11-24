@@ -30,13 +30,14 @@ export const productSchema = z
     active: z.boolean().optional(),
     show_home: z.boolean().optional(),
     description: z.string().trim().optional(),
-    category_id: z.number().int().positive("يجب اختيار فئة"),
-    brand_id: z.number().int().positive("يجب اختيار علامة تجارية"),
+    category_id: z.number("الفئة مطلوبة").int().positive("يجب اختيار فئة"),
+    brand_id: z.number("العلامه التجارية مطلوبة").int().positive("يجب اختيار علامة تجارية"),
     pharmacy_id: z.number().int().positive().optional(),
     image: z.union([z.string(), z.number()]).optional(),
     rating: z.number().min(0).max(5).optional(),
     tax: z.number().min(0).optional(),
-    price: z.number().min(1, "السعر يجب أن يكون رقمًا موجبًا"),
+    price: z.number("السعر مطلوب").min(1, "السعر يجب أن يكون رقمًا موجبًا"),
+    // price: z.number("السعر مطلوب").optional(),
   })
   .refine(
     (data) => {

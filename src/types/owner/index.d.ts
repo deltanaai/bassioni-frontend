@@ -60,6 +60,8 @@ declare global {
     rating: number;
     rating_count: number | null;
     price: number;
+    price_without_tax:number;
+    tax:number;
     image_url: string | null;
     image: string | null;
     deleted: boolean;
