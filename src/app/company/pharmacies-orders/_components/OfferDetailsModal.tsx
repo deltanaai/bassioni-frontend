@@ -220,7 +220,7 @@ export default function OfferDetailsModal({
               </div>
 
               {/* تواريخ */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                   <Calendar className="h-5 w-5 text-gray-600" />
                   <div>
@@ -254,7 +254,7 @@ export default function OfferDetailsModal({
                     </p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* تفاصيل العرض */}
               {offerDetails.offer && (
