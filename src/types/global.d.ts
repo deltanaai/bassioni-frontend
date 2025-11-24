@@ -1,5 +1,19 @@
 // global declarations
 
+interface Brand {
+  id: number;
+  name: string;
+  showHome: boolean;
+  position: number;
+  active: boolean;
+  imageUrl: string | null;
+  image: string | null;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+}
+
 interface MasterProductCategory {
   id: number;
   name: string;
