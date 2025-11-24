@@ -108,6 +108,9 @@ declare global {
     guard_name: string;
     permissions: PermissionT[];
   };
+  interface ImportProductsParams {
+  file: File;
+}
 }
 
 export {};

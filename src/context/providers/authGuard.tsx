@@ -15,6 +15,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   const { session, isLoadingSession, refetch } = useGetSession();
+  console.log("token: ", session?.token);
 
   // Normalize for consistent checks
   const lowerPath = pathname.toLowerCase();
