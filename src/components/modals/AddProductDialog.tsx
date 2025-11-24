@@ -120,7 +120,7 @@ export default function AddProductDialog({
         dosage_form: product.dosage_form || "",
         scientific_name: product.scientific_name || "",
         active_ingredients: product.active_ingredients || "",
-        description: product.description,
+        description: product.description || "",
         category_id: product.category.id,
         brand_id: matchingBrand?.id || undefined,
         position: product.position || undefined,
