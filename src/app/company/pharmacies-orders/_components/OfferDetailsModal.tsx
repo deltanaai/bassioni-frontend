@@ -7,13 +7,17 @@ import {
   DollarSign,
   Package,
   Percent,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import {
   showDemandedOfferDetails,
   updateDemandedOfferStatus,
 } from "@/lib/actions/company/responseOffers.action";
+import logger from "@/lib/logger";
 import { queryClient } from "@/lib/queryClient";
 
 interface OfferDetailsModalProps {
@@ -41,10 +45,24 @@ export default function OfferDetailsModal({
     enabled: isOpen && !!offerId, // بيتشغل فقط إذا Modal مفتوح وفيه offerId
   });
 
-  const warehouseId = 1; // TODO: get warehouse id from auth store
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string>("");
+
+  const { data: warehousesResponse } = useQuery({
+    queryKey: ["warehouses"],
+    queryFn: () =>
+      import("@/lib/actions/company/warehouse.action").then((mod) =>
+        mod.getAllWarehouses({ paginate: false })
+      ),
+  });
 
   const updateStatusMutation = useMutation({
-    mutationFn: (status: "approved" | "rejected") =>
+    mutationFn: ({
+      status,
+      warehouseId,
+    }: {
+      status: "approved" | "rejected";
+      warehouseId: number;
+    }) =>
       updateDemandedOfferStatus({
         offerId: offerId as number,
         warehouseId,
@@ -52,24 +70,32 @@ export default function OfferDetailsModal({
       }),
     onSuccess: (data) => {
       if (data.success === true) {
-        toast.success(data.message);
-
+        toast.success(data.message || "تم تحديث الحالة بنجاح");
         queryClient.invalidateQueries({ queryKey: ["demandedOffers"] });
+        onClose();
+        setSelectedWarehouse("");
       } else {
-        console.log("MESSAGE", data.error?.message);
-
-        toast.error(data.error?.message);
+        toast.error(data.error?.message || "فشل تحديث الحالة");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error("فشل تحديث الحالة");
-      console.error(error);
+      logger.error(error);
     },
   });
 
   const handleUpdateStatus = (status: "approved" | "rejected") => {
-    updateStatusMutation.mutate(status);
+    if (!selectedWarehouse) {
+      toast.error("يجب اختيار المستودع");
+      return;
+    }
+    updateStatusMutation.mutate({
+      status,
+      warehouseId: Number(selectedWarehouse),
+    });
   };
+
+  const warehouses = warehousesResponse?.success ? warehousesResponse.data : [];
 
   const offerDetails = response?.success ? response.data : null;
 
@@ -302,6 +328,67 @@ export default function OfferDetailsModal({
           )}
         </div>
 
+        {/* Status Update Section */}
+        {!isLoading &&
+          !error &&
+          offerDetails &&
+          offerDetails.status === "pending" && (
+            <div className="border-t border-gray-200 pt-6">
+              <div className="rounded-xl border border-purple-200 bg-purple-50 p-4">
+                <div className="mb-4 flex items-center gap-2">
+                  <Building className="h-5 w-5 text-purple-600" />
+                  <h3 className="font-semibold text-gray-900">
+                    تحديث حالة العرض
+                  </h3>
+                </div>
+
+                <div className="mb-4">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    اختر المستودع <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={selectedWarehouse}
+                    onChange={(e) => setSelectedWarehouse(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                  >
+                    <option value="">اختر المستودع</option>
+                    {warehouses?.map((warehouse: Warehouse) => (
+                      <option key={warehouse.id} value={String(warehouse.id)}>
+                        {warehouse.name} - {warehouse.location}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    يجب اختيار المستودع قبل تحديث الحالة
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleUpdateStatus("approved")}
+                    disabled={
+                      !selectedWarehouse || updateStatusMutation.isPending
+                    }
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-2 text-white transition-all hover:from-purple-700 hover:to-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    قبول العرض
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus("rejected")}
+                    disabled={
+                      !selectedWarehouse || updateStatusMutation.isPending
+                    }
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    رفض العرض
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         {/* Footer */}
         {!isLoading && !error && offerDetails && (
           <div className="flex justify-end gap-3 border-t border-gray-200 p-6">
@@ -311,22 +398,6 @@ export default function OfferDetailsModal({
             >
               إغلاق
             </button>
-            {offerDetails.status === "pending" && (
-              <>
-                <button
-                  className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-                  onClick={() => handleUpdateStatus("approved")}
-                >
-                  قبول الطلب
-                </button>
-                <button
-                  className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
-                  onClick={() => handleUpdateStatus("rejected")}
-                >
-                  رفض الطلب
-                </button>
-              </>
-            )}
           </div>
         )}
       </div>

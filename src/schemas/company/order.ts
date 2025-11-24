@@ -1,7 +1,6 @@
 import z from "zod";
 
-export const UpdateOrderStatusSchema = z
-  .object({
+export const UpdateOrderStatusSchema = z.object({
     orderId: z.number().int().positive("معرف الطلب مطلوب"),
     status: z.enum(
       ["approved", "rejected"],

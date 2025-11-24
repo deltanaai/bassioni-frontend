@@ -1,8 +1,37 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { X, Calendar, DollarSign, Package, CreditCard } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  X,
+  Calendar,
+  DollarSign,
+  Package,
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  Truck,
+  User,
+  MapPin,
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { showCompanyOrder } from "@/lib/actions/company/orders.action";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  showCompanyOrder,
+  updateOrderStatus,
+  assignOrderToWarehouse,
+} from "@/lib/actions/company/orders.action";
+import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
+import { queryClient } from "@/lib/queryClient";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -15,6 +44,9 @@ export default function OrderDetailsModal({
   onClose,
   orderId,
 }: OrderDetailsModalProps) {
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string>("");
+  const [reason, setReason] = useState("");
+
   const {
     data: response,
     isLoading,
@@ -29,7 +61,74 @@ export default function OrderDetailsModal({
     enabled: isOpen && !!orderId,
   });
 
+  const { data: warehousesResponse } = useQuery({
+    queryKey: ["warehouses"],
+    queryFn: () => getAllWarehouses({ paginate: false }),
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({
+      status,
+      reason: rejectionReason,
+    }: {
+      status: "approved" | "rejected";
+      reason?: string;
+    }) =>
+      updateOrderStatus({
+        orderId: orderId as number,
+        status,
+        reason: rejectionReason,
+      }),
+    onSuccess: (data, variables) => {
+      if (data.success) {
+        if (variables.status === "approved" && selectedWarehouse) {
+          // After approving, assign to warehouse
+          assignWarehouseMutation.mutate({
+            warehouseId: Number(selectedWarehouse),
+          });
+        } else {
+          // For rejection, just show success and close
+          toast.success("تم تحديث حالة الطلب بنجاح");
+          queryClient.invalidateQueries({ queryKey: ["companyOrders"] });
+          onClose();
+          setSelectedWarehouse("");
+          setReason("");
+        }
+      } else {
+        toast.error(data.error?.message || "فشل تحديث الحالة");
+      }
+    },
+    onError: (error: any) => {
+      toast.error("حدث خطأ أثناء تحديث الحالة");
+      console.error(error);
+    },
+  });
+
+  const assignWarehouseMutation = useMutation({
+    mutationFn: ({ warehouseId }: { warehouseId: number }) =>
+      assignOrderToWarehouse({
+        orderId: orderId as number,
+        warehouseId,
+      }),
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("تم الموافقة على الطلب وتعيين المستودع بنجاح");
+        queryClient.invalidateQueries({ queryKey: ["companyOrders"] });
+        onClose();
+        setSelectedWarehouse("");
+        setReason("");
+      } else {
+        toast.error(data.error?.message || "فشل تعيين المستودع");
+      }
+    },
+    onError: (error: any) => {
+      toast.error("حدث خطأ أثناء تعيين المستودع");
+      console.error(error);
+    },
+  });
+
   const orderDetails = response?.success ? response.data : null;
+  const warehouses = warehousesResponse?.success ? warehousesResponse.data : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -72,7 +171,22 @@ export default function OrderDetailsModal({
     }
   };
 
+  const handleStatusUpdate = (newStatus: "approved" | "rejected") => {
+    if (newStatus === "approved" && !selectedWarehouse) {
+      toast.error("يجب اختيار المستودع");
+      return;
+    }
+
+    // Approve/Reject order first, then assign warehouse (if approved)
+    updateStatusMutation.mutate({
+      status: newStatus,
+      reason: reason || undefined,
+    });
+  };
+
   if (!isOpen) return null;
+
+  const canUpdateStatus = orderDetails?.status === "pending";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -197,6 +311,128 @@ export default function OrderDetailsModal({
             </div>
           )}
         </div>
+
+        {/* Products Section */}
+        {!isLoading && !error && orderDetails && orderDetails.items && (
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <Package className="h-5 w-5 text-emerald-600" />
+              المنتجات ({orderDetails.items.length})
+            </h3>
+            <div className="space-y-3">
+              {orderDetails.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 rounded-lg border border-gray-100 p-3 transition-colors hover:bg-gray-50"
+                >
+                  <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-gray-100">
+                    <Image
+                      src={item.product.imageUrl || "/placeholder.png"}
+                      alt={item.product.name}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.png";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">
+                      {item.product.name}
+                    </h4>
+                    <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
+                      <span>الكمية: {item.quantity}</span>
+                      <span>السعر: {item.price} ج.م</span>
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <div className="font-bold text-emerald-600">
+                      {item.total || Number(item.price) * item.quantity} ج.م
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Status Update Section */}
+        {!isLoading && !error && orderDetails && canUpdateStatus && (
+          <div className="border-t border-gray-200 pt-6">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+              <div className="mb-4 flex items-center gap-2">
+                <Truck className="h-5 w-5 text-emerald-600" />
+                <h3 className="font-semibold text-gray-900">
+                  تحديث حالة الطلب
+                </h3>
+              </div>
+
+              <div className="mb-4">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  اختر المستودع <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  value={selectedWarehouse}
+                  onValueChange={setSelectedWarehouse}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر المستودع" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(warehouses || []).map((warehouse: Warehouse) => (
+                      <SelectItem
+                        key={warehouse.id}
+                        value={String(warehouse.id)}
+                      >
+                        {warehouse.name} - {warehouse.location}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="mb-4">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  ملاحظات (اختياري)
+                </label>
+                <Textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="أضف أي ملاحظات أو سبب الرفض..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => handleStatusUpdate("approved")}
+                  disabled={
+                    !selectedWarehouse ||
+                    updateStatusMutation.isPending ||
+                    assignWarehouseMutation.isPending
+                  }
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800"
+                >
+                  <CheckCircle className="ml-2 h-4 w-4" />
+                  قبول الطلب
+                </Button>
+                <Button
+                  onClick={() => handleStatusUpdate("rejected")}
+                  disabled={
+                    updateStatusMutation.isPending ||
+                    assignWarehouseMutation.isPending
+                  }
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <XCircle className="ml-2 h-4 w-4" />
+                  رفض الطلب
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex justify-end gap-3 border-t border-gray-200 p-6">
