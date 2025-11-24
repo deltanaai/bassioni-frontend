@@ -183,9 +183,11 @@ export default function ProductsBulkImport({
                 <tbody>
                   {previewData.map((row, idx) => (
                     <tr key={idx} className="even:bg-gray-50">
-                      {Object.values(row).map((value, i) => (
+                      {Object.keys(previewData[0]).map((key, i) => (
                         <td key={i} className="border px-2 py-1 text-xs">
-                          {JSON.stringify(value)}
+                          {row[key] !== undefined && row[key] !== ""
+                            ? JSON.stringify(row[key])
+                            : "null "}
                         </td>
                       ))}
                     </tr>
