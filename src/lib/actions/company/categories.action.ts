@@ -5,16 +5,16 @@ import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import logger from "@/lib/logger";
 import {
-  GetBrandDetailsSchema,
-  IndexBrandsSchema,
-} from "@/schemas/company/brands";
+  GetCategoryDetailsSchema,
+  IndexCategoriesSchema,
+} from "@/schemas/company/categories";
 
-export async function IndexAllBrands(
+export async function IndexAllCategories(
   params: PaginatedSearchParams
-): Promise<ActionResponse<Brand[]>> {
+): Promise<ActionResponse<Category[]>> {
   const validationResult = await action({
     params,
-    schema: IndexBrandsSchema,
+    schema: IndexCategoriesSchema,
     authorize: true,
   });
   if (validationResult instanceof Error) {
@@ -42,11 +42,13 @@ export async function IndexAllBrands(
   };
 
   try {
-    const response = await api.company.brands.index({ payload });
+    const response = await api.company.categories.index({ payload });
 
     if (!response || response.result === "Error") {
       logger.error(
-        `Failed to fetch company brands: ${response?.message || "No response"}`
+        `Failed to fetch company categories: ${
+          response?.message || "No response"
+        }`
       );
       return handleError(
         new Error("فشل تلقي بيانات من الخادم")
@@ -55,7 +57,7 @@ export async function IndexAllBrands(
 
     return {
       success: true,
-      data: response.data as Brand[],
+      data: response.data as Category[],
       links: response.links,
       meta: response.meta,
     };
@@ -64,21 +66,21 @@ export async function IndexAllBrands(
   }
 }
 
-export async function GetBrandDetails(
-  params: GetBrandDetailsParams
-): Promise<ActionResponse<Brand>> {
+export async function GetCategoryDetails(
+  params: GetCategoryDetailsParams
+): Promise<ActionResponse<Category>> {
   const validationResult = await action({
     params,
-    schema: GetBrandDetailsSchema,
+    schema: GetCategoryDetailsSchema,
     authorize: true,
   });
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { brandId } = validationResult.params!;
+  const { categoryId } = validationResult.params!;
   try {
-    const response = await api.company.brands.show({ brandId });
+    const response = await api.company.categories.show({ categoryId });
     if (!response || response.result === "Error") {
       logger.error(
         `Failed to fetch brand details: ${response?.message || "No response"}`
@@ -89,7 +91,7 @@ export async function GetBrandDetails(
     }
     return {
       success: true,
-      data: response.data as Brand,
+      data: response.data as Category,
     };
   } catch (error) {
     return handleError(error as Error) as ErrorResponse;

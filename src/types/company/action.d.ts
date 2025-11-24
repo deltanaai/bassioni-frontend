@@ -269,6 +269,9 @@ interface ListCompanyOrdersParams {
   companyId: number;
 }
 
-interface GetBrandDetails {
+interface GetBrandDetailsParams {
   brandId: number;
+}
+interface GetCategoryDetailsParams {
+  categoryId: number;
 }

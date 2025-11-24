@@ -1,5 +1,6 @@
 import { authEndpoints as companyAuthEndponts } from "./endpoints/company/auth";
 import { companyBrandsEndpoints } from "./endpoints/company/brands";
+import { companyCategoriesEndpoints } from "./endpoints/company/categories";
 import { companyProductsInfoEndpoints } from "./endpoints/company/companyProduct";
 import { employeesEndpoints } from "./endpoints/company/employees";
 import { companyEndpoint } from "./endpoints/company/info";
@@ -52,6 +53,7 @@ export const api = {
     responseToOffers: responseOffersEndpoints,
     pharmacyOrders: pharmacyOrdersEndpoints,
     brands: companyBrandsEndpoints,
+    categories: companyCategoriesEndpoints,
   },
   pharma: {
     auth: pharmaAuthEndpoints,
