@@ -268,3 +268,7 @@ interface SearchWarehousesParams {
 interface ListCompanyOrdersParams {
   companyId: number;
 }
+
+interface GetBrandDetails {
+  brandId: number;
+}

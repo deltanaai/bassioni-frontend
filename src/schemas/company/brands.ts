@@ -15,4 +15,6 @@ export const IndexBrandsSchema = z.object({
   deleted: z.boolean().optional(),
 });
 
-export const GetBrandDetailsSchema = z.object({})
+export const GetBrandDetailsSchema = z.object({
+  brandId: z.number().int().positive(),
+});
