@@ -185,7 +185,7 @@ function DetailCard({
           {icon}
         </div>
         <div className="flex-1 space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+          <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">
             {label}
           </p>
           <div className="text-base font-semibold text-gray-900">{value}</div>
