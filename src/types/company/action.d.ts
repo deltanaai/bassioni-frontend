@@ -268,3 +268,10 @@ interface SearchWarehousesParams {
 interface ListCompanyOrdersParams {
   companyId: number;
 }
+
+interface GetBrandDetailsParams {
+  brandId: number;
+}
+interface GetCategoryDetailsParams {
+  categoryId: number;
+}
