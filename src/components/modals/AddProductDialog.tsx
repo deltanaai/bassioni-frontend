@@ -80,7 +80,6 @@ export default function AddProductDialog({
       image: undefined,
       rating: undefined,
       tax: 0,
-      // price_without_tax: undefined,
       price: undefined,
     },
   });
@@ -130,8 +129,7 @@ export default function AddProductDialog({
         image: undefined,
         rating: product.rating,
         tax: product.tax,
-        price: product.price,
-        // price_without_tax: product.price_without_tax,
+        price: product.price_without_tax,
       });
       //   setImagePreview(product.image_url || null);
     } else if (!product) {
