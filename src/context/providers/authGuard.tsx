@@ -42,7 +42,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 
     // 2️⃣ If user is logged in and visiting /auth -> redirect to dashboard
     if (isAuthRoute && session?.token) {
-      switch (userType) {
+      switch (userType?.toLowerCase()) {
         case "company":
           router.replace(ROUTES_COMPANY.DASHBOARD);
           break;
