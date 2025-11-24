@@ -1,15 +1,26 @@
+import { importBulkProducts } from "@/lib/actions/owner/products.actions";
+import { queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
-export default function ProductsBulkImport({ onClose }) {
+type ProductsBulkImportProps = {
+  onClose: () => void;
+};
+
+export default function ProductsBulkImport({
+  onClose,
+}: ProductsBulkImportProps) {
   const [fileName, setFileName] = useState("");
   const [previewData, setPreviewData] = useState<any[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleupload = async (e) => {
-    const file = e.target.files[0];
+  const handleupload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    // بنتحقق من الامتداد
+    // Validate extension
     const allowedExtensions = [".xlsx", ".xls", ".csv"];
     const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
 
@@ -17,19 +28,46 @@ export default function ProductsBulkImport({ onClose }) {
       toast.error("Invalid file format! Please upload Excel or CSV only.");
       return;
     }
+
+    setSelectedFile(file);
     setFileName(file.name);
+
+    // Preview data
     const data = await file.arrayBuffer();
-    console.log(data, "dataaaa");
     const workbook = XLSX.read(data);
-    console.log(workbook, "booookk");
-
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    console.log(worksheet, "sheet");
-
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
-    console.log(jsonData, "dataaaaa");
+
     setPreviewData(jsonData);
   };
+
+  const mutation = useMutation({
+    mutationFn: importBulkProducts,
+    onSuccess: (res) => {
+      if (!res.success) {
+        toast.error(res.error?.message ?? "حدث خطأ أثناء استيراد المنتجات");
+        return;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+
+      toast.success(res.message ?? "تم استيراد المنتجات بنجاح");
+      onClose();
+    },
+    onError: () => {
+      toast.error("حدث خطأ أثناء استيراد المنتجات");
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!selectedFile) {
+      toast.error("الرجاء اختيار ملف");
+      return;
+    }
+
+    mutation.mutate({ file: selectedFile });
+  };
+
   return (
     <>
       <div className="max-w-4xl overflow-y-auto max-h-[80vh] mx-auto p-6 space-y-6  rounded-xl ">
@@ -147,7 +185,7 @@ export default function ProductsBulkImport({ onClose }) {
                     <tr key={idx} className="even:bg-gray-50">
                       {Object.values(row).map((value, i) => (
                         <td key={i} className="border px-2 py-1 text-xs">
-                          {value}
+                          {JSON.stringify(value)}
                         </td>
                       ))}
                     </tr>
@@ -165,7 +203,7 @@ export default function ProductsBulkImport({ onClose }) {
                 Cancel
               </button>
               <button
-                // onClick={handleConfirmUpload}
+                onClick={handleSubmit}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
               >
                 <svg
@@ -181,7 +219,7 @@ export default function ProductsBulkImport({ onClose }) {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                Confirm Upload
+                {mutation.isPending ? " is aploading..." : "Confirm Upload"}
               </button>
             </div>
           </div>

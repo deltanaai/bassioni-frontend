@@ -1,9 +1,11 @@
 "use server";
 
+import { getSession } from "@/lib/session";
 import { api } from "../../api";
 import action from "../../handlers/action";
 import handleError from "../../handlers/error";
 import { GetProductsSchema } from "@/schemas/owner/products";
+import logger from "@/lib/logger";
 
 export async function getAllProducts(params: GetAllProductsPayload = {}) {
   const validationResult = await action({
@@ -166,6 +168,46 @@ export async function restoreproducts(ids: productsIdsPayload) {
 
     return {
       success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function importBulkProducts(
+  params: ImportProductsParams
+): Promise<ActionResponse<{ message: string }>> {
+  
+  if (!params.file) {
+    return handleError(new Error("الملف مطلوب")) as ErrorResponse;
+  }
+
+  // Check authorization
+  const session = await getSession();
+  if (!session) {
+    return handleError(new Error("غير مصرح")) as ErrorResponse;
+  }
+
+  const {  file } = params;
+
+  try {
+    const response = await api.owner.products.importBulkProducts({
+      file
+    });
+
+    if (response.result === "Error" || !response) {
+      logger.error(
+        `Import Products Error: ${
+          response.message || "Unknown error"
+        }`
+      );
+      return handleError(
+        new Error(response.message || "لم يتم تلقي بيانات صالحة من الخادم")
+      ) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message ?? "تم استيراد المنتجات بنجاح",
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

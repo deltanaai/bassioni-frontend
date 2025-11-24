@@ -54,4 +54,22 @@ export const ownerProductsEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  importBulkProducts: ({
+    file
+  }: {
+    file: File;
+  }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return fetchHandler(
+      `${API_URL}product/import`,
+      {
+        method: "POST",
+        auth: true,
+        body: formData,
+      }
+    );
+  },
 };
