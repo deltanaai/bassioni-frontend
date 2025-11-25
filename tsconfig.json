@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/app/Owner/companies"  ],
+, "src/app/owner55/companies"  ],
   "exclude": [
     "node_modules"
   ]
