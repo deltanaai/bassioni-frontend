@@ -295,7 +295,7 @@ function ProductsPageContent() {
                       ) : (
                         <>
                           <Link
-                            href={`/Owner/products/${product.id}`}
+                            href={`/owner/products/${product.id}`}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="عرض التفاصيل"
                           >

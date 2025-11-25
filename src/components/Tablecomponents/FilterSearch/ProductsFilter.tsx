@@ -250,8 +250,8 @@ export default function ProductsFilter() {
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
             >
               <option value="">الكل (الحالة)</option>
-              <option value="true">نشط</option>
-              <option value="false">غير نشط</option>
+              <option value="1">نشط</option>
+              <option value="0">غير نشط</option>
             </select>
           </div>
           <div className="relative">
