@@ -9,7 +9,7 @@ function useGetProducts() {
   const name = searchParams.get("name") || undefined;
   const category_id = searchParams.get("category_id") || undefined;
   const brand_id = searchParams.get("brand_id") || undefined;
-  const show_home = searchParams.get("show_home") || undefined;
+  const show_home = searchParams.get("show_home");
   const active = searchParams.get("active");
   const orderBy = searchParams.get("orderBy") || "id";
   const deleted = searchParams.get("deleted");
@@ -24,7 +24,8 @@ function useGetProducts() {
    if (name) filters.search_index = name;
    if (category_id) filters.category_id = category_id;
    if (brand_id) filters.brand_id = brand_id;
-   if (show_home) filters.show_home = show_home === "true"; 
+   if (show_home !== null && show_home !=="")
+    filters.show_home=show_home
    if (active !== null && active !== "") 
      filters.active = active; 
   

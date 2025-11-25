@@ -234,8 +234,8 @@ export default function ProductsFilter() {
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
             >
               <option value="">الكل (العرض في الرئيسية)</option>
-              <option value="true">معروض في الرئيسية</option>
-              <option value="false">مخفي من الرئيسية</option>
+              <option value="1">معروض في الرئيسية</option>
+              <option value="0">مخفي من الرئيسية</option>
             </select>
           </div>
         </div>
