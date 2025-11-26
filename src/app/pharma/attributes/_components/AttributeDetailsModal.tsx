@@ -82,9 +82,7 @@ export default function AttributeDetailsModal({
                 <Hash className="h-4 w-4" />
                 <span className="text-sm font-medium">المعرف</span>
               </div>
-              <p className="mt-2 text-lg font-semibold text-white">
-                {item.id}
-              </p>
+              <p className="mt-2 text-lg font-semibold text-white">{item.id}</p>
             </div>
 
             {/* Name */}

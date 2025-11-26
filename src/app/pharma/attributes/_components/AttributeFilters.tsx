@@ -41,9 +41,7 @@ export default function AttributeFilters({
       <div className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2">
         <span className="text-sm text-gray-400">
           النتائج:{" "}
-          <span className="font-semibold text-emerald-400">
-            {resultsCount}
-          </span>
+          <span className="font-semibold text-emerald-400">{resultsCount}</span>
         </span>
       </div>
     </div>

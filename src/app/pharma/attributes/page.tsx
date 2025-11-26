@@ -1,4 +1,4 @@
-    "use client";
+"use client";
 
 import { Package2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -109,9 +109,7 @@ export default function PharmaAttributesPage() {
           <Package2 className="h-7 w-7 text-emerald-400" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-white">
-            البراندات والفئات
-          </h1>
+          <h1 className="text-3xl font-bold text-white">البراندات والفئات</h1>
           <p className="text-sm text-gray-400">
             عرض جميع البراندات والفئات المتوفرة
           </p>
@@ -121,11 +119,17 @@ export default function PharmaAttributesPage() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} dir="rtl">
         <TabsList className="grid w-full max-w-md grid-cols-2 border-gray-700 bg-gray-800">
-          <TabsTrigger value="brands" className="gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+          <TabsTrigger
+            value="brands"
+            className="gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+          >
             <Package2 className="h-4 w-4" />
             البراندات
           </TabsTrigger>
-          <TabsTrigger value="categories" className="gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+          <TabsTrigger
+            value="categories"
+            className="gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+          >
             <Package2 className="h-4 w-4" />
             الفئات
           </TabsTrigger>

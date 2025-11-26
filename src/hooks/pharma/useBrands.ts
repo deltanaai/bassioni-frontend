@@ -20,7 +20,14 @@ export function useBrands({
   orderByDirection = "desc",
 }: UseBrandsParams = {}) {
   const brandsQuery = useQuery({
-    queryKey: ["pharma-brands", filters, page, perPage, orderBy, orderByDirection],
+    queryKey: [
+      "pharma-brands",
+      filters,
+      page,
+      perPage,
+      orderBy,
+      orderByDirection,
+    ],
     queryFn: async () => {
       const response = await IndexAllBrands({
         filters,

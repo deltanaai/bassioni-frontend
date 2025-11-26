@@ -20,7 +20,14 @@ export function useCategories({
   orderByDirection = "desc",
 }: UseCategoriesParams = {}) {
   const categoriesQuery = useQuery({
-    queryKey: ["pharma-categories", filters, page, perPage, orderBy, orderByDirection],
+    queryKey: [
+      "pharma-categories",
+      filters,
+      page,
+      perPage,
+      orderBy,
+      orderByDirection,
+    ],
     queryFn: async () => {
       const response = await IndexAllCategories({
         filters,
