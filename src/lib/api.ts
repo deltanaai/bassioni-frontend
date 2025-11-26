@@ -26,7 +26,9 @@ import { ownerRolesEndpoints } from "./endpoints/owner/roles";
 import { pharmaAuthEndpoints } from "./endpoints/pharma/auth";
 import { pharmaBranchEndpoints } from "./endpoints/pharma/branches";
 import { branchProductsEndpoints } from "./endpoints/pharma/branchProduct";
+import { pharmaBrandsEndpoints } from "./endpoints/pharma/brands";
 import { cartEndpoints } from "./endpoints/pharma/cart";
+import { pharmaCategoriesEndpoints } from "./endpoints/pharma/categories";
 import { pharmaCompaniesEndpoints } from "./endpoints/pharma/companies";
 import { companyOffersEndpoints } from "./endpoints/pharma/companyOffers";
 import { companyProductsEndpoints } from "./endpoints/pharma/companyProducts";
@@ -66,6 +68,8 @@ export const api = {
     companyOffers: companyOffersEndpoints,
     branchProducts: branchProductsEndpoints,
     orders: pharmaOrderEndpoints,
+    brands: pharmaBrandsEndpoints,
+    categories: pharmaCategoriesEndpoints,
   },
   owner: {
     auth: authEndpoints,
