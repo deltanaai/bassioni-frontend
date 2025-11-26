@@ -57,8 +57,8 @@ export const pharmaSettingsLinks = [
 ];
 
 export const pharmaHeaderLinks = [
-  { name: "الشركات", href: "/Pharma/warehouse", Icon: Package },
-  { name: "الفروع", href: "/Pharma/branches", Icon: Store },
-  { name: "الموظفين", href: "/Pharma/add-employee", Icon: Users },
-  { name: "النظام", href: "/Pharma/system", Icon: Settings },
+  { name: "الشركات", href: ROUTES_PHARMA.COMPANIES, Icon: Package },
+  { name: "الفروع", href: ROUTES_PHARMA.BRANCHES, Icon: Store },
+  { name: "الموظفين", href: ROUTES_PHARMA.ADD_EMPLOYEE, Icon: Users },
+  { name: "النظام", href: ROUTES_PHARMA.SYSTEM, Icon: Settings },
 ];

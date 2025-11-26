@@ -33,6 +33,10 @@ export const ROUTES_PHARMA = {
   DISCOUNT: "/pharma/discount",
   CART: "/pharma/cart",
   COMPANIESPRODUCTS: "/pharma/companies-products",
+  COMPANIES: "/pharma/warehouse",
+  BRANCHES:"/pharma/branches",
+  ADD_EMPLOYEE:"/pharma/add-employee",
+  SYSTEM:"/pharma/system"
 };
 
 export const ROUTES_COMPANY = {
