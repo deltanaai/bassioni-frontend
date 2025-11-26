@@ -34,9 +34,10 @@ export const ROUTES_PHARMA = {
   CART: "/pharma/cart",
   COMPANIESPRODUCTS: "/pharma/companies-products",
   COMPANIES: "/pharma/warehouse",
-  BRANCHES:"/pharma/branches",
-  ADD_EMPLOYEE:"/pharma/add-employee",
-  SYSTEM:"/pharma/system"
+  BRANCHES: "/pharma/branches",
+  ADD_EMPLOYEE: "/pharma/add-employee",
+  SYSTEM: "/pharma/system",
+  BRANCH: (id: number) => `/pharma/branches/${id}`,
 };
 
 export const ROUTES_COMPANY = {

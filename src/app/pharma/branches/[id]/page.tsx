@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { ROUTES_PHARMA } from "@/constants/routes";
 import useBranchDetails from "@/hooks/branches/useBranchDetails";
 import useBranchProducts from "@/hooks/branches/useBranchProducts";
 
@@ -132,7 +133,7 @@ export default function BranchDetailsPage() {
       {
         onSuccess: () => {
           toast.success("تم حذف الفرع بنجاح");
-          router.push("/Pharma/branches");
+          router.push(ROUTES_PHARMA.BRANCHES);
         },
         onError: () => {
           toast.error("حدث خطأ أثناء حذف الفرع");
@@ -196,7 +197,7 @@ export default function BranchDetailsPage() {
         {/* Back Button */}
         <div className="mb-6">
           <button
-            onClick={() => router.push("/Pharma/branches")}
+            onClick={() => router.push(ROUTES_PHARMA.BRANCHES)}
             className="inline-flex items-center gap-2 rounded-xl border border-gray-800/50 bg-gray-900/50 px-4 py-2 text-gray-300 shadow-sm backdrop-blur-xl transition-all hover:bg-gray-900/70 hover:text-white hover:shadow-md"
           >
             <ArrowLeft className="h-5 w-5 text-emerald-400" />

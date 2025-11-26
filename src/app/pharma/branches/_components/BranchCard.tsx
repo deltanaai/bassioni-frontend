@@ -4,6 +4,7 @@ import { Building2, Edit, Eye, MapPin, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/Card";
+import { ROUTES_PHARMA } from "@/constants/routes";
 
 interface BranchCardProps {
   branch: Branch;
@@ -19,7 +20,7 @@ export default function BranchCard({
   const router = useRouter();
 
   const handleViewDetails = () => {
-    router.push(`/Pharma/branches/${branch.id}`);
+    router.push(ROUTES_PHARMA.BRANCH(branch.id));
   };
 
   return (
