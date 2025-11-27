@@ -2,6 +2,7 @@ import React from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 import { roleCreateInput, UpdateRoleInput } from "@/types/company/uiProps";
+import Toggle from "./Toggle";
 
 interface PermissionsSelectorProps {
   permissions: RolePermission[];
@@ -85,15 +86,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -112,15 +112,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -143,15 +142,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -170,15 +168,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -200,15 +197,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -227,15 +223,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -254,15 +249,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
@@ -287,15 +281,14 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                   key={permission.id}
                   className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
                 >
-                  <input
-                    type="checkbox"
-                    value={permission.id}
-                    {...(register as any)("permissions")}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 transition focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  />
                   <span className="flex-1 text-sm font-medium text-gray-700">
                     {getPermissionLabel(permission.name)}
                   </span>
+                  <Toggle
+                    value={permission.id}
+                    name="permissions"
+                    register={register}
+                  />
                 </label>
               ))}
           </div>
