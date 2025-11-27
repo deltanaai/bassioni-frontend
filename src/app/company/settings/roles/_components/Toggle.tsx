@@ -2,15 +2,22 @@ type ToggleProps = {
   value: string | number;
   register: any;
   name: string;
+  defaultChecked?: boolean;
 };
 
-export default function Toggle({ value, register, name }: ToggleProps) {
+export default function Toggle({
+  value,
+  register,
+  name,
+  defaultChecked,
+}: ToggleProps) {
   return (
     <label className="relative inline-flex items-center cursor-pointer">
       <input
         type="checkbox"
         value={value}
         {...register(name)}
+        defaultChecked={defaultChecked}
         className="sr-only peer"
       />
 

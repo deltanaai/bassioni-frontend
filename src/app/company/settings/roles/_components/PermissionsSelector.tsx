@@ -8,6 +8,7 @@ interface PermissionsSelectorProps {
   permissions: RolePermission[];
   register: UseFormRegister<roleCreateInput> | UseFormRegister<UpdateRoleInput>;
   errors?: FieldErrors<roleCreateInput> | FieldErrors<UpdateRoleInput>;
+  watch: (field: "permissions") => number[];
 }
 
 //  عشان نقسمهم لاجزاء في فورم الاضافه ميبقاش كله علي بعضه
@@ -15,6 +16,7 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
   permissions,
   register,
   errors,
+  watch,
 }) => {
   const getPermissionLabel = (permissionName: string) => {
     const labels: { [key: string]: string } = {
@@ -93,6 +95,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -119,6 +124,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -149,6 +157,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -175,6 +186,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -204,6 +218,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -230,6 +247,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -256,6 +276,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}
@@ -288,6 +311,9 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
                     value={permission.id}
                     name="permissions"
                     register={register}
+                    defaultChecked={watch("permissions")?.includes(
+                      permission.id
+                    )}
                   />
                 </label>
               ))}

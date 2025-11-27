@@ -29,9 +29,10 @@ export default function AddRoleForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<roleCreateInput>({
-    resolver: zodResolver(AddNewRoleSchema),
+    resolver: zodResolver(AddNewRoleSchema) as any,
     defaultValues: {
       name: "",
       permissions: [],
@@ -80,6 +81,7 @@ export default function AddRoleForm({
           permissions={permissions}
           register={register}
           errors={errors}
+          watch={watch}
         />
 
         <div className="flex gap-3 border-t border-gray-200 pt-6">

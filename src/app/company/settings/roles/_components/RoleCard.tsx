@@ -1,6 +1,11 @@
-import { Users, Edit, Trash2, Shield } from "lucide-react";
+import { Users, Edit, Trash2, Shield, Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { getRoleById } from "@/lib/actions/company/role.action";
+import { toast } from "sonner";
+import { useState } from "react";
+import ViewRoleModal from "./ViewRoleModal";
 
 interface RoleCardProps {
   role: CompanyRole;
@@ -9,6 +14,20 @@ interface RoleCardProps {
 }
 
 export default function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
+  const [selectedRole, setSelectedRole] = useState<CompanyRole | null>(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+
+  const viewRoleMutation = useMutation({
+    mutationFn: (roleId: number) => getRoleById({ roleId }),
+    onSuccess: (res) => {
+      if (res.success) {
+        setSelectedRole(res.data);
+        setIsViewOpen(true);
+      } else {
+        toast.error("فشل في جلب تفاصيل الدور");
+      }
+    },
+  });
   return (
     <div className="group rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-6 shadow-sm transition-all hover:border-indigo-300 hover:shadow-lg">
       <div className="flex items-start justify-between">
@@ -32,12 +51,20 @@ export default function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1">
+          <Button
+            onClick={() => viewRoleMutation.mutate(role.id)}
+            variant="ghost"
+            size="sm"
+            className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
           <Button
             onClick={() => onEdit(role)}
             variant="ghost"
             size="sm"
-            className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+            className="text-green-600 hover:bg-blue-50 hover:text-blue-700"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -51,6 +78,13 @@ export default function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
           </Button>
         </div>
       </div>
+
+      {isViewOpen && selectedRole && (
+        <ViewRoleModal
+          role={selectedRole}
+          onClose={() => setIsViewOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -32,8 +32,13 @@ export default function EditRoleModal({
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<UpdateRoleInput>({
-    resolver: zodResolver(UpdateRoleSchema),
+    resolver: zodResolver(UpdateRoleSchema) as any,
+    defaultValues: {
+      name: role.name,
+      permissions: role.permissions.map((p) => p.id),
+    },
   });
 
   useEffect(() => {
@@ -54,8 +59,8 @@ export default function EditRoleModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4">
-      <div className="my-8 w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center  justify-center bg-black/50 p-4">
+      <div className="my-8 w-full max-w-4xl rounded-2xl bg-white overflow-y-auto max-h-[95vh] shadow-2xl">
         <div className="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4">
           <h3 className="text-lg font-semibold text-blue-900">تعديل الدور</h3>
           <button
@@ -87,6 +92,7 @@ export default function EditRoleModal({
             permissions={permissions}
             register={register}
             errors={errors}
+            watch={watch}
           />
 
           <div className="flex gap-3 border-t border-gray-200 pt-6">
