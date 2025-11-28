@@ -10,6 +10,8 @@ import ProductDetailsModal from "./_Components/ProductDetailModal";
 import ProductFilters from "./_Components/ProductFilters";
 import ProductSearch from "./_Components/ProductSearch";
 import ProductsTable from "./_Components/ProductsTable";
+import Link from "next/link";
+import { ROUTES_COMPANY } from "@/constants/routes";
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,6 +123,14 @@ export default function ProductsPage() {
             <p className="mt-1 text-xs text-gray-600 md:text-sm">
               عرض وإدارة جميع المنتجات المتاحة
             </p>
+          </div>
+          <div className="mr-auto">
+            <Link
+              href={ROUTES_COMPANY.REQUESTS_PRODUCTS}
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg"
+            >
+              طلبات المنتجات
+            </Link>
           </div>
         </div>
 

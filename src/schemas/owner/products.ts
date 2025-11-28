@@ -37,7 +37,6 @@ export const productSchema = z
     rating: z.number().min(0).max(5).optional(),
     tax: z.number().min(0).optional(),
     price: z.number("السعر مطلوب").min(1, "السعر يجب أن يكون رقمًا موجبًا"),
-    // price: z.number("السعر مطلوب").optional(),
   })
   .refine(
     (data) => {

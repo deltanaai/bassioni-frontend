@@ -60,4 +60,6 @@ export const ROUTES_COMPANY = {
   ADMINISTRATION: "/company/administration",
   OFFERS: "/company/offers",
   PHARMACIES_ORDERS: "/company/pharmacies-orders",
+  REQUESTS_PRODUCTS:'/company/products/request',
+  NEW_PRODUCT_REQ: '/company/products/request/new',
 };
