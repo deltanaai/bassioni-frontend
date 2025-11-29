@@ -6,6 +6,7 @@ import {
   Building,
   ChevronDown,
   ChevronUp,
+  ClipboardList,
   Home,
   LogIn,
   LogOut,
@@ -30,6 +31,11 @@ import { queryClient } from "@/lib/queryClient";
 const links = [
   { name: "الصفحة الرئيسية", href: ROUTES_OWNER.MAIN_DASHBOARD, Icon: Home },
   // { name: "Media", href: "ROUTES.MEDIA", Icon: ImageIcon },
+  {
+    name: "طلبات اضافة المنتجات",
+    href: ROUTES_OWNER.PRODUCT_REQUESTS,
+    Icon: ClipboardList,
+  },
   { name: "السلايدر", href: ROUTES_OWNER.SLIDERS, Icon: Sliders },
   { name: "المشرفين", href: ROUTES_OWNER.ADMINS, Icon: Shield },
   { name: "البراندات", href: ROUTES_OWNER.BRANDS, Icon: Badge },
