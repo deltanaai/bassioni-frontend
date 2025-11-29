@@ -46,8 +46,6 @@ const mockRequests: ProductRequest[] = [
 export default function ProductRequestsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   const [selectedRequest, setSelectedRequest] =
     useState<ProductRequestDetails | null>(null);
@@ -98,13 +96,6 @@ export default function ProductRequestsPage() {
 
     return matchesSearch && matchesStatus;
   });
-
-  // Pagination
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentRequests = filteredRequests.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
 
   //  عندما لا توجد بيانات
   if (mockRequests.length === 0) {
@@ -251,7 +242,7 @@ export default function ProductRequestsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {currentRequests.map((request) => {
+              {filteredRequests.map((request) => {
                 const statusDetails = getStatusDetails(request.status);
                 return (
                   <tr
@@ -295,7 +286,7 @@ export default function ProductRequestsPage() {
           </table>
         </div>
 
-        <Pagination count={filteredRequests.length} pageSize={itemsPerPage} />
+        <Pagination count={filteredRequests.length} pageSize={8} />
       </div>
       <ProductRequestDetailsModal
         request={selectedRequest}

@@ -14,6 +14,7 @@ export const ROUTES_OWNER = {
   ADMINS: "/owner/admins",
   SLIDERS: "/owner/slider",
   ROLES: "/owner/roles",
+  PRODUCT_REQUESTS: "/owner/product-requests"
 };
 
 export const ROUTES_PHARMA = {
