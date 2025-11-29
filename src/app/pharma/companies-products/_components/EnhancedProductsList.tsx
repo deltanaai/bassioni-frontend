@@ -5,6 +5,8 @@ import { AlertCircle, Package } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePharmacySession } from "@/hooks/usePharmacySession";
+import { getCart } from "@/lib/actions/pharma/cart.action";
 import { getCompanyProducts } from "@/lib/actions/pharma/companyProducts.action";
 
 import EnhancedProductCard from "./EnhancedProductCard";
@@ -17,6 +19,9 @@ interface EnhancedProductsListProps {
 export default function EnhancedProductsList({
   company,
 }: EnhancedProductsListProps) {
+  const { pharmacist } = usePharmacySession();
+  const pharmacyId = pharmacist?.pharmacy.id;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceSort, setPriceSort] = useState<"asc" | "desc" | null>(null);
@@ -32,10 +37,24 @@ export default function EnhancedProductsList({
     enabled: !!company.id,
   });
 
+  const { data: cartData } = useQuery({
+    queryKey: ["cart", pharmacyId],
+    queryFn: () => getCart({ pharmacyId: pharmacyId! }),
+    enabled: !!pharmacyId,
+  });
+
   const allProducts = useMemo(
     () => productsResponse?.data?.products || [],
     [productsResponse]
   );
+
+  const cartItems = useMemo(() => cartData?.data || [], [cartData]);
+
+  // Helper to get cart quantity for a product
+  const getProductCartQuantity = (productId: number) => {
+    const cartItem = cartItems.find((item) => item.product.id === productId);
+    return cartItem?.quantity || 0;
+  };
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -158,7 +177,11 @@ export default function EnhancedProductsList({
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => (
-              <EnhancedProductCard key={product.id} product={product} />
+              <EnhancedProductCard
+                key={product.id}
+                product={product}
+                cartQuantity={getProductCartQuantity(product.id)}
+              />
             ))}
           </div>
         </>

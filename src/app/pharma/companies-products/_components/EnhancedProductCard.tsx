@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Package, ShoppingCart, Star } from "lucide-react";
+import { Check, Package, ShoppingCart, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -11,22 +11,25 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { usePharmacySession } from "@/hooks/usePharmacySession";
-import { addToCart } from "@/lib/actions/pharma/cart.action";
+import { addToCart, deleteCartItem } from "@/lib/actions/pharma/cart.action";
 
 interface EnhancedProductCardProps {
   product: CompanyProductPayload;
+  cartQuantity?: number;
 }
 
 export default function EnhancedProductCard({
   product,
+  cartQuantity = 0,
 }: EnhancedProductCardProps) {
   const queryClient = useQueryClient();
   const { pharmacist } = usePharmacySession();
   const [showCounter, setShowCounter] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(cartQuantity || 1);
   const [imageError, setImageError] = useState(false);
 
   const pharmacyId = pharmacist?.pharmacy.id;
+  const isInCart = cartQuantity > 0;
 
   const addToCartMutation = useMutation({
     mutationFn: addToCart,
@@ -38,6 +41,18 @@ export default function EnhancedProductCard({
         setQuantity(1);
       } else {
         toast.error("فشل في إضافة المنتج إلى السلة");
+      }
+    },
+  });
+
+  const deleteFromCartMutation = useMutation({
+    mutationFn: deleteCartItem,
+    onSuccess: (res) => {
+      if (res.success === true) {
+        toast.success("تم حذف المنتج من السلة");
+        queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
+      } else {
+        toast.error("فشل في حذف المنتج من السلة");
       }
     },
   });
@@ -55,10 +70,35 @@ export default function EnhancedProductCard({
     });
   };
 
+  const handleUpdateCart = () => {
+    if (!pharmacyId) return;
+
+    addToCartMutation.mutate({
+      productId: product.id,
+      quantity,
+      pharmacyId,
+    });
+  };
+
+  const handleDeleteFromCart = () => {
+    if (!pharmacyId) return;
+
+    deleteFromCartMutation.mutate({
+      productId: product.id,
+      pharmacyId,
+    });
+  };
+
   const isAvailable = product.active && !product.deleted;
 
   return (
-    <Card className="group overflow-hidden border-gray-700 bg-gray-800 transition-all hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10">
+    <Card
+      className={`group overflow-hidden transition-all ${
+        isInCart
+          ? "border-2 border-emerald-500 bg-gray-800 shadow-lg shadow-emerald-500/20"
+          : "border-gray-700 bg-gray-800 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10"
+      }`}
+    >
       <CardContent className="p-0">
         {/* Product Image */}
         <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800">
@@ -79,6 +119,12 @@ export default function EnhancedProductCard({
 
           {/* Badges */}
           <div className="absolute top-3 right-3 flex flex-col gap-2">
+            {isInCart && (
+              <Badge className="flex items-center gap-1 bg-emerald-600 text-white shadow-lg">
+                <Check className="h-4 w-4" />
+                في السلة ({cartQuantity})
+              </Badge>
+            )}
             {!isAvailable && (
               <Badge
                 variant="destructive"
@@ -88,7 +134,7 @@ export default function EnhancedProductCard({
               </Badge>
             )}
             {product.show_home && (
-              <Badge className="bg-emerald-600/90 backdrop-blur-sm">مميز</Badge>
+              <Badge className="bg-blue-600/90 backdrop-blur-sm">مميز</Badge>
             )}
           </div>
         </div>
@@ -137,8 +183,39 @@ export default function EnhancedProductCard({
             <span className="text-sm text-gray-400">جنيه</span>
           </div>
 
-          {/* Add to Cart */}
-          {!showCounter ? (
+          {/* Cart Actions */}
+          {isInCart ? (
+            <div className="space-y-3">
+              <div className="rounded-lg border border-emerald-600/30 bg-emerald-950/50 p-3">
+                <p className="mb-2 text-xs font-medium text-emerald-400">
+                  الكمية في السلة:
+                </p>
+                <QuantityCounter
+                  quantity={quantity}
+                  onQuantityChange={setQuantity}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleUpdateCart}
+                  disabled={
+                    addToCartMutation.isPending || quantity === cartQuantity
+                  }
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {addToCartMutation.isPending ? "جاري التحديث..." : "تحديث"}
+                </Button>
+                <Button
+                  onClick={handleDeleteFromCart}
+                  disabled={deleteFromCartMutation.isPending}
+                  variant="destructive"
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ) : !showCounter ? (
             <Button
               onClick={() => setShowCounter(true)}
               disabled={!isAvailable}

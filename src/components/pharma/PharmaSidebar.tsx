@@ -1,7 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp, LogOut } from "lucide-react";
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,9 @@ import {
   pharmaProductLinks,
   pharmaSettingsLinks,
 } from "@/constants/pharmaNavigation";
+import { ROUTES_PHARMA } from "@/constants/routes";
+import { usePharmacySession } from "@/hooks/usePharmacySession";
+import { getCart } from "@/lib/actions/pharma/cart.action";
 
 import { PharmaSidebarNavLink } from "./PharmaSidebarNavLink";
 import { PharmaSidebarSection } from "./PharmaSidebarSection";
@@ -26,6 +30,20 @@ export function PharmaSidebar({
   onToggle,
   onSignOut,
 }: PharmaSidebarProps) {
+  const { pharmacist } = usePharmacySession();
+  const pharmacyId = pharmacist?.pharmacy.id;
+
+  const { data: cartData } = useQuery({
+    queryKey: ["cart", pharmacyId],
+    queryFn: () => getCart({ pharmacyId: pharmacyId! }),
+    enabled: !!pharmacyId,
+  });
+
+  const totalCartItems = useMemo(() => {
+    const cartItems = cartData?.data || [];
+    return cartItems.length;
+  }, [cartData]);
+
   return (
     <aside
       className={`${
@@ -74,6 +92,9 @@ export function PharmaSidebar({
               href={link.href}
               icon={<link.Icon className="h-5 w-5" />}
               isCollapsed={isCollapsed}
+              badge={
+                link.href === ROUTES_PHARMA.CART ? totalCartItems : undefined
+              }
             >
               {link.name}
             </PharmaSidebarNavLink>
