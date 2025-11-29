@@ -30,14 +30,14 @@ export default function OfferSearchBar({
           placeholder="ابحث باسم المنتج أو الشركة..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-12 border-gray-700 bg-white pr-10 pl-12 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500/20"
+          className="h-12 border-gray-700 bg-gray-800 pr-10 pl-12 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-emerald-500/20"
         />
         {searchTerm && (
           <Button
             onClick={handleClear}
             variant="ghost"
             size="icon"
-            className="absolute top-1/2 left-2 h-8 w-8 -translate-y-1/2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="absolute top-1/2 left-2 h-8 w-8 -translate-y-1/2 text-gray-400 hover:bg-gray-700 hover:text-gray-300"
           >
             <X className="h-4 w-4" />
           </Button>

@@ -23,6 +23,7 @@ export default function RequestOfferModal({
 }: RequestOfferModalProps) {
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(offer.min_quantity);
+  const [inputValue, setInputValue] = useState(offer.min_quantity.toString());
   const discountValue = parseFloat(offer.discount);
 
   const requestMutation = useMutation({
@@ -46,22 +47,54 @@ export default function RequestOfferModal({
 
   const handleIncrement = () => {
     if (quantity < offer.total_quantity) {
-      setQuantity(quantity + 1);
+      const newQuantity = quantity + 1;
+      setQuantity(newQuantity);
+      setInputValue(newQuantity.toString());
     }
   };
 
   const handleDecrement = () => {
     if (quantity > offer.min_quantity) {
-      setQuantity(quantity - 1);
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      setInputValue(newQuantity.toString());
     }
   };
 
   const handleQuantityChange = (value: string) => {
-    const num = parseInt(value);
+    // Allow empty input for better UX
+    setInputValue(value);
+
+    // Only update quantity if value is a valid number
+    if (value === "") {
+      return;
+    }
+
+    const num = parseInt(value, 10);
     if (!isNaN(num)) {
-      if (num >= offer.min_quantity && num <= offer.total_quantity) {
-        setQuantity(num);
-      }
+      setQuantity(num);
+    }
+  };
+
+  const handleBlur = () => {
+    // On blur, ensure the value is within valid range
+    if (inputValue === "" || isNaN(parseInt(inputValue, 10))) {
+      setInputValue(offer.min_quantity.toString());
+      setQuantity(offer.min_quantity);
+      return;
+    }
+
+    const num = parseInt(inputValue, 10);
+
+    if (num < offer.min_quantity) {
+      setQuantity(offer.min_quantity);
+      setInputValue(offer.min_quantity.toString());
+    } else if (num > offer.total_quantity) {
+      setQuantity(offer.total_quantity);
+      setInputValue(offer.total_quantity.toString());
+    } else {
+      setQuantity(num);
+      setInputValue(num.toString());
     }
   };
 
@@ -145,8 +178,9 @@ export default function RequestOfferModal({
               </Button>
               <Input
                 type="number"
-                value={quantity}
+                value={inputValue}
                 onChange={(e) => handleQuantityChange(e.target.value)}
+                onBlur={handleBlur}
                 min={offer.min_quantity}
                 max={offer.total_quantity}
                 className="h-12 border-gray-700 bg-gray-900 text-center text-xl font-bold text-white focus:border-emerald-500"
