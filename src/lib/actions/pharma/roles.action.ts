@@ -122,3 +122,29 @@ export async function showPharmacyRole(
     return handleError(error as Error) as ErrorResponse;
   }
 }
+
+export async function showPharmacyRolePermissions(): Promise<ActionResponse<RolePermission[]>>{
+  const validationResult = await action({
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  try {
+    const response = await api.pharma.roles.showPermissions();
+    if (!response || response.result === "Error") {
+      logger.error(
+        `Failed to fetch pharmacy role permissions: ${response?.message}`,
+      );
+      return handleError(
+        new Error(response?.message || "Unknown error"),
+      ) as ErrorResponse;
+    }
+    return {
+      success: true,
+      data: response.data as RolePermission[],
+    };
+  } catch (error) {
+    return handleError(error as Error) as ErrorResponse;
+  }
+}

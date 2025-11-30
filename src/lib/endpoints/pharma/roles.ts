@@ -21,4 +21,10 @@ export const pharmaRolesEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  showPermissions: () =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/permissions`, {
+      method: "GET",
+      auth: true,
+    }),
 };
