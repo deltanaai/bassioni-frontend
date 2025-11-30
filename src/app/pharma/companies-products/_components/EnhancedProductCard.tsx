@@ -38,7 +38,6 @@ export default function EnhancedProductCard({
         toast.success("تمت إضافة المنتج إلى السلة بنجاح");
         queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
         setShowCounter(false);
-        setQuantity(1);
       } else {
         toast.error("فشل في إضافة المنتج إلى السلة");
       }
@@ -51,6 +50,7 @@ export default function EnhancedProductCard({
       if (res.success === true) {
         toast.success("تم حذف المنتج من السلة");
         queryClient.invalidateQueries({ queryKey: ["cart", pharmacyId] });
+        setQuantity(1);
       } else {
         toast.error("فشل في حذف المنتج من السلة");
       }
