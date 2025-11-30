@@ -21,3 +21,7 @@ export const CreateRoleSchema = z.object({
     .array(z.coerce.number())
     .nonempty("يجب اختيار صلاحية واحدة على الأقل"),
 });
+
+export const ShowRoleSchema = z.object({
+  roleId: z.coerce.number(),
+});

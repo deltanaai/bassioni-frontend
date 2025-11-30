@@ -15,4 +15,10 @@ export const pharmaRolesEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  show: ({ roleId }: { roleId: number }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/roles/${roleId}`, {
+      method: "GET",
+      auth: true,
+    }),
 };

@@ -2,7 +2,11 @@ import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
 import logger from "@/lib/logger";
-import { CreateRoleSchema, IndexRolesSchema } from "@/schemas/pharma/roles";
+import {
+  CreateRoleSchema,
+  IndexRolesSchema,
+  ShowRoleSchema,
+} from "@/schemas/pharma/roles";
 
 export async function indexPharmacyRoles(
   params: PaginatedSearchParams,
@@ -81,6 +85,38 @@ export async function createPharmacyRole(
     return {
       success: true,
       message: response.message || "Role created successfully",
+    };
+  } catch (error) {
+    return handleError(error as Error) as ErrorResponse;
+  }
+}
+
+export async function showPharmacyRole(
+  params: ShowPharmaRoleParams,
+): Promise<ActionResponse<CompanyRole>> {
+  const validationResult = await action({
+    params,
+    schema: ShowRoleSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { roleId } = validationResult.params!;
+
+  try {
+    const response = await api.pharma.roles.show({ roleId });
+    if (!response || response.result === "Error") {
+      logger.error(
+        `Failed to fetch pharmacy role details: ${response?.message}`,
+      );
+      return handleError(
+        new Error(response?.message || "Unknown error"),
+      ) as ErrorResponse;
+    }
+    return {
+      success: true,
+      data: response.data as CompanyRole,
     };
   } catch (error) {
     return handleError(error as Error) as ErrorResponse;

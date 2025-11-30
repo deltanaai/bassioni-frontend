@@ -171,3 +171,7 @@ interface CreatePharmacyRoleParams {
   name: string;
   permissions: number[];
 }
+
+interface ShowPharmaRoleParams {
+  roleId: number;
+}
