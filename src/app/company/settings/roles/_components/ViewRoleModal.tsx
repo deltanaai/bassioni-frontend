@@ -1,3 +1,5 @@
+import { getPermissionLabel } from "@/app/utils/permissions";
+
 interface ViewRoleModalProps {
   role: CompanyRole;
   onClose: () => void;
@@ -132,7 +134,7 @@ export default function ViewRoleModal({ role, onClose }: ViewRoleModalProps) {
                     >
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                       <span className="text-sm mr-2 font-medium text-gray-700">
-                        {p.name}
+                        {getPermissionLabel(p.name)}
                       </span>
                     </div>
                   ))}
