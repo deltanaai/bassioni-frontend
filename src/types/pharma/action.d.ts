@@ -57,7 +57,7 @@ interface SendToOrderResponse {
 
 interface UpdateOrderStatusParams {
   orderId: number;
-  status: "approved" | "rejected";
+  status: "approved" | "rejected" |"completed";
   reason?: string;
 }
 

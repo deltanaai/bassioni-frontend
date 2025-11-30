@@ -1,6 +1,10 @@
 "use client";
 
-import { Calendar, Package2, MapPin, User } from "lucide-react";
+import { updateOrderStatus } from "@/lib/actions/company/orders.action";
+import { queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { Calendar, Package2, MapPin, User, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface OrderCardProps {
   order: CompanyOrder;
@@ -8,11 +12,26 @@ interface OrderCardProps {
 }
 
 export default function OrderCard({ order, onViewDetails }: OrderCardProps) {
+  const completeOrderMutation = useMutation({
+    mutationFn: () =>
+      updateOrderStatus({ orderId: order.order_id, status: "completed" }),
+    onSuccess: () => {
+      toast.success("تم اكتمال الطلب بنجاح");
+      queryClient.invalidateQueries({ queryKey: ["companyOrders"] });
+    },
+    onError: (error) => {
+      toast.error("حدث خطا أثناء اكتمال الطلب   ");
+      console.error(error);
+    },
+  });
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-700 border-yellow-200";
       case "approved":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+
       case "completed":
         return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case "rejected":
@@ -96,6 +115,15 @@ export default function OrderCard({ order, onViewDetails }: OrderCardProps) {
 
       {/* Actions */}
       <div className="mt-4 flex justify-end border-t border-gray-100 pt-4">
+        {order.status === "approved" && (
+          <button
+            onClick={() => completeOrderMutation.mutate()}
+            className="rounded-lg group  items-center gap-2 flex bg-emerald-500 ml-3 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-emerald-700"
+          >
+            <CheckCircle className="w-4 h-4 text-white" />
+            تم الاستلام
+          </button>
+        )}
         <button
           onClick={() => onViewDetails(order)}
           className="rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-700 px-4 py-2 text-sm font-medium text-white transition-all hover:from-emerald-700 hover:to-emerald-800"

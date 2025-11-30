@@ -1,17 +1,25 @@
 "use client";
 
-import { Package, ShoppingCart, CheckCircle, XCircle } from "lucide-react";
+import {
+  Package,
+  ShoppingCart,
+  XCircle,
+  Circle,
+  CheckCircle,
+} from "lucide-react";
 
 interface OrdersStatsProps {
   total: number;
   pending: number;
   completed: number;
+  approved: number;
   cancelled: number;
 }
 
 export default function OrdersStats({
   total,
   pending,
+  approved,
   completed,
   cancelled,
 }: OrdersStatsProps) {
@@ -20,8 +28,8 @@ export default function OrdersStats({
       label: "إجمالي الطلبات",
       value: total,
       icon: ShoppingCart,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
+      color: "text-gray-600",
+      bgColor: "bg-gray-100",
     },
     {
       label: "قيد الانتظار",
@@ -31,7 +39,14 @@ export default function OrdersStats({
       bgColor: "bg-yellow-100",
     },
     {
-      label: "مكتمل",
+      label: "موافق علية",
+      value: approved,
+      icon: Circle,
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
+    },
+    {
+      label: "مكتمل ",
       value: completed,
       icon: CheckCircle,
       color: "text-emerald-600",
@@ -47,7 +62,7 @@ export default function OrdersStats({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-5">
       {stats.map((stat) => (
         <div
           key={stat.label}
