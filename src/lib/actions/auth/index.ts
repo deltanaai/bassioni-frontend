@@ -27,19 +27,39 @@ export async function signIn(
       throw new Error("Invalid login response from the server.");
     }
 
-    console.log("user data: ", response.data);
-    const userData = { ...response.data, userType: "Owner" } as SessionUser;
+    const data = response.data as { company?: { name: string }; pharmacy?: { name: string }; dashboardName?: string };
+
+    let userType = "Owner";
+    let dashboardName = "";
+
+    if (data.company) {
+      userType = "Company";
+      dashboardName = data.company.name; 
+    } else if (data.pharmacy) {
+      userType = "Pharmacy";
+      dashboardName = data.pharmacy.name;
+    } else {
+      userType = "Owner";
+      dashboardName = `${data.dashboardName}` ; 
+    }
+//     const userData = { ...response.data, userType: "Owner" } as SessionUser;
+    const userData = {
+      ...data,
+      userType,
+      dashboardName,
+    } as SessionUser;
 
     await setSession(userData, response.token);
 
     return {
       success: true,
-      data: JSON.parse(JSON.stringify(response.data)),
+      data: JSON.parse(JSON.stringify(data)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
 }
+
 
 export async function signOut(): Promise<ActionResponse<{ message: string }>> {
   const validatioResult = await action({

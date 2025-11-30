@@ -12,9 +12,17 @@ declare global {
     phone?: string;
     active: boolean;
     userType?: "Pharma" | "Owner" | "Company";
+    dashboardName?: string;
     imageUrl?: string;
     image?: string | null;
     pharmacy?: Pharmacy;
+      company?: {
+    id: number;
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+  };
     role: string;
     address?: string;
     createdAt: string;
