@@ -100,7 +100,7 @@ export default function RolesManagementPage() {
           </div>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
           {roles.map((role) => (
             <RoleCard
               key={role.id}

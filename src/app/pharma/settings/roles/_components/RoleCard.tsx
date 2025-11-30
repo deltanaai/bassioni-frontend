@@ -1,9 +1,11 @@
 "use client";
 
-import { Edit, Shield, Trash2, Users } from "lucide-react";
+import { Edit, Loader2, Shield, Trash2, Users } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+
+import { useRoleDetails } from "../_hooks/useRoleDetails";
 
 interface RoleCardProps {
   role: CompanyRole;
@@ -13,6 +15,14 @@ interface RoleCardProps {
 
 export default function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
   const [showPermissions, setShowPermissions] = useState(false);
+  
+  // Always fetch role details to show count
+  const { data: roleDetails, isLoading: isLoadingDetails } = useRoleDetails(
+    role.id,
+    true // Always enabled to get permission count
+  );
+
+  const permissions = roleDetails?.permissions || [];
 
   return (
     <div className="group rounded-xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg transition-all hover:border-purple-500 hover:shadow-xl hover:shadow-purple-500/10">
@@ -54,7 +64,11 @@ export default function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
         <div>
           <p className="text-xs text-gray-500">عدد الصلاحيات</p>
           <p className="text-lg font-semibold text-white">
-            {role.permissions?.length || 0}
+            {isLoadingDetails ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              permissions.length
+            )}
           </p>
         </div>
       </div>
@@ -68,16 +82,22 @@ export default function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
       </button>
 
       {/* Permissions List */}
-      {showPermissions && role.permissions && role.permissions.length > 0 && (
+      {showPermissions && (
         <div className="mt-4 max-h-60 space-y-1 overflow-y-auto rounded-lg bg-gray-900/50 p-3">
-          {role.permissions.map((permission) => (
-            <div
-              key={permission.id}
-              className="rounded bg-gray-800/50 px-3 py-2 text-sm text-gray-300"
-            >
-              {permission.name}
-            </div>
-          ))}
+          {permissions.length > 0 ? (
+            permissions.map((permission) => (
+              <div
+                key={permission.id}
+                className="rounded bg-gray-800/50 px-3 py-2 text-sm text-gray-300"
+              >
+                {permission.name}
+              </div>
+            ))
+          ) : (
+            <p className="py-2 text-center text-sm text-gray-500">
+              لا توجد صلاحيات
+            </p>
+          )}
         </div>
       )}
     </div>

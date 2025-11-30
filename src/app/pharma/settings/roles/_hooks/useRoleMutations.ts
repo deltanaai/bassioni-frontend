@@ -29,10 +29,14 @@ export function useRoleMutations() {
 
   const updateMutation = useMutation({
     mutationFn: updatePharmacyRole,
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       if (data.success) {
         toast.success(data.message || "تم تحديث الدور بنجاح");
         queryClient.invalidateQueries({ queryKey: ["pharmacy-roles"] });
+        // Invalidate the specific role details to reflect changes immediately
+        queryClient.invalidateQueries({
+          queryKey: ["pharmacy-role", variables.roleId],
+        });
       } else {
         toast.error(data.message || "فشل تحديث الدور");
       }
