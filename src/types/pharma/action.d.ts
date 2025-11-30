@@ -166,3 +166,8 @@ interface ShowBranchParams {
 interface ShowPharmacyOrdersParams {
   pharmacyId: number;
 }
+
+interface CreatePharmacyRoleParams {
+  name: string;
+  permissions: number[];
+}

@@ -35,6 +35,7 @@ import { companyProductsEndpoints } from "./endpoints/pharma/companyProducts";
 import { pharmaMasterProductsEndpoints } from "./endpoints/pharma/masterProducts";
 import { pharmaOrderEndpoints } from "./endpoints/pharma/orders";
 import { pharmacyProductsEndpoints } from "./endpoints/pharma/pharmaProducts";
+import { pharmaRolesEndpoints } from "./endpoints/pharma/roles";
 
 // API_URL in development is http://127.0.0.1:8000/api/
 export const api = {
@@ -70,6 +71,7 @@ export const api = {
     orders: pharmaOrderEndpoints,
     brands: pharmaBrandsEndpoints,
     categories: pharmaCategoriesEndpoints,
+    roles: pharmaRolesEndpoints,
   },
   owner: {
     auth: authEndpoints,
