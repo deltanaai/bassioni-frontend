@@ -3,6 +3,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 import { roleCreateInput, UpdateRoleInput } from "@/types/company/uiProps";
 import Toggle from "./Toggle";
+import { getPermissionLabel } from "@/app/utils/permissions";
 
 interface PermissionsSelectorProps {
   permissions: RolePermission[];
@@ -18,50 +19,6 @@ const PermissionsSelector: React.FC<PermissionsSelectorProps> = ({
   errors,
   watch,
 }) => {
-  const getPermissionLabel = (permissionName: string) => {
-    const labels: { [key: string]: string } = {
-      "manage-company": "إدارة الشركة",
-      "employee-list": "عرض الموظفين",
-      "employee-create": "إضافة موظف",
-      "employee-edit": "تعديل موظف",
-      "employee-delete": "حذف موظف",
-      "role-list": "عرض الأدوار",
-      "role-create": "إضافة دور",
-      "role-edit": "تعديل دور",
-      "role-delete": "حذف دور",
-      "warehouse-list": "عرض المستودعات",
-      "warehouse-create": "إضافة مستودع",
-      "warehouse-edit": "تعديل مستودع",
-      "warehouse-delete": "حذف مستودع",
-      "warehouse-product-list": "عرض منتجات المستودع",
-      "warehouse-product-create": "إضافة منتج للمستودع",
-      "warehouse-product-edit": "تعديل منتج في المستودع",
-      "warehouse-product-import": "استيراد المنتجات من المستودعات",
-      "warehouse-product-delete": "حذف منتج من المستودع",
-      "company-list": "عرض الشركات",
-      "pharmacy-list": "عرض الصيدليات",
-      "offer-list": "عرض العروض",
-      "offer-create": "إضافة عرض",
-      "offer-edit": "تعديل عرض",
-      "offer-delete": "حذف عرض",
-      "response_offer-list": "عرض ردود العروض",
-      "response_offer-edit": "تعديل رد العرض",
-      "response_offer-delete": "حذف رد العرض",
-      "company-offer-list": "قائمة عروض الشركة",
-      "company-offer-create": "انشاء عرض شركة",
-      "company-offer-edit": "تعديل عرض الشركة",
-      "company-offer-delete": "حذف عرض الشركة",
-      "product-list": "عرض المنتجات",
-      "response_offer-order": "استجابة طلب العرض  ",
-      "order-list": "عرض الطلبات",
-      "order-create": "إضافة طلب",
-      "order-edit": "تعديل طلب",
-      "order-delete": "حذف طلب",
-    };
-
-    return labels[permissionName] || permissionName;
-  };
-
   // console.log("PERMISSIONS", permissions);
   const selectedPermissions = (watch("permissions") || []).map((p) =>
     Number(p)
