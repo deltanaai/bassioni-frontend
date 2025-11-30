@@ -1,3 +1,5 @@
+'use server';
+
 import { api } from "@/lib/api";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
@@ -11,7 +13,7 @@ import {
 
 export async function indexPharmacyRoles(
   params: PaginatedSearchParams,
-): Promise<ActionResponse<RolePermission[]>> {
+): Promise<ActionResponse<CompanyRole[]>> {
   const validationResult = await action({
     params,
     schema: IndexRolesSchema,
@@ -53,7 +55,7 @@ export async function indexPharmacyRoles(
     }
     return {
       success: true,
-      data: response.data as RolePermission[],
+      data: response.data as CompanyRole[],
       links: response.links,
       meta: response.meta,
     };
