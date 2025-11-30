@@ -175,3 +175,7 @@ interface CreatePharmacyRoleParams {
 interface ShowPharmaRoleParams {
   roleId: number;
 }
+
+interface UpdatePharmaRoleParams extends CreatePharmacyRoleParams {
+  roleId: number;
+}
