@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatArabicDate2 } from "@/lib/utils";
 
 interface AttributesTableProps {
   items: Brand[] | Category[];
@@ -149,11 +150,7 @@ export default function AttributesTable({
                 )}
               </TableCell>
               <TableCell className="text-sm text-gray-600">
-                {new Date(item.createdAt).toLocaleDateString("ar-EG", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {formatArabicDate2(item.createdAt)}
               </TableCell>
               <TableCell>
                 <Button

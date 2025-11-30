@@ -158,3 +158,26 @@ export function formatBackendDateToArabic(
     return dateString;
   }
 }
+
+export function formatArabicDate2(dateStr: string) {
+  // Example incoming string: "2025-Nov-25 15:52:11 PM"
+
+  const normalized = dateStr.replace("PM", "").replace("AM", "").trim();
+
+  const date = new Date(normalized);
+
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date received:", dateStr);
+    return dateStr;
+  }
+
+  return new Intl.DateTimeFormat("ar-EG", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+  }).format(date);
+}

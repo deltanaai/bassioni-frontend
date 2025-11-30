@@ -22,7 +22,7 @@ export default function AttributesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>("all");
   const [selectedItem, setSelectedItem] = useState<Brand | Category | null>(
-    null
+    null,
   );
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
@@ -120,12 +120,18 @@ export default function AttributesPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} dir="rtl">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="brands" className="gap-2">
+        <TabsList className="grid w-full max-w-md grid-cols-2 bg-white">
+          <TabsTrigger
+            value="brands"
+            className="gap-2 data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm"
+          >
             <Package2 className="h-4 w-4" />
             البراندات
           </TabsTrigger>
-          <TabsTrigger value="categories" className="gap-2">
+          <TabsTrigger
+            value="categories"
+            className="gap-2 data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm"
+          >
             <Package2 className="h-4 w-4" />
             الفئات
           </TabsTrigger>

@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { formatArabicDate2 } from "@/lib/utils";
 
 interface AttributeDetailsModalProps {
   item: Brand | Category | null;
@@ -58,7 +59,7 @@ export default function AttributeDetailsModal({
                     if (parent && !parent.querySelector("svg")) {
                       const svg = document.createElementNS(
                         "http://www.w3.org/2000/svg",
-                        "svg"
+                        "svg",
                       );
                       svg.setAttribute("class", "h-12 w-12 text-gray-400");
                       svg.innerHTML =
@@ -119,34 +120,18 @@ export default function AttributeDetailsModal({
             />
             <DetailCard
               label="تاريخ الإنشاء"
-              value={new Date(item.createdAt).toLocaleDateString("ar-EG", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              value={formatArabicDate2(item.createdAt)}
               icon="📅"
             />
             <DetailCard
               label="آخر تحديث"
-              value={new Date(item.updatedAt).toLocaleDateString("ar-EG", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              value={formatArabicDate2(item.updatedAt)}
               icon="🔄"
             />
             {item.deletedAt && (
               <DetailCard
                 label="تاريخ الحذف"
-                value={new Date(item.deletedAt).toLocaleDateString("ar-EG", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                value={formatArabicDate2(item.deletedAt)}
                 icon="🗑️"
               />
             )}
