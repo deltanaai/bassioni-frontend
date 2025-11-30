@@ -40,4 +40,11 @@ export const pharmaRolesEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  delete: ({ payload }: { payload: DeleteRolesPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/roles/delete`, {
+      method: "DELETE",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };

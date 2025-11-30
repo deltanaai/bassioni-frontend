@@ -25,3 +25,9 @@ export const CreateRoleSchema = z.object({
 export const ShowRoleSchema = z.object({
   roleId: z.coerce.number(),
 });
+
+export const DeleteRoleSchema = z.object({
+  itemsIds: z
+    .array(z.number("معرف الدور غير صالح").int().positive())
+    .min(1, "يجب تحديد دور واحد على الأقل للحذف"),
+});

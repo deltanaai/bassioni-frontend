@@ -86,3 +86,7 @@ interface DeleteBranchProductsPayload {
 interface DeleteBranchPayload {
   items: number[];
 }
+
+interface DeleteRolesPayload {
+  items: number[];
+}

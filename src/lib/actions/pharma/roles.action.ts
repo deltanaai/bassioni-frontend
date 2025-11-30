@@ -4,6 +4,7 @@ import handleError from "@/lib/handlers/error";
 import logger from "@/lib/logger";
 import {
   CreateRoleSchema,
+  DeleteRoleSchema,
   IndexRolesSchema,
   ShowRoleSchema,
 } from "@/schemas/pharma/roles";
@@ -175,6 +176,39 @@ export async function updatePharmacyRole(
     return {
       success: true,
       message: response.message || "Role updated successfully",
+    };
+  } catch (error) {
+    return handleError(error as Error) as ErrorResponse;
+  }
+}
+
+export async function deletePharmacyRoles(
+  params: DeleteRoleParams,
+): Promise<ActionResponse<{ message: string }>> {
+  const validationResult = await action({
+    params,
+    schema: DeleteRoleSchema,
+    authorize: true,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { itemsIds } = validationResult.params!;
+
+  const payload: DeleteRolesPayload = {
+    items: itemsIds,
+  };
+  try {
+    const response = await api.pharma.roles.delete({ payload });
+    if (!response || response.result === "Error") {
+      logger.error(`Failed to delete pharmacy roles: ${response?.message}`);
+      return handleError(
+        new Error(response?.message || "Unknown error"),
+      ) as ErrorResponse;
+    }
+    return {
+      success: true,
+      message: response.message || "Roles deleted successfully",
     };
   } catch (error) {
     return handleError(error as Error) as ErrorResponse;
