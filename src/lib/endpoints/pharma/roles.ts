@@ -27,4 +27,24 @@ export const pharmaRolesEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  update: ({
+    roleId,
+    payload,
+  }: {
+    roleId: number;
+    payload: CreatePharmacyRoleParams;
+  }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/roles/${roleId}`, {
+      method: "PATCH",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
+
+  delete: ({ payload }: { payload: DeleteRolesPayload }) =>
+    fetchHandler(`${API_URL}pharmacy/dashboard/roles/delete`, {
+      method: "DELETE",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };
