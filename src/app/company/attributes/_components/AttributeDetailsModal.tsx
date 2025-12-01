@@ -31,7 +31,7 @@ export default function AttributeDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto bg-white">
         <DialogHeader className="border-b border-gray-100 pb-4">
           <DialogTitle className="flex items-center gap-3 text-2xl font-bold text-gray-900">
             <div className="rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 p-2.5">
@@ -59,7 +59,7 @@ export default function AttributeDetailsModal({
                     if (parent && !parent.querySelector("svg")) {
                       const svg = document.createElementNS(
                         "http://www.w3.org/2000/svg",
-                        "svg",
+                        "svg"
                       );
                       svg.setAttribute("class", "h-12 w-12 text-gray-400");
                       svg.innerHTML =
