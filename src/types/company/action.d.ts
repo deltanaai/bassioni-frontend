@@ -275,3 +275,7 @@ interface GetBrandDetailsParams {
 interface GetCategoryDetailsParams {
   categoryId: number;
 }
+
+interface ShowCompanyPriceParams {
+  productId: number;
+}
