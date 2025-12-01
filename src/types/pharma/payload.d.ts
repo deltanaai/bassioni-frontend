@@ -56,7 +56,7 @@ interface SendToOrderPayload {
 }
 
 interface UpdateOrderStatusPayload {
-  status: "approved" | "rejected";
+  status: "approved" | "rejected"|"completed";
   reason?: string;
 }
 

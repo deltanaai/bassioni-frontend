@@ -139,7 +139,7 @@ export default function AddPharmacyDialog({
         </DialogTrigger>
       )}
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-blue-600">
             {isEditMode ? "تعديل الصيدلية" : "إضافة صيدلية جديدة"}

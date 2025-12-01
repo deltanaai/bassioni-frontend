@@ -16,7 +16,7 @@ import {
 } from "./_components";
 
 type OrderType = "orders" | "offers";
-type StatusFilter = "all" | "pending" | "approved" | "rejected";
+type StatusFilter = "all" | "pending" | "approved" | "rejected" | "completed";
 
 export default function PharmaciesOrdersPage() {
   const [activeTab, setActiveTab] = useState<OrderType>("orders");
@@ -52,10 +52,9 @@ export default function PharmaciesOrdersPage() {
     return {
       total: orders.length,
       pending: orders.filter((o) => o.status === "pending").length,
-      completed: orders.filter(
-        (o) => o.status === "approved" || o.status === "completed"
-      ).length,
+      completed: orders.filter((o) => o.status === "completed").length,
       cancelled: orders.filter((o) => o.status === "rejected").length,
+      approved: orders.filter((o) => o.status === "approved").length,
     };
   }, [orders]);
 
@@ -64,7 +63,8 @@ export default function PharmaciesOrdersPage() {
     return {
       total: offers.length,
       pending: offers.filter((o) => o.status === "pending").length,
-      completed: offers.filter((o) => o.status === "approved").length,
+      completed: offers.filter((o) => o.status === "completed").length,
+      approved: offers.filter((o) => o.status === "approved").length,
       cancelled: offers.filter((o) => o.status === "rejected").length,
     };
   }, [offers]);
@@ -118,6 +118,16 @@ export default function PharmaciesOrdersPage() {
         موافق عليه
       </button>
       <button
+        onClick={() => setStatusFilter("completed")}
+        className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+          statusFilter === "completed"
+            ? "bg-emerald-600 text-white"
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        }`}
+      >
+        مكتمل
+      </button>
+      <button
         onClick={() => setStatusFilter("rejected")}
         className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
           statusFilter === "rejected"
@@ -166,6 +176,7 @@ export default function PharmaciesOrdersPage() {
             pending={ordersStats.pending}
             completed={ordersStats.completed}
             cancelled={ordersStats.cancelled}
+            approved={ordersStats.approved}
           />
 
           {/* Status Filters */}
@@ -212,6 +223,7 @@ export default function PharmaciesOrdersPage() {
             pending={offersStats.pending}
             completed={offersStats.completed}
             cancelled={offersStats.cancelled}
+            approved={ordersStats.approved}
           />
 
           {/* Status Filters */}

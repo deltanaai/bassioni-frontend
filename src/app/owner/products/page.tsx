@@ -154,7 +154,7 @@ function ProductsPageContent() {
               <div className="col-span-2 text-center">اسم المنتج</div>
               <div className="col-span-1 text-center">الاسم العلمي</div>
               <div className="col-span-1 text-center">شكل الجرعة</div>
-              <div className="col-span-1 text-center">السعر</div>
+              <div className="col-span-1 text-center">سعر الجمهور</div>
               <div className="col-span-1 text-center">الفئة</div>
               <div className="col-span-1 text-center">العلامة</div>
               <div className="col-span-1 text-center">التقييم</div>

@@ -208,7 +208,7 @@ export default function ProductRequestDetailsModal({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700">
-                      السعر
+                      سعر الجمهور
                     </label>
                     <p className="text-gray-900 mt-1">
                       {request.price

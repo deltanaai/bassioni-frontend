@@ -9,8 +9,6 @@ import {
   CheckCircle,
   XCircle,
   Truck,
-  User,
-  MapPin,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -98,7 +96,7 @@ export default function OrderDetailsModal({
         toast.error(data.error?.message || "فشل تحديث الحالة");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error("حدث خطأ أثناء تحديث الحالة");
       console.error(error);
     },
@@ -121,7 +119,7 @@ export default function OrderDetailsModal({
         toast.error(data.error?.message || "فشل تعيين المستودع");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error("حدث خطأ أثناء تعيين المستودع");
       console.error(error);
     },
