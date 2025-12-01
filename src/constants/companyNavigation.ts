@@ -27,6 +27,7 @@ export interface NavLink {
 export const companyMainLinks: NavLink[] = [
   { name: "الصفحة الرئيسية", href: ROUTES_COMPANY.DASHBOARD, Icon: Home },
   { name: "المنتجات", href: ROUTES_COMPANY.PRODUCTS, Icon: Mail },
+  { name: " انشاء فواتير البيع و الشراء", href: ROUTES_COMPANY.OFFLINE_INVOICES, Icon: Archive },
   {
     name: "طلبات الصيدليات",
     href: ROUTES_COMPANY.PHARMACIES_ORDERS,
