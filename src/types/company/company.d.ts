@@ -17,3 +17,12 @@ interface ProductBatches {
     name: string;
   };
 }
+
+interface CompanyPriceDetails {
+  product_id: number;
+  discount_percent: string;
+  final_price: number;
+  updatedAt: string;
+  sentSince: string;
+  createdAt: string;
+}

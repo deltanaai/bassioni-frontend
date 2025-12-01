@@ -45,7 +45,7 @@ interface GetProductApiResponse extends BaseApiResponse {
 
 interface DeleteWarehouseProductParams {
   warehouseId: number;
-  itemsId: number[];
+  itemId: number;
   batchNumber: string;
 }
 
@@ -274,4 +274,13 @@ interface GetBrandDetailsParams {
 }
 interface GetCategoryDetailsParams {
   categoryId: number;
+}
+
+interface ShowCompanyPriceParams {
+  productId: number;
+}
+
+interface SetCompanyPriceParams {
+  productId: number;
+  discountPercent: number;
 }

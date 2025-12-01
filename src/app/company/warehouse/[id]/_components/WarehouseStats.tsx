@@ -3,33 +3,28 @@ import { AlertTriangle, Archive, Package, ShoppingCart } from "lucide-react";
 import { useMemo } from "react";
 
 interface WarehouseStatsProps {
-  products: WarehouseProduct[];
+  products: WarehouseProductsIndex[];
 }
 
 export default function WarehouseStats({ products }: WarehouseStatsProps) {
   const stats = useMemo(() => {
     const totalProducts = products.length;
-    const totalStock = products.reduce((sum, p) => sum + p.available_stock, 0);
+    const totalStock = products.reduce((sum, p) => sum + p.total_stock, 0);
     const totalReserved = products.reduce(
       (sum, p) => sum + p.reserved_stock,
       0
     );
 
-    // Count expiring products (within 30 days)
-    const today = new Date();
-    const expiringProducts = products.filter((p) => {
-      const expiry = new Date(p.expiry_date);
-      const daysUntilExpiry = Math.ceil(
-        (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
-    }).length;
+    // Count low stock products
+    const lowStockProducts = products.filter(
+      (p) => p.stock_status === "low_stock"
+    ).length;
 
     return {
       totalProducts,
       totalStock,
       totalReserved,
-      expiringProducts,
+      lowStockProducts,
     };
   }, [products]);
 
@@ -59,8 +54,8 @@ export default function WarehouseStats({ products }: WarehouseStatsProps) {
       borderColor: "border-orange-200",
     },
     {
-      title: "قريب الانتهاء",
-      value: stats.expiringProducts.toLocaleString(),
+      title: "منتجات منخفضة المخزون",
+      value: stats.lowStockProducts.toLocaleString(),
       icon: AlertTriangle,
       gradient: "from-red-50 to-red-100",
       iconColor: "text-red-600",
