@@ -279,3 +279,8 @@ interface GetCategoryDetailsParams {
 interface ShowCompanyPriceParams {
   productId: number;
 }
+
+interface SetCompanyPriceParams {
+  productId: number;
+  discountPercent: number;
+}

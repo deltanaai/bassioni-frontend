@@ -184,3 +184,8 @@ interface DeleteDemandedOffersPayload {
 interface RestoreDemandedOffersPayload {
   items: number[];
 }
+
+interface SetCompanyPricePayload {
+  product_id: number;
+  discount_percent: number;
+}

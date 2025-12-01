@@ -7,4 +7,11 @@ export const companyPriceEndpoints = {
       method: "GET",
       auth: true,
     }),
+
+  set: ({ payload }: { payload: SetCompanyPricePayload }) =>
+    fetchHandler(`${API_URL}company/dashboard/products-prices/store`, {
+      method: "POST",
+      auth: true,
+      body: JSON.stringify(payload),
+    }),
 };
