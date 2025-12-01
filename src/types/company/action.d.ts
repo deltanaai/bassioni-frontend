@@ -191,12 +191,14 @@ interface ShowCompanyOrderParams {
 }
 
 interface CreateOfferParams {
-  warehouseProductId: number;
-  discount: number;
+  productId: number;
+  offerType: "DISCOUNT" | "BUY_X_GET_Y";
+  freeQuantity?: number;
+  discount?: number;
   active: boolean;
   minQuantity: number;
   totalQuantity: number;
-  description: string;
+  description?: string;
   startDate: string;
   endDate: string;
 }

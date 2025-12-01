@@ -148,10 +148,12 @@ interface AssignOrderToWarehousePayload {
 }
 
 interface CreateOfferPayload {
-  warehouse_product_id: number;
-  discount: number;
-  active: boolean;
+  product_id: number;
+  offer_type: "DISCOUNT" | "BUY_X_GET_Y";
+  discount?: number;
+  get_free_quantity?: number;
   min_quantity: number;
+  active: boolean;
   total_quantity: number;
   description?: string;
   start_date: string;
