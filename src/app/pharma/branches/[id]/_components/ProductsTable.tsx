@@ -51,7 +51,7 @@ export default function ProductsTable({ products = [] }: ProductsTableProps) {
               المحجوز
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-300">
-              السعر
+              سعر الجمهور
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-300">
               عدد الدفعات

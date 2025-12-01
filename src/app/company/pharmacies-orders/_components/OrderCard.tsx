@@ -101,7 +101,7 @@ export default function OrderCard({ order, onViewDetails }: OrderCardProps) {
               </span>
             </div>
             <div className="flex items-center gap-2 font-semibold text-emerald-600">
-              <span>السعر: {order.total_price} ج.م</span>
+              <span>اجمالي السعر: {order.total_price} ج.م</span>
             </div>
           </div>
 

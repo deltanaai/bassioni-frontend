@@ -87,7 +87,7 @@ export default function ReviewModal({
                 />
                 <InfoCard
                   icon="💰"
-                  label="السعر"
+                  label="سعر الجمهور"
                   value={request.details.price}
                   valueClassName="text-green-600 font-semibold"
                 />

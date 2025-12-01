@@ -75,7 +75,7 @@ export default function ProductsTable({
               المحجوز
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
-              السعر
+              سعر الجمهور
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               القيمة الإجمالية

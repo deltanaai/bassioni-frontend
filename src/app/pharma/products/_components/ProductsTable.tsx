@@ -43,7 +43,7 @@ export default function ProductsTable({
               البراند
             </th>
             <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
-              السعر
+              سعر الجمهور
             </th>
             <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
               التقييم

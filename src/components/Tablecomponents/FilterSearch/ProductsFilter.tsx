@@ -284,7 +284,7 @@ export default function ProductsFilter() {
                   <option value="name_en">الاسم (بالانجليزية)</option>
                   <option value="name_ar">الاسم (بالعربية)</option>
                   <option value="position">الترتيب</option>
-                  <option value="price">السعر</option>
+                  <option value="price">سعر الجمهور</option>
                   <option value="rating">التقييم</option>
                 </select>
               </div>

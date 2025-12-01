@@ -283,7 +283,7 @@ export default function StagnantGoods() {
                   الكمية
                 </th>
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">
-                  السعر
+                  سعر الجمهور
                 </th>
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">
                   المخزن
