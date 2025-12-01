@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
-import InvoiceTable, { ProductRow } from "./InvoiceTable";
-import InvoiceTotals from "./InvoiceTotals";
+import { ProductRow } from "./InvoiceTable";
 
-export default function InvoiceWithSearch() {
+interface Props {
+  rows: ProductRow[];
+  setRows: React.Dispatch<React.SetStateAction<ProductRow[]>>;
+}
+
+export default function ProductSearch({ setRows }: Props) {
   const { data: companyProductsResponse, isLoading: productsLoading } =
     useQuery({
       queryKey: ["companyProducts"],
@@ -19,7 +23,6 @@ export default function InvoiceWithSearch() {
   const [searchBy, setSearchBy] = useState<"name" | "barcode" | "gtin" | "qr">(
     "name"
   );
-  const [rows, setRows] = useState<ProductRow[]>([]);
 
   const filteredProducts = allProducts.filter((p) => {
     if (!searchTerm) return false;
@@ -110,10 +113,6 @@ export default function InvoiceWithSearch() {
           ))}
         </ul>
       )}
-
-      {/* الجدول */}
-      <InvoiceTable rows={rows} setRows={setRows} />
-      <InvoiceTotals items={rows} />
     </div>
   );
 }

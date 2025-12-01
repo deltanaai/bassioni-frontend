@@ -8,23 +8,39 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function BuyInvoicePage() {
-  const [rows, setRows] = useState<InvoiceItem[]>([]);
-  const [partyId, setPartyId] = useState<number | null>(null);
-
-  //  استرجاع المسودة عند فتح الصفحة
-  useEffect(() => {
-    const savedDraft = localStorage.getItem("invoice_draft");
-    if (savedDraft) {
-      const parsed = JSON.parse(savedDraft);
-      setRows(parsed.items || []);
-      setPartyId(parsed.partyId || null);
+  const [rows, setRows] = useState<InvoiceItem[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedDraft = localStorage.getItem("invoice_draft_buy");
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          return parsed.items || [];
+        } catch {
+          return [];
+        }
+      }
     }
-  }, []);
+    return [];
+  });
 
-  //  الحفظ التلقائي عند أي تغيير
+  const [partyId, setPartyId] = useState<number | null>(() => {
+    if (typeof window !== "undefined") {
+      const savedDraft = localStorage.getItem("invoice_draft_buy");
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          return parsed.partyId || null;
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
+  });
+
   useEffect(() => {
     localStorage.setItem(
-      "invoice_draft",
+      "invoice_draft_buy",
       JSON.stringify({
         items: rows,
         partyId,
@@ -48,7 +64,13 @@ export default function BuyInvoicePage() {
         </h1>
       </div>
 
-      <InvoiceForm type="buy" />
+      <InvoiceForm
+        type="buy"
+        rows={rows}
+        setRows={setRows}
+        partyId={partyId}
+        setPartyId={setPartyId}
+      />
     </>
   );
 }

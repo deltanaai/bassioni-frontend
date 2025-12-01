@@ -7,8 +7,8 @@ export type InvoiceItem = {
   freeQty: number;
   unitPrice: number;
   discount: number;
-  lineTotal: number; // لازم يكون محسوب مسبقًا أو نحسبه هنا
 };
+
 
 
 export interface InvoiceFormData {

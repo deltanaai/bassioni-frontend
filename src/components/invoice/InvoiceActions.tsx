@@ -1,8 +1,5 @@
-"use client";
-
 import { InvoiceItem, InvoiceType } from "@/types/invoice";
 import { toast } from "sonner";
-import { useEffect } from "react";
 
 interface Props {
   type: InvoiceType;
@@ -11,25 +8,12 @@ interface Props {
   onClear: () => void;
 }
 
-const STORAGE_KEY = "invoice_draft";
-
 export default function InvoiceActions({
   type,
   items,
   partyId,
   onClear,
 }: Props) {
-  //  Auto Save
-  useEffect(() => {
-    const draft = {
-      type,
-      partyId,
-      items,
-    };
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-  }, [type, partyId, items]);
-
   const handleSave = () => {
     if (!partyId) return toast.error("اختار العميل / المورد");
     if (!items.length) return toast.error("الفاتورة فاضية");
@@ -40,20 +24,17 @@ export default function InvoiceActions({
       items,
     });
 
-    //  بعد الحفظ نمسح الـ draft
-    localStorage.removeItem(STORAGE_KEY);
+    toast.success("تم حفظ الفاتورة بنجاح");
 
-    alert("تم حفظ الفاتورة (تجريبي)");
     onClear();
   };
 
   const handleClear = () => {
-    localStorage.removeItem(STORAGE_KEY);
     onClear();
   };
 
   const handlePrint = () => {
-    window.open(`/invoices/print`, "_blank");
+    window.open(`/company/offline_invoices/print`, "_blank");
   };
 
   return (
