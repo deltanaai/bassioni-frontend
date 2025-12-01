@@ -34,7 +34,7 @@ export default function InvoiceActions({
   };
 
   const handlePrint = () => {
-    window.open(`/company/offline_invoices/print`, "_blank");
+    window.open(`/company/offline_invoices/print?type=${type}`, "_blank");
   };
 
   return (

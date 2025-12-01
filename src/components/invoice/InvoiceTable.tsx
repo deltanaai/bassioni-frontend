@@ -65,6 +65,7 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
               <td className="border px-2 py-1">
                 <input
                   type="number"
+                  min={0}
                   value={row.unitPrice}
                   onChange={(e) =>
                     updateRow(
@@ -79,6 +80,7 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
               <td className="border px-2 py-1">
                 <input
                   type="number"
+                  min={1}
                   value={row.qty}
                   onChange={(e) =>
                     updateRow(row.id, "qty", parseInt(e.target.value) || 0)
@@ -89,6 +91,7 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
               <td className="border px-2 py-1">
                 <input
                   type="number"
+                  min={0}
                   value={row.freeQty}
                   onChange={(e) =>
                     updateRow(row.id, "freeQty", parseInt(e.target.value) || 0)
@@ -99,6 +102,7 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
               <td className="border px-2 py-1">
                 <input
                   type="number"
+                  min={0}
                   value={row.discount}
                   onChange={(e) =>
                     updateRow(
