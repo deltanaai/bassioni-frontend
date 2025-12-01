@@ -1,46 +1,30 @@
 "use client";
-import { Package2, Trash2 } from "lucide-react";
+import { Eye, Package2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 interface ProductsTableProps {
-  products: WarehouseProduct[];
-  onDelete?: (product: WarehouseProduct) => void;
+  products: WarehouseProductsIndex[];
+  onViewBatches?: (product: WarehouseProductsIndex) => void;
 }
 
 export default function ProductsTable({
   products = [],
-  onDelete,
+  onViewBatches,
 }: ProductsTableProps) {
-  // Helper function to get expiry status
-  const getExpiryStatus = (expiryDate: string) => {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    const daysUntilExpiry = Math.ceil(
-      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (daysUntilExpiry < 0) {
-      return { status: "expired", label: "منتهي الصلاحية", color: "red" };
-    } else if (daysUntilExpiry <= 30) {
-      return {
-        status: "expiring_soon",
-        label: "قريب الانتهاء",
-        color: "orange",
-      };
-    }
-    return { status: "good", label: "جيد", color: "emerald" };
-  };
-
   // Helper function to get stock status
-  const getStockStatus = (availableStock: number) => {
-    if (availableStock === 0) {
-      return { label: "نفذ من المخزن", color: "red" };
-    } else if (availableStock < 10) {
-      return { label: "منخفض", color: "orange" };
+  const getStockStatus = (status: string) => {
+    switch (status) {
+      case "out_of_stock":
+        return { label: "نفذ من المخزن", color: "red" };
+      case "low_stock":
+        return { label: "منخفض", color: "orange" };
+      case "in_stock":
+        return { label: "متوفر", color: "emerald" };
+      default:
+        return { label: "غير محدد", color: "gray" };
     }
-    return { label: "متوفر", color: "emerald" };
   };
 
   if (!Array.isArray(products) || products.length === 0) {
@@ -66,7 +50,7 @@ export default function ProductsTable({
               المنتج
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
-              رقم الدفعة
+              المخزون الكلي
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               المتوفر
@@ -75,13 +59,13 @@ export default function ProductsTable({
               المحجوز
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
-              السعر
+              عدد الدفعات
+            </th>
+            <th className="p-4 text-center text-sm font-semibold text-gray-700">
+              السعر (بعد الخصم)
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               القيمة الإجمالية
-            </th>
-            <th className="p-4 text-center text-sm font-semibold text-gray-700">
-              الصلاحية
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               الحالة
@@ -93,14 +77,13 @@ export default function ProductsTable({
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
           {products.map((product) => {
-            const expiryStatus = getExpiryStatus(product.expiry_date);
-            const stockStatus = getStockStatus(product.available_stock);
+            const stockStatus = getStockStatus(product.stock_status);
             const totalValue =
-              product.available_stock * parseFloat(product.price);
+              product.available_stock * product.price_after_discount_with_tax;
 
             return (
               <tr
-                key={`${product.id}-${product.batch_number}`}
+                key={product.id}
                 className="transition-colors hover:bg-gray-50"
               >
                 <td className="p-4">
@@ -112,21 +95,21 @@ export default function ProductsTable({
                       <p className="font-semibold text-gray-900">
                         {product.name}
                       </p>
-                      {product.description && (
+                      {product.scientific_name && (
                         <p className="text-xs text-gray-500">
-                          {product.description}
+                          {product.scientific_name}
                         </p>
                       )}
                     </div>
                   </div>
                 </td>
                 <td className="p-4 text-center">
-                  <span className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
-                    {product.batch_number}
+                  <span className="text-sm font-semibold text-gray-900">
+                    {product.total_stock.toLocaleString()}
                   </span>
                 </td>
                 <td className="p-4 text-center">
-                  <span className="text-sm font-semibold text-gray-900">
+                  <span className="text-sm font-semibold text-emerald-600">
                     {product.available_stock.toLocaleString()}
                   </span>
                 </td>
@@ -136,32 +119,19 @@ export default function ProductsTable({
                   </span>
                 </td>
                 <td className="p-4 text-center">
+                  <span className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                    {product.total_batches}
+                  </span>
+                </td>
+                <td className="p-4 text-center">
                   <span className="text-sm font-medium text-gray-900">
-                    {parseFloat(product.price).toLocaleString()} ج.م
+                    {product.price_after_discount_with_tax.toLocaleString()} ج.م
                   </span>
                 </td>
                 <td className="p-4 text-center">
                   <span className="text-sm font-bold text-emerald-600">
                     {totalValue.toLocaleString()} ج.م
                   </span>
-                </td>
-                <td className="p-4">
-                  <div className="flex flex-col items-center gap-1">
-                    <Badge
-                      className={`${
-                        expiryStatus.color === "red"
-                          ? "bg-red-100 text-red-700 hover:bg-red-100"
-                          : expiryStatus.color === "orange"
-                          ? "bg-orange-100 text-orange-700 hover:bg-orange-100"
-                          : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
-                      }`}
-                    >
-                      {expiryStatus.label}
-                    </Badge>
-                    <span className="text-xs text-gray-500">
-                      {product.expiry_date}
-                    </span>
-                  </div>
                 </td>
                 <td className="p-4 text-center">
                   <Badge
@@ -180,10 +150,10 @@ export default function ProductsTable({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onDelete?.(product)}
-                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                    onClick={() => onViewBatches?.(product)}
+                    className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Eye className="h-4 w-4" />
                   </Button>
                 </td>
               </tr>

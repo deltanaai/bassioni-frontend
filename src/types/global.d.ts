@@ -113,6 +113,29 @@ interface CompanyRole {
   permissions: RolePermission[];
 }
 
+interface WarehouseProductsIndex {
+  id: number;
+  name: string;
+  description: string;
+  scientific_name: string;
+  active_ingredients: string;
+  dosage_form: string;
+  gtin: string;
+  bar_code: string;
+  company_discount_percent: number;
+  tax: number;
+  price_after_discount_without_tax: number;
+  price_after_discount_with_tax: number;
+  price_without_tax: number;
+  active: boolean;
+  imageUrl: string;
+  total_stock: number;
+  reserved_stock: number;
+  available_stock: number;
+  total_batches: number;
+  stock_status: string;
+}
+
 interface WarehouseProduct {
   id: number;
   name: string;

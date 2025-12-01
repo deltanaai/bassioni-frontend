@@ -45,7 +45,7 @@ interface GetProductApiResponse extends BaseApiResponse {
 
 interface DeleteWarehouseProductParams {
   warehouseId: number;
-  itemsId: number[];
+  itemId: number;
   batchNumber: string;
 }
 

@@ -78,9 +78,7 @@ export const UpdateWarehouseProductSchema = z.object({
 
 export const DeleteWarehouseProductSchema = z.object({
   warehouseId: z.number().min(1, "معرف المستودع مطلوب"),
-  itemsId: z
-    .array(z.number().int().positive())
-    .min(1, "يجب حذف منتج واحد على الأقل"),
+  itemId: z.number().int().positive(),
   batchNumber: z.string().min(1, "رقم الدفعة مطلوب"),
 });
 

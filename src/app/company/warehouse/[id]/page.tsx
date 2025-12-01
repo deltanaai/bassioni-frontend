@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 import AddWarehouseProductModal from "@/components/warehouse/AddWarehouseProductModal";
 import DeleteWarehouseModal from "@/components/warehouse/DeleteWarehouseModal";
-import DeleteWarehouseProductModal from "@/components/warehouse/DeleteWarehouseProductModal";
 import EditWarehouseModal from "@/components/warehouse/EditWarehouseModal";
 import ImportProductsModal from "@/components/warehouse/ImportProductsModal";
 import useWarehouseDetails from "@/hooks/warehouse/useWarehouseDetails";
@@ -17,6 +16,7 @@ import { UpdateWarehouseSchema } from "@/schemas/company/warehouse";
 import { StoreWarehouseProductSchema } from "@/schemas/company/warehouseProducts";
 import { ProductInput } from "@/types/company/uiProps";
 
+import ProductBatchesModal from "./_components/ProductBatchesModal";
 import ProductFilters from "./_components/ProductFilters";
 import ProductSearch from "./_components/ProductSearch";
 import ProductsTable from "./_components/ProductsTable";
@@ -40,9 +40,9 @@ export default function WarehouseDetailsPage() {
 
   // products
   const [showProductModal, setShowProductModel] = useState(false);
-  const [showDeleteProductModal, setShowDeleteProductModal] = useState(false);
-  const [productToDelete, setProductToDelete] =
-    useState<WarehouseProduct | null>(null);
+  const [showBatchesModal, setShowBatchesModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] =
+    useState<WarehouseProductsIndex | null>(null);
 
   const params = useParams();
   const warehouseId = Number(params.id) || 0;
@@ -55,7 +55,6 @@ export default function WarehouseDetailsPage() {
     editMutation,
     deleteMutation,
     addProductMutation,
-    deleteProductMutation,
   } = useWarehouseDetails(warehouseId);
 
   const warehouse = warehouseQuery.data?.data;
@@ -68,42 +67,25 @@ export default function WarehouseDetailsPage() {
   );
   const masterProductsArray = (masterQuery.data?.data as MasterProduct[]) || [];
 
-  // Helper function to get expiry status
-  const getExpiryStatus = (expiryDate: string) => {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    const daysUntilExpiry = Math.ceil(
-      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (daysUntilExpiry < 0) return "expired";
-    if (daysUntilExpiry <= 30) return "expiring_soon";
-    return "good";
-  };
-
   // Client-side filtering with useMemo
   const filteredProducts = useMemo(() => {
     return allProducts.filter((product) => {
       const matchesSearch =
         searchQuery === "" ||
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.batch_number
-          .toLowerCase()
+        product.scientific_name
+          ?.toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        product.expiry_date.includes(searchQuery);
+        product.gtin?.includes(searchQuery) ||
+        product.bar_code?.includes(searchQuery);
 
-      const expiryStatus = getExpiryStatus(product.expiry_date);
-      const matchesExpiryStatus =
-        selectedExpiryStatus === "all" || expiryStatus === selectedExpiryStatus;
-
+      // Filter by stock status using the stock_status field
       const matchesStockStatus =
         selectedStockStatus === "all" ||
-        (selectedStockStatus === "in_stock" && product.available_stock > 10) ||
-        (selectedStockStatus === "low_stock" &&
-          product.available_stock > 0 &&
-          product.available_stock <= 10) ||
-        (selectedStockStatus === "out_of_stock" &&
-          product.available_stock === 0);
+        product.stock_status === selectedStockStatus;
+
+      // Note: expiry status filtering removed as it's now at batch level
+      const matchesExpiryStatus = selectedExpiryStatus === "all";
 
       return matchesSearch && matchesExpiryStatus && matchesStockStatus;
     });
@@ -214,28 +196,6 @@ export default function WarehouseDetailsPage() {
     );
   };
 
-  const handleProductDelete = () => {
-    if (productToDelete) {
-      deleteProductMutation.mutate(
-        {
-          warehouseId,
-          itemsId: [productToDelete.id],
-          batchNumber: productToDelete.batch_number,
-        },
-        {
-          onSuccess: () => {
-            setShowDeleteProductModal(false);
-            setProductToDelete(null);
-            toast.success(`تم حذف المنتج من المستودع بنجاح`);
-          },
-          onError: () => {
-            toast.error("حدث خطأ غير متوقع أثناء حذف المنتج");
-          },
-        }
-      );
-    }
-  };
-
   // التحقق من صحة الـ ID
   if (isNaN(warehouseId)) {
     return (
@@ -344,9 +304,9 @@ export default function WarehouseDetailsPage() {
         ) : (
           <ProductsTable
             products={filteredProducts}
-            onDelete={(product) => {
-              setShowDeleteProductModal(true);
-              setProductToDelete(product);
+            onViewBatches={(product) => {
+              setSelectedProduct(product);
+              setShowBatchesModal(true);
             }}
           />
         )}
@@ -380,15 +340,14 @@ export default function WarehouseDetailsPage() {
         submitting={addProductMutation.isPending}
       />
 
-      <DeleteWarehouseProductModal
-        show={showDeleteProductModal}
-        product={productToDelete}
-        onClose={() => {
-          setShowDeleteProductModal(false);
-          setProductToDelete(null);
+      <ProductBatchesModal
+        product={selectedProduct}
+        warehouseId={warehouseId}
+        open={showBatchesModal}
+        onOpenChange={(open) => {
+          setShowBatchesModal(open);
+          if (!open) setSelectedProduct(null);
         }}
-        onConfirm={handleProductDelete}
-        deleting={deleteProductMutation.isPending}
       />
 
       <ImportProductsModal

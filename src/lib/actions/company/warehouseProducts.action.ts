@@ -5,7 +5,6 @@ import { getSession } from "@/lib/session";
 import {
   DeleteWarehouseProductSchema,
   GetWarehouseProductsSchema,
-  ImportWarehouseProductsSchema,
   StoreWarehouseBatchProductSchema,
   StoreWarehouseProductSchema,
   WarehouseProductsIndexSchema,
@@ -17,7 +16,7 @@ import handleError from "../../handlers/error";
 
 export async function getAllWarehouseProducts(
   params: WarehouseProductsIndexParams
-): Promise<ActionResponse<WarehouseProduct[]>> {
+): Promise<ActionResponse<WarehouseProductsIndex[]>> {
   const validationResult = await action({
     params,
     schema: WarehouseProductsIndexSchema,
@@ -58,7 +57,7 @@ export async function getAllWarehouseProducts(
     }
     return {
       success: true,
-      data: response.data as WarehouseProduct[],
+      data: response.data as WarehouseProductsIndex[],
       links: response.links,
       meta: response.meta,
     };
@@ -308,10 +307,10 @@ export async function deleteProductFromWarehouse(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { warehouseId, itemsId, batchNumber } = validationResult.params!;
+  const { warehouseId, itemId, batchNumber } = validationResult.params!;
 
   const payload: DeleteWarehouseProductPayload = {
-    items: itemsId,
+    product_id: itemId,
     batch_number: batchNumber,
   };
 

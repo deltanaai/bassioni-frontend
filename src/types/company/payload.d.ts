@@ -31,7 +31,7 @@ interface UpdateWarehouseProductPayload {
 }
 
 interface DeleteWarehouseProductPayload {
-  items: number[];
+  product_id: number;
   batch_number: string;
 }
 
