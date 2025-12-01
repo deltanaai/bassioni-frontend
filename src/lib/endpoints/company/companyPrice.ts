@@ -14,4 +14,20 @@ export const companyPriceEndpoints = {
       auth: true,
       body: JSON.stringify(payload),
     }),
+
+  update: ({
+    productId,
+    payload,
+  }: {
+    productId: number;
+    payload: SetCompanyPricePayload;
+  }) =>
+    fetchHandler(
+      `${API_URL}company/dashboard/products-prices/update/${productId}`,
+      {
+        method: "PATCH",
+        auth: true,
+        body: JSON.stringify(payload),
+      }
+    ),
 };
