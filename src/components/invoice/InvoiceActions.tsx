@@ -34,6 +34,7 @@ export default function InvoiceActions({
   };
 
   const handlePrint = () => {
+    if (!items.length) return toast.error("الفاتورة فاضية");
     window.open(`/company/offline_invoices/print?type=${type}`, "_blank");
   };
 

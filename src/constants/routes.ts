@@ -63,5 +63,7 @@ export const ROUTES_COMPANY = {
   PHARMACIES_ORDERS: "/company/pharmacies-orders",
   REQUESTS_PRODUCTS:'/company/products/request',
   NEW_PRODUCT_REQ: '/company/products/request/new',
-  OFFLINE_INVOICES:"/company/offline_invoices"
+  BUY_INVOICES:"/company/offline_invoices/buy",
+  SELL_INVOICES:"/company/offline_invoices/sell"
+
 };

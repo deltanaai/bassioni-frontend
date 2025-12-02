@@ -6,6 +6,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   companyFavoriteLinks,
+  companyInvoicesLinks,
   companyMainLinks,
   companySettingsLinks,
 } from "@/constants/companyNavigation";
@@ -42,7 +43,9 @@ export function CompanySidebar({
               <span className="text-sm font-bold">A</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-gray-800">Company</span>
+              <span className="text-sm font-semibold text-gray-800">
+                Company
+              </span>
               <span className="text-xs text-gray-500">شركة بسيوني</span>
             </div>
           </div>
@@ -76,12 +79,33 @@ export function CompanySidebar({
           ))}
         </div>
 
+        {/* invoices section */}
+        <SidebarSection
+          title="فواتير offline"
+          isCollapsed={isCollapsed}
+          defaultExpanded={true}
+          showAddButton={false}
+        >
+          {companyInvoicesLinks.map((link) => (
+            <SidebarNavLink
+              key={link.href}
+              href={link.href}
+              icon={<link.Icon className="h-5 w-5" />}
+              isCollapsed={isCollapsed}
+            >
+              <div className="flex flex-1 items-center justify-between">
+                <span>{link.name}</span>
+              </div>
+            </SidebarNavLink>
+          ))}
+        </SidebarSection>
+
         {/* Favorites Section */}
         <SidebarSection
           title="المفضلة"
           isCollapsed={isCollapsed}
           defaultExpanded={true}
-          showAddButton={true}
+          showAddButton={false}
         >
           {companyFavoriteLinks.map((link) => (
             <SidebarNavLink
