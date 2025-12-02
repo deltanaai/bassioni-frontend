@@ -70,6 +70,8 @@ export default function BuyInvoicePage() {
         setRows={setRows}
         partyId={partyId}
         setPartyId={setPartyId}
+        theme="light"
+        source="company"
       />
     </>
   );

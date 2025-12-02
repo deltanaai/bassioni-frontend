@@ -200,6 +200,8 @@
 @media print {
   body * {
     visibility: hidden; 
+    background: white !important;
+    color: black !important;
   }
   .printable, .printable * {
     visibility: visible; 
@@ -212,7 +214,8 @@
     min-width: 100%;
     margin: 0;
     padding: 0;
-    background: white;
+    background: white !important;
+    color: black !important;
   }
   
   .printable-table {
