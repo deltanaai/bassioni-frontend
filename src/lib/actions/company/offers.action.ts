@@ -190,7 +190,10 @@ export async function deleteOffers(
   try {
     const response = await api.company.offers.delete({ payload });
     if (!response || response.result !== "Success") {
-      throw new Error("فشل حذف العروض");
+      logger.error(`Failed to delete offers: ${response?.message}`);
+      return handleError(
+        new Error(response.message || "فشل حذف العروض")
+      ) as ErrorResponse;
     }
     return {
       success: true,
