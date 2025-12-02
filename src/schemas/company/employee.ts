@@ -104,7 +104,7 @@ export const UpdateEmployeeSchema = z
 
     email: z.string().email("بريد إلكتروني غير صالح").optional(),
 
-   phone: z
+    phone: z
       .string({
         error: "رقم الهاتف مطلوب",
       })
@@ -157,7 +157,7 @@ export const UpdateEmployeeSchema = z
 
     roleId: z.number("يجب اختيار دور الموظف").int().positive().optional(),
 
-    warehouseId: z.number().int().positive().nullable().optional(),
+    warehouses: z.array(z.number().int().positive()).nullable().optional(),
 
     active: z.boolean().optional(),
 

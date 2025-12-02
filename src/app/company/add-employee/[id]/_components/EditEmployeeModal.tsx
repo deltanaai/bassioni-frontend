@@ -53,7 +53,7 @@ export default function EditEmployeeModal({
       phone: "",
       address: "",
       roleId: undefined,
-      warehouseId: undefined,
+      warehouses: null,
       active: false,
       password: "",
       passwordConfirmation: "",
@@ -71,7 +71,7 @@ export default function EditEmployeeModal({
         phone: employee.phone,
         address: employee.address || "",
         roleId: foundRole?.id,
-        warehouseId: employee.warehouse_id,
+        warehouses: employee.warehouse_id ? [employee.warehouse_id] : null,
         active: employee.active,
         password: "",
         passwordConfirmation: "",
@@ -193,7 +193,9 @@ export default function EditEmployeeModal({
                 onValueChange={(value) =>
                   setValue("roleId", parseInt(value), { shouldValidate: true })
                 }
-                defaultValue={employee.warehouse_id?.toString()}
+                defaultValue={roles
+                  .find((role) => role.name === employee.role)
+                  ?.id.toString()}
               >
                 <SelectTrigger
                   className={errors.roleId ? "border-red-500" : ""}
@@ -216,10 +218,14 @@ export default function EditEmployeeModal({
             <div className="space-y-2">
               <Label htmlFor="warehouse">المستودع (اختياري)</Label>
               <Select
-                onValueChange={(value) =>
-                  setValue("warehouseId", value ? parseInt(value) : undefined)
-                }
-                defaultValue={employee.warehouse_id?.toString()}
+                onValueChange={(value) => {
+                  if (value === "null") {
+                    setValue("warehouses", null);
+                  } else {
+                    setValue("warehouses", [parseInt(value)]);
+                  }
+                }}
+                defaultValue={employee.warehouse_id?.toString() || "null"}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="اختر المستودع" />
