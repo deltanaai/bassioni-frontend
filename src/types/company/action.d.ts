@@ -195,6 +195,7 @@ interface CreateOfferParams {
   offerType: "DISCOUNT" | "BUY_X_GET_Y";
   freeQuantity?: number;
   discount?: number;
+  maxRedemptions?: number;
   active: boolean;
   minQuantity: number;
   totalQuantity: number;
@@ -205,8 +206,11 @@ interface CreateOfferParams {
 
 interface UpdateOfferParams {
   offerId: number;
-  warehouseProductId?: number;
+  productId?: number;
+  offerType?: "DISCOUNT" | "BUY_X_GET_Y";
+  freeQuantity?: number;
   discount?: number;
+  maxRedemptions?: number;
   active?: boolean;
   minQuantity?: number;
   totalQuantity?: number;

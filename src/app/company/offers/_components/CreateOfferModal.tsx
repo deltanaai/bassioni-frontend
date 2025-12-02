@@ -21,7 +21,10 @@ export default function CreateOfferModal({
 }: CreateOfferModalProps) {
   const [form, setForm] = useState({
     productId: "",
+    offerType: "DISCOUNT" as "DISCOUNT" | "BUY_X_GET_Y",
     discount: "",
+    freeQuantity: "",
+    maxRedemptions: "",
     description: "",
     active: true,
     minQuantity: "1",
@@ -45,12 +48,30 @@ export default function CreateOfferModal({
     setErrors({});
 
     // تحقق من الحقول الأساسية
-    if (!form.productId || !form.discount) {
+    if (!form.productId) {
       setErrors({
-        productId: !form.productId ? "يجب اختيار منتج" : "",
-        discount: !form.discount ? "يجب إدخال نسبة الخصم" : "",
+        productId: "يجب اختيار منتج",
       });
       return;
+    }
+
+    // تحقق من الحقول حسب نوع العرض
+    if (form.offerType === "DISCOUNT" && !form.discount) {
+      setErrors({ discount: "يجب إدخال نسبة الخصم" });
+      return;
+    }
+
+    if (form.offerType === "BUY_X_GET_Y") {
+      if (!form.freeQuantity) {
+        setErrors({ freeQuantity: "يجب إدخال الكمية المجانية" });
+        return;
+      }
+      if (!form.maxRedemptions) {
+        setErrors({
+          maxRedemptions: "يجب إدخال الحد الأقصى لعمليات الاسترداد",
+        });
+        return;
+      }
     }
 
     const startDate = formatDateForBackend(form.startDate);
@@ -58,13 +79,17 @@ export default function CreateOfferModal({
 
     console.log("START DATE", startDate);
     console.log("END DATE", endDate);
-    
 
     // هيئ البيانات للإرسال
     const submitData: CreateOfferParams = {
-      warehouseProductId: Number(form.productId),
-      discount: Number(form.discount),
-      description: form.description ?? "",
+      productId: Number(form.productId),
+      offerType: form.offerType,
+      discount: form.discount ? Number(form.discount) : undefined,
+      freeQuantity: form.freeQuantity ? Number(form.freeQuantity) : undefined,
+      maxRedemptions: form.maxRedemptions
+        ? Number(form.maxRedemptions)
+        : undefined,
+      description: form.description || undefined,
       active: form.active,
       minQuantity: Number(form.minQuantity) || 1,
       totalQuantity: Number(form.totalQuantity) || 1,
@@ -73,7 +98,7 @@ export default function CreateOfferModal({
     };
 
     console.log("📤 إرسال بيانات العرض:", JSON.stringify(submitData, null, 2));
-    console.log("📤 warehouseProductId:", submitData.warehouseProductId);
+    console.log("📤 productId:", submitData.productId);
     console.log(
       "📤 جميع المنتجات المتاحة:",
       JSON.stringify(allProducts, null, 2)
@@ -148,9 +173,7 @@ export default function CreateOfferModal({
                     setForm({ ...form, productId: e.target.value })
                   }
                   className={`w-full rounded-xl border px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none ${
-                    errors.warehouseProductId
-                      ? "border-red-500"
-                      : "border-gray-300"
+                    errors.productId ? "border-red-500" : "border-gray-300"
                   }`}
                 >
                   <option value="">-- اختر منتج --</option>
@@ -160,29 +183,98 @@ export default function CreateOfferModal({
                     </option>
                   ))}
                 </select>
-                {getError("warehouseProductId")}
+                {getError("productId")}
               </>
             )}
           </div>
 
-          {/* نسبة الخصم */}
+          {/* نوع العرض */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
-              نسبة الخصم % *
+              نوع العرض *
             </label>
-            <input
-              type="number"
-              value={form.discount}
-              onChange={(e) => setForm({ ...form, discount: e.target.value })}
-              className={`w-full rounded-xl border px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none ${
-                errors.discount ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="10"
-              min="1"
-              max="100"
-            />
-            {getError("discount")}
+            <select
+              value={form.offerType}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  offerType: e.target.value as "DISCOUNT" | "BUY_X_GET_Y",
+                  // Reset conditional fields when switching offer type
+                  discount: "",
+                  freeQuantity: "",
+                  maxRedemptions: "",
+                })
+              }
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            >
+              <option value="DISCOUNT">خصم</option>
+              <option value="BUY_X_GET_Y">اشتري واحصل على</option>
+            </select>
           </div>
+
+          {/* نسبة الخصم - يظهر فقط إذا كان النوع خصم */}
+          {form.offerType === "DISCOUNT" && (
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                نسبة الخصم % *
+              </label>
+              <input
+                type="number"
+                value={form.discount}
+                onChange={(e) => setForm({ ...form, discount: e.target.value })}
+                className={`w-full rounded-xl border px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none ${
+                  errors.discount ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="10"
+                min="0"
+                max="100"
+              />
+              {getError("discount")}
+            </div>
+          )}
+
+          {/* الكمية المجانية والحد الأقصى - تظهر فقط إذا كان النوع اشتري واحصل على */}
+          {form.offerType === "BUY_X_GET_Y" && (
+            <>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  الكمية المجانية *
+                </label>
+                <input
+                  type="number"
+                  value={form.freeQuantity}
+                  onChange={(e) =>
+                    setForm({ ...form, freeQuantity: e.target.value })
+                  }
+                  className={`w-full rounded-xl border px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none ${
+                    errors.freeQuantity ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="1"
+                  min="1"
+                />
+                {getError("freeQuantity")}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  الحد الأقصى لعمليات الاسترداد *
+                </label>
+                <input
+                  type="number"
+                  value={form.maxRedemptions}
+                  onChange={(e) =>
+                    setForm({ ...form, maxRedemptions: e.target.value })
+                  }
+                  className={`w-full rounded-xl border px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none ${
+                    errors.maxRedemptions ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="100"
+                  min="1"
+                />
+                {getError("maxRedemptions")}
+              </div>
+            </>
+          )}
 
           {/* التواريخ */}
           <div className="grid grid-cols-2 gap-4">

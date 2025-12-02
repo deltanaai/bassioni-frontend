@@ -152,6 +152,7 @@ interface CreateOfferPayload {
   offer_type: "DISCOUNT" | "BUY_X_GET_Y";
   discount?: number;
   get_free_quantity?: number;
+  max_redemption_per_invoice?: number;
   min_quantity: number;
   active: boolean;
   total_quantity: number;
@@ -161,8 +162,11 @@ interface CreateOfferPayload {
 }
 
 interface UpdateOfferPayload {
-  warehouse_product_id?: number;
+  product_id?: number;
+  offer_type?: "DISCOUNT" | "BUY_X_GET_Y";
+  get_free_quantity?: number;
   discount?: number;
+  max_redemption_per_invoice?: number;
   active?: boolean;
   min_quantity?: number;
   total_quantity?: number;

@@ -25,9 +25,12 @@ export async function createOffer(
   }
 
   const {
-    warehouseProductId,
+    productId,
     discount,
     description,
+    offerType,
+    maxRedemptions,
+    freeQuantity,
     active,
     minQuantity,
     totalQuantity,
@@ -36,7 +39,10 @@ export async function createOffer(
   } = validationResult.params!;
 
   const payload: CreateOfferPayload = {
-    warehouse_product_id: warehouseProductId,
+    product_id: productId,
+    offer_type: offerType,
+    get_free_quantity: freeQuantity,
+    max_redemption_per_invoice: maxRedemptions,
     discount,
     description,
     active,
@@ -119,8 +125,11 @@ export async function updateOffer(
   }
   const {
     offerId,
-    warehouseProductId,
+    productId,
+    offerType,
+    freeQuantity,
     discount,
+    maxRedemptions,
     description,
     active,
     minQuantity,
@@ -130,8 +139,11 @@ export async function updateOffer(
   } = validationResult.params!;
 
   const payload: UpdateOfferPayload = {
-    warehouse_product_id: warehouseProductId,
+    product_id: productId,
+    offer_type: offerType,
+    get_free_quantity: freeQuantity,
     discount,
+    max_redemption_per_invoice: maxRedemptions,
     description,
     active,
     min_quantity: minQuantity,
@@ -140,7 +152,9 @@ export async function updateOffer(
     end_date: endDate,
   };
 
-  logger.info(`Updating offer ${offerId} with payload: ${JSON.stringify(payload)}`);
+  logger.info(
+    `Updating offer ${offerId} with payload: ${JSON.stringify(payload)}`
+  );
   try {
     const response = await api.company.offers.update({ offerId, payload });
     if (!response || response.result !== "Success") {

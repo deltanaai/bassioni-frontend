@@ -208,10 +208,13 @@ export default function OffersPage() {
                       #
                     </th>
                     <th className="p-4 text-right text-sm font-semibold text-gray-700">
+                      نوع العرض
+                    </th>
+                    <th className="p-4 text-right text-sm font-semibold text-gray-700">
                       الوصف
                     </th>
                     <th className="p-4 text-right text-sm font-semibold text-gray-700">
-                      الخصم
+                      تفاصيل العرض
                     </th>
                     <th className="p-4 text-right text-sm font-semibold text-gray-700">
                       الحالة
@@ -225,54 +228,85 @@ export default function OffersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {offers.map((offer) => (
-                    <tr
-                      key={offer.id}
-                      className="transition-colors hover:bg-gray-50"
-                    >
-                      <td className="p-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.includes(offer.id)}
-                          onChange={() => toggleSelect(offer.id)}
-                          className="rounded border-gray-300"
-                        />
-                      </td>
-                      <td className="p-4 text-sm font-medium text-gray-900">
-                        {offer.id}
-                      </td>
-                      <td className="max-w-xs truncate p-4 text-sm text-gray-700">
-                        {offer.description || "لا يوجد وصف"}
-                      </td>
-                      <td className="p-4 text-sm font-bold text-emerald-600">
-                        {offer.discount}%
-                      </td>
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                            offer.active
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {offer.active ? "نشط" : "غير نشط"}
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm text-gray-600">
-                        {formatIsoToArabicDate(offer.start_date)} إلى{" "}
-                        {formatIsoToArabicDate(offer.end_date)}
-                      </td>
-                      <td className="p-4">
-                        <button
-                          onClick={() => setEditing(offer)}
-                          className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 transition-colors hover:bg-blue-200"
-                        >
-                          <FiEdit className="h-3 w-3" />
-                          تعديل
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {offers.map((offer) => {
+                    const offerType = offer.offer_type;
+                    return (
+                      <tr
+                        key={offer.id}
+                        className="transition-colors hover:bg-gray-50"
+                      >
+                        <td className="p-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(offer.id)}
+                            onChange={() => toggleSelect(offer.id)}
+                            className="rounded border-gray-300"
+                          />
+                        </td>
+                        <td className="p-4 text-sm font-medium text-gray-900">
+                          {offer.id}
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                              offerType === "DISCOUNT"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {offerType === "DISCOUNT"
+                              ? "خصم"
+                              : "اشتري واحصل على"}
+                          </span>
+                        </td>
+                        <td className="max-w-xs truncate p-4 text-sm text-gray-700">
+                          {offer.description || "لا يوجد وصف"}
+                        </td>
+                        <td className="p-4">
+                          {offerType === "DISCOUNT" ? (
+                            <span className="text-sm font-bold text-emerald-600">
+                              {offer.discount}%
+                            </span>
+                          ) : (
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium">
+                                احصل على {offer.get_free_quantity || 0} مجانًا
+                              </span>
+                              <br />
+                              <span className="text-xs text-gray-500">
+                                الحد الأقصى:{" "}
+                                {offer.max_redemption_per_invoice || 0}
+                              </span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                              offer.active
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {offer.active ? "نشط" : "غير نشط"}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-gray-600">
+                          {formatIsoToArabicDate(offer.start_date)} إلى{" "}
+                          {formatIsoToArabicDate(offer.end_date)}
+                        </td>
+                        <td className="p-4">
+                          <button
+                            onClick={() => setEditing(offer)}
+                            className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 transition-colors hover:bg-blue-200"
+                          >
+                            <FiEdit className="h-3 w-3" />
+                            تعديل
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -316,8 +350,11 @@ function EditOfferModal({
   isLoading,
 }: EditOfferModalProps) {
   const [form, setForm] = useState({
+    offerType: offer.offer_type,
     description: offer.description || "",
-    discount: offer.discount.toString(),
+    discount: offer.discount?.toString() || "",
+    freeQuantity: offer.get_free_quantity?.toString() || "",
+    maxRedemptions: offer.max_redemption_per_invoice?.toString() || "",
     active: offer.active,
     startDate: formatDateForBackend(offer.start_date),
     endDate: formatDateForBackend(offer.end_date),
@@ -326,8 +363,13 @@ function EditOfferModal({
   const handleSubmit = () => {
     onSubmit({
       offerId: offer.id,
-      warehouseProductId: offer.warehouse_product_id,
-      discount: Number(form.discount),
+      productId: offer.product.id,
+      offerType: form.offerType,
+      discount: form.discount ? Number(form.discount) : undefined,
+      freeQuantity: form.freeQuantity ? Number(form.freeQuantity) : undefined,
+      maxRedemptions: form.maxRedemptions
+        ? Number(form.maxRedemptions)
+        : undefined,
       description: form.description,
       active: form.active,
       minQuantity: offer.min_quantity,
@@ -338,21 +380,47 @@ function EditOfferModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white">
-        <div className="flex items-center justify-between border-b p-6">
-          <h2 className="text-xl font-bold">تعديل العرض #{offer.id}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-gray-800 bg-gray-950">
+        <div className="flex items-center justify-between border-b border-gray-800 p-6">
+          <h2 className="text-xl font-bold text-white">
+            تعديل العرض #{offer.id}
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-300"
           >
             <FiX className="h-6 w-6" />
           </button>
         </div>
 
         <div className="space-y-4 p-6">
+          {/* نوع العرض */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-300">
+              نوع العرض
+            </label>
+            <select
+              value={form.offerType}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  offerType: e.target.value as "DISCOUNT" | "BUY_X_GET_Y",
+                  // Reset conditional fields when switching offer type
+                  discount: "",
+                  freeQuantity: "",
+                  maxRedemptions: "",
+                })
+              }
+              className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            >
+              <option value="DISCOUNT">خصم</option>
+              <option value="BUY_X_GET_Y">اشتري واحصل على</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-300">
               وصف العرض
             </label>
             <input
@@ -360,25 +428,64 @@ function EditOfferModal({
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
             />
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              نسبة الخصم %
-            </label>
-            <input
-              type="number"
-              value={form.discount}
-              onChange={(e) => setForm({ ...form, discount: e.target.value })}
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            />
-          </div>
+          {/* نسبة الخصم - يظهر فقط إذا كان النوع خصم */}
+          {form.offerType === "DISCOUNT" && (
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-300">
+                نسبة الخصم %
+              </label>
+              <input
+                type="number"
+                value={form.discount}
+                onChange={(e) => setForm({ ...form, discount: e.target.value })}
+                className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                min="0"
+                max="100"
+              />
+            </div>
+          )}
+
+          {/* الكمية المجانية والحد الأقصى - تظهر فقط إذا كان النوع اشتري واحصل على */}
+          {form.offerType === "BUY_X_GET_Y" && (
+            <>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-300">
+                  الكمية المجانية
+                </label>
+                <input
+                  type="number"
+                  value={form.freeQuantity}
+                  onChange={(e) =>
+                    setForm({ ...form, freeQuantity: e.target.value })
+                  }
+                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  min="1"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-300">
+                  الحد الأقصى لعمليات الاسترداد
+                </label>
+                <input
+                  type="number"
+                  value={form.maxRedemptions}
+                  onChange={(e) =>
+                    setForm({ ...form, maxRedemptions: e.target.value })
+                  }
+                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  min="1"
+                />
+              </div>
+            </>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block text-sm font-medium text-gray-300">
                 تاريخ البداية
               </label>
               <input
@@ -387,19 +494,19 @@ function EditOfferModal({
                 onChange={(e) =>
                   setForm({ ...form, startDate: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-1 block text-sm font-medium text-gray-300">
                 تاريخ النهاية
               </label>
               <input
                 type="date"
                 value={form.endDate}
                 onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
               />
             </div>
           </div>
@@ -409,23 +516,23 @@ function EditOfferModal({
               type="checkbox"
               checked={form.active}
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
-              className="rounded border-gray-300"
+              className="rounded border-gray-700 bg-gray-900"
             />
-            <label className="text-sm text-gray-700">عرض نشط</label>
+            <label className="text-sm text-gray-300">عرض نشط</label>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 rounded-b-2xl border-t bg-gray-50 p-6">
+        <div className="flex justify-end gap-3 rounded-b-2xl border-t border-gray-800 bg-gray-900 p-6">
           <button
             onClick={onClose}
-            className="rounded-xl border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
+            className="rounded-xl border border-gray-700 px-6 py-2 text-gray-300 hover:bg-gray-800"
           >
             إلغاء
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="rounded-xl bg-emerald-600 px-6 py-2 text-white hover:bg-emerald-700 disabled:opacity-50"
+            className="rounded-xl bg-purple-600 px-6 py-2 text-white hover:bg-purple-700 disabled:opacity-50"
           >
             {isLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
           </button>
