@@ -63,18 +63,27 @@ interface MasterProduct {
 
 interface Offer {
   id: number;
-  warehouse_product_id: number;
-  discount: number;
-  active: boolean;
+  offer_type: "DISCOUNT" | "BUY_X_GET_Y";
+  discount: number | null;
+  get_free_quantity: number | null;
+  max_redemption_per_invoice: number | null;
   min_quantity: number;
   total_quantity: number;
-  description: string;
+  description: string | null;
   start_date: string;
   end_date: string;
-  company_id: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  active: boolean;
+  company: string;
+  product: {
+    id: number;
+    name: string;
+    bar_code: string;
+  };
+  deleted: boolean;
+  deletedAt: string | null;
+  updatedAt: string;
+  sentSince: string;
+  createdAt: string;
 }
 
 interface Company {
