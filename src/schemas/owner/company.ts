@@ -1,4 +1,5 @@
 import z from "zod";
+import { phoneNumberSchema } from "../global";
 
 export const GetCompanySchema = z.object({
   filters: z
@@ -20,7 +21,7 @@ export const companySchema = z
     id: z.number().int().optional(),
     name: z.string().min(1),
     address: z.string().min(1),
-    phone: z.string().regex(/^\d{8,15}$/, "Invalid phone number"),
+    phone: phoneNumberSchema,
     email: z.string().email("Invalid email address"),
     password: z
       .string()

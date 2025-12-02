@@ -1,4 +1,5 @@
 import z from "zod";
+import { phoneNumberSchema } from "../global";
 
 export const GetPharmacySchema = z.object({
   filters: z
@@ -20,7 +21,7 @@ export const pharmacySchema = z
     id: z.number().int().optional(),
     name: z.string().min(1),
     address: z.string().min(1),
-    phone: z.string().regex(/^\d{8,15}$/, "Invalid phone number"),
+    phone:phoneNumberSchema,
     license_number: z.string().regex(/^\d+$/, "Invalid license number"),
     email: z.string().email("Invalid email address"),
     password: z

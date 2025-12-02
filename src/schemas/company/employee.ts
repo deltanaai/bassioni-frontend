@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 
 import { z } from "zod";
+import { phoneNumberSchema } from "../global";
 
 export const GetEmployeesSchema = z.object({
   page: z.number().int().positive().optional(),
@@ -33,25 +34,7 @@ export const CreateEmployeeSchema = z
       .string()
       .min(3, "اسم الموظف مطلوب ويجب أن يحتوي على 3 أحرف على الأقل"),
     email: z.email("بريد إلكتروني غير صالح"),
-    phone: z
-      .string({
-        error: "رقم الهاتف مطلوب",
-      })
-      .refine(
-        (val) => !/[\s\-\(\)\.]/.test(val),
-        "رقم الهاتف لا يجب أن يحتوي على مسافات أو رموز مثل - أو ( أو )"
-      )
-      .refine(
-        (val) =>
-          // Egyptian formats
-          /^01[0-9]{9}$/.test(val) || // محلي: 01xxxxxxxxx
-          /^\+?201[0-9]{9}$/.test(val) || // دولي: +201xxxxxxxxx أو 201xxxxxxxxx
-          /^00201[0-9]{9}$/.test(val) || // دولي: 00201xxxxxxxxx
-          // Generic international formats
-          /^\+?[1-9]\d{6,14}$/.test(val) || // +14155552671 أو 14155552671
-          /^00[1-9]\d{6,14}$/.test(val), // 00441555552671
-        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا محليًا أو دوليًا (مثال: 010xxxxxxxx أو +14155552671 أو 00441555552671)"
-      ),
+    phone:phoneNumberSchema,
     password: z.string(),
     passwordConfirmation: z.string(),
     // password: z
@@ -104,26 +87,7 @@ export const UpdateEmployeeSchema = z
 
     email: z.string().email("بريد إلكتروني غير صالح").optional(),
 
-    phone: z
-      .string({
-        error: "رقم الهاتف مطلوب",
-      })
-      .refine(
-        (val) => !/[\s\-\(\)\.]/.test(val),
-        "رقم الهاتف لا يجب أن يحتوي على مسافات أو رموز مثل - أو ( أو )"
-      )
-      .refine(
-        (val) =>
-          // Egyptian formats
-          /^01[0-9]{9}$/.test(val) || // محلي: 01xxxxxxxxx
-          /^\+?201[0-9]{9}$/.test(val) || // دولي: +201xxxxxxxxx أو 201xxxxxxxxx
-          /^00201[0-9]{9}$/.test(val) || // دولي: 00201xxxxxxxxx
-          // Generic international formats
-          /^\+?[1-9]\d{6,14}$/.test(val) || // +14155552671 أو 14155552671
-          /^00[1-9]\d{6,14}$/.test(val), // 00441555552671
-        "رقم الهاتف غير صالح، يجب أن يكون رقمًا صحيحًا محليًا أو دوليًا (مثال: 010xxxxxxxx أو +14155552671 أو 00441555552671)"
-      )
-      .optional(),
+    phone:phoneNumberSchema.optional(),
 
     password: z
       .string()

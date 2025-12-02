@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { phoneNumberSchema } from "../global";
 
 const messages = {
   requiredEmail: "البريد الإلكتروني مطلوب",
@@ -20,7 +21,7 @@ export const userSchema = z.object({
   id: z.number().int(),
   name: z.string().trim(),
   email: z.string().trim().email(),
-  phone: z.string().trim(),
+  phone: phoneNumberSchema,
   active: z.boolean(),
   role: z.string().trim(),
   address: z.string().trim().optional(),
