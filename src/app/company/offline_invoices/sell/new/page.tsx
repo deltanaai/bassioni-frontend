@@ -67,6 +67,8 @@ export default function SellInvoicePage() {
         setRows={setRows}
         partyId={partyId}
         setPartyId={setPartyId}
+        theme="light"
+        source="company"
       />
     </>
   );

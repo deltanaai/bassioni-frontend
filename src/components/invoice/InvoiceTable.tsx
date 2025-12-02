@@ -17,7 +17,15 @@ interface InvoiceTableProps {
   setRows: React.Dispatch<React.SetStateAction<ProductRow[]>>;
 }
 
-export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
+export default function InvoiceTable({
+  rows,
+  setRows,
+  theme,
+}: InvoiceTableProps & { theme?: "dark" | "light" }) {
+  const baseClass =
+    theme === "dark"
+      ? "bg-gray-900 text-gray-100 border-gray-700"
+      : "bg-white text-gray-900 border-gray-300";
   // تحديث أي حقل
   const updateRow = (id: number, field: keyof ProductRow, value: number) => {
     setRows((prev) =>
@@ -44,25 +52,34 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full border border-gray-200">
-        <thead className="bg-gray-100">
+      <table className={`min-w-full border ${baseClass}`}>
+        <thead className={baseClass}>
           <tr>
-            <th className="border px-2 py-1">اسم المنتج</th>
-            <th className="border px-2 py-1">كود / GTIN / Barcode</th>
-            <th className="border px-2 py-1">سعر الوحدة</th>
-            <th className="border px-2 py-1">الكمية</th>
-            <th className="border px-2 py-1">كمية مجانية</th>
-            <th className="border px-2 py-1">خصم</th>
-            <th className="border px-2 py-1">الإجمالي</th>
-            <th className="border px-2 py-1">حذف</th>
+            <th className=" px-2 py-1">اسم المنتج</th>
+            <th className=" px-2 py-1">كود / GTIN / Barcode</th>
+            <th className=" px-2 py-1">سعر الوحدة</th>
+            <th className=" px-2 py-1">الكمية</th>
+            <th className=" px-2 py-1">كمية مجانية</th>
+            <th className=" px-2 py-1">خصم</th>
+            <th className=" px-2 py-1">الإجمالي</th>
+            <th className=" px-2 py-1">حذف</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id}>
-              <td className="border px-2 py-1">{row.name}</td>
-              <td className="border px-2 py-1">{row.bar_code}</td>
-              <td className="border px-2 py-1">
+            <tr
+              key={row.id}
+              className={
+                theme === "dark"
+                  ? "hover:bg-gray-800/50"
+                  : "hover:bg-gray-100/50"
+              }
+            >
+              <td className={`border px-2 py-1 ${baseClass}`}>{row.name}</td>
+              <td className={`border px-2 py-1 ${baseClass}`}>
+                {row.bar_code}
+              </td>
+              <td className={`border px-2 py-1 ${baseClass}`}>
                 <input
                   type="number"
                   min={0}
@@ -74,10 +91,10 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
                       parseFloat(e.target.value) || 0
                     )
                   }
-                  className="w-20 border rounded px-1 py-0.5"
+                  className={`${baseClass} w-20 border rounded px-1 py-0.5`}
                 />
               </td>
-              <td className="border px-2 py-1">
+              <td className={`border px-2 py-1 ${baseClass}`}>
                 <input
                   type="number"
                   min={1}
@@ -85,10 +102,10 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
                   onChange={(e) =>
                     updateRow(row.id, "qty", parseInt(e.target.value) || 0)
                   }
-                  className="w-16 border rounded px-1 py-0.5"
+                  className={`${baseClass} w-20 border rounded px-1 py-0.5`}
                 />
               </td>
-              <td className="border px-2 py-1">
+              <td className={`border px-2 py-1 ${baseClass}`}>
                 <input
                   type="number"
                   min={0}
@@ -96,10 +113,10 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
                   onChange={(e) =>
                     updateRow(row.id, "freeQty", parseInt(e.target.value) || 0)
                   }
-                  className="w-16 border rounded px-1 py-0.5"
+                  className={`${baseClass} w-20 border rounded px-1 py-0.5`}
                 />
               </td>
-              <td className="border px-2 py-1">
+              <td className={`border px-2 py-1 ${baseClass}`}>
                 <input
                   type="number"
                   min={0}
@@ -111,11 +128,13 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
                       parseFloat(e.target.value) || 0
                     )
                   }
-                  className="w-20 border rounded px-1 py-0.5"
+                  className={`${baseClass} w-20 border rounded px-1 py-0.5`}
                 />
               </td>
-              <td className="border px-2 py-1">{calculateLineTotal(row)}</td>
-              <td className="border px-2 py-1 text-center">
+              <td className={`border px-2 py-1 ${baseClass}`}>
+                {calculateLineTotal(row)}
+              </td>
+              <td className={`border px-2 py-1 text-center ${baseClass}`}>
                 <button
                   onClick={() => deleteRow(row.id)}
                   className="text-red-500 font-bold"
@@ -126,16 +145,16 @@ export default function InvoiceTable({ rows, setRows }: InvoiceTableProps) {
             </tr>
           ))}
         </tbody>
-        <tfoot className="bg-gray-100 font-semibold">
+        <tfoot className={` font-semibold${baseClass}`}>
           <tr>
-            <td className="border px-2 py-1">الإجمالي</td>
-            <td className="border px-2 py-1"></td>
-            <td className="border px-2 py-1"></td>
-            <td className="border px-2 py-1">{totalQty}</td>
-            <td className="border px-2 py-1"></td>
-            <td className="border px-2 py-1"></td>
-            <td className="border px-2 py-1">{totalAmount}</td>
-            <td className="border px-2 py-1"></td>
+            <td className=" px-2 py-1">الإجمالي</td>
+            <td className=" px-2 py-1"></td>
+            <td className=" px-2 py-1"></td>
+            <td className=" px-2 py-1">{totalQty}</td>
+            <td className=" px-2 py-1"></td>
+            <td className=" px-2 py-1"></td>
+            <td className=" px-2 py-1">{totalAmount}</td>
+            <td className=" px-2 py-1"></td>
           </tr>
         </tfoot>
       </table>

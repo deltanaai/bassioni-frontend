@@ -4,20 +4,37 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
 import { ProductRow } from "./InvoiceTable";
+import { indexPhamacyProducts } from "@/lib/actions/pharma/pharmaProducts.action";
+import { th } from "zod/v4/locales";
 
 interface Props {
   rows: ProductRow[];
   setRows: React.Dispatch<React.SetStateAction<ProductRow[]>>;
 }
 
-export default function ProductSearch({ setRows }: Props) {
-  const { data: companyProductsResponse, isLoading: productsLoading } =
-    useQuery({
-      queryKey: ["companyProducts"],
-      queryFn: () => indexCompanyProducts(),
-    });
+export default function ProductSearch({
+  setRows,
+  theme,
+  source,
+}: Props & { theme?: "light" | "dark" } & { source?: "company" | "pharma" }) {
+  const companyQuery = useQuery({
+    queryKey: ["companyProducts"],
+    queryFn: () => indexCompanyProducts(),
+    enabled: source === "company",
+  });
 
-  const allProducts: ProductViewT[] = companyProductsResponse?.data || [];
+  const pharmaQuery = useQuery({
+    queryKey: ["pharmacyProducts"],
+    queryFn: () => indexPhamacyProducts({ page: 1, perPage: 100 }),
+    enabled: source === "pharma",
+  });
+
+  const productsResponse =
+    source === "company" ? companyQuery.data : pharmaQuery.data;
+  const productsLoading =
+    source === "company" ? companyQuery.isLoading : pharmaQuery.isLoading;
+
+  const allProducts: ProductViewT[] = productsResponse?.data || [];
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchBy, setSearchBy] = useState<"name" | "barcode" | "gtin" | "qr">(
@@ -77,7 +94,11 @@ export default function ProductSearch({ setRows }: Props) {
           onChange={(e) =>
             setSearchBy(e.target.value as "name" | "barcode" | "gtin" | "qr")
           }
-          className="border rounded px-2 py-1"
+          className={`border rounded px-2 py-1 ${
+            theme === "dark"
+              ? "bg-gray-800 text-gray-100 border-gray-600"
+              : "bg-white text-gray-900 border-gray-300"
+          }`}
         >
           <option value="name">اسم المنتج</option>
           <option value="barcode">Barcode</option>
@@ -95,7 +116,11 @@ export default function ProductSearch({ setRows }: Props) {
               handleAddProduct(filteredProducts[0]);
             }
           }}
-          className="border rounded px-2 py-1 flex-1"
+          className={`border rounded px-2 py-1 flex-1 ${
+            theme === "dark"
+              ? "bg-gray-800 text-gray-100 border-gray-600 "
+              : "bg-white text-gray-900 border-gray-300"
+          }`}
         />
       </div>
 
@@ -105,7 +130,9 @@ export default function ProductSearch({ setRows }: Props) {
           {filteredProducts.map((p) => (
             <li
               key={p.id}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
+              className={`p-2  cursor-pointer${
+                theme === "dark" ? " hover:bg-gray-800" : "hover:bg-gray-100"
+              }`}
               onClick={() => handleAddProduct(p)}
             >
               {p.name} - {p.bar_code} - {p.price} ج.م

@@ -54,7 +54,10 @@ export default function InvoiceActions({
         طباعة
       </button>
 
-      <button onClick={handleClear} className="rounded bg-gray-300 px-4 py-2">
+      <button
+        onClick={handleClear}
+        className="rounded bg-gray-500 text-white px-4 py-2"
+      >
         مسح الكل
       </button>
     </div>

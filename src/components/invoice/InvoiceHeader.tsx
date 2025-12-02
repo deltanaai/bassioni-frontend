@@ -22,7 +22,13 @@ export default function InvoiceHeader({
   onDateChange,
   onRefNumberChange,
   onNotesChange,
-}: Props) {
+  theme,
+}: Props & { theme?: "light" | "dark" }) {
+  const inputClass = `w-full rounded border px-2 py-1 ${
+    theme === "dark"
+      ? "bg-gray-800 text-gray-100 border-gray-600"
+      : "bg-white text-gray-900 border-gray-300"
+  }`;
   return (
     <div className="grid grid-cols-4 gap-4 ">
       <div>
@@ -32,7 +38,7 @@ export default function InvoiceHeader({
         <select
           value={partyId}
           onChange={(e) => onPartySelect(Number(e.target.value))}
-          className="w-full rounded border p-2"
+          className={inputClass}
         >
           <option value="">اختر</option>
           <option value="1">محمد علي</option>

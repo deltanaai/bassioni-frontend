@@ -12,6 +12,8 @@ interface Props {
   setRows: React.Dispatch<React.SetStateAction<InvoiceItem[]>>;
   partyId: number | null;
   setPartyId: React.Dispatch<React.SetStateAction<number | null>>;
+  theme?: "light" | "dark";
+  source?: "company" | "pharma";
 }
 
 export default function InvoiceForm({
@@ -20,6 +22,8 @@ export default function InvoiceForm({
   setRows,
   partyId,
   setPartyId,
+  theme,
+  source,
 }: Props) {
   const isBuy = type === "buy";
 
@@ -54,7 +58,13 @@ export default function InvoiceForm({
   }, [date, refNumber, notes, type]);
 
   return (
-    <div className="space-y-6 rounded-xl bg-white p-6 shadow">
+    <div
+      className={`space-y-6 rounded-xl p-6 shadow ${
+        theme === "dark"
+          ? "bg-gray-950 text-gray-100 border border-gray-800"
+          : "bg-white text-gray-900 border border-gray-200"
+      }`}
+    >
       <InvoiceHeader
         partyType={isBuy ? "supplier" : "customer"}
         onPartySelect={setPartyId}
@@ -65,13 +75,19 @@ export default function InvoiceForm({
         onDateChange={setDate}
         onRefNumberChange={setRefNumber}
         onNotesChange={setNotes}
+        theme={theme}
       />
 
-      <ProductSearch rows={rows} setRows={setRows} />
+      <ProductSearch
+        rows={rows}
+        setRows={setRows}
+        theme={theme}
+        source={source}
+      />
 
-      <InvoiceTable rows={rows} setRows={setRows} />
+      <InvoiceTable rows={rows} setRows={setRows} theme={theme} />
 
-      <InvoiceTotals items={rows} />
+      <InvoiceTotals items={rows} theme={theme} />
 
       <InvoiceActions
         type={type}

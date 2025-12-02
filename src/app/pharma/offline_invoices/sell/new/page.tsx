@@ -52,14 +52,12 @@ export default function SellInvoicePage() {
       <div className=" items-center gap-4">
         <Link
           href={ROUTES_PHARMA.SELL_INVOICES}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          className="flex items-center gap-2 text-gray-400 hover:text-gray-500 transition-colors"
         >
           <ArrowRight className="w-5 h-5" />
           العودة لفواتير البيع
         </Link>
-        <h1 className="text-3xl mt-5 font-bold mb-5 text-gray-900">
-          فاتورة بيع
-        </h1>
+        <h1 className="text-3xl mt-5 font-bold mb-5 text-white">فاتورة بيع</h1>
       </div>
       <InvoiceForm
         type="sell"
@@ -67,6 +65,8 @@ export default function SellInvoicePage() {
         setRows={setRows}
         partyId={partyId}
         setPartyId={setPartyId}
+        theme="dark"
+        source="pharma"
       />
     </>
   );
