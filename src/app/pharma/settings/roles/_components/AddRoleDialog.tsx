@@ -60,19 +60,19 @@ export default function AddRoleDialog({ permissions }: AddRoleDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
+        <Button className="bg-gradient-to-r  from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
           <Plus className="ml-2 h-5 w-5" />
           إضافة دور جديد
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl border-gray-800 bg-gray-950 shadow-2xl">
+      <DialogContent className="max-w-4xl border-gray-800 overflow-y-auto !bg-gray-950 max-h-[90vh]  shadow-2xl ">
         <DialogHeader className="border-b border-gray-800 pb-4">
-          <DialogTitle className="text-xl font-semibold text-gray-100">
+          <DialogTitle className="text-xl  font-semibold text-gray-100">
             إنشاء دور جديد
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4 ">
           {/* Role Name */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-sm font-medium text-gray-400">
@@ -103,7 +103,7 @@ export default function AddRoleDialog({ permissions }: AddRoleDialogProps) {
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 border-t border-gray-800 pt-4">
+          <div className="flex gap-3 border-t border-gray-800 pt-4 ">
             <Button
               type="submit"
               disabled={createMutation.isPending}
