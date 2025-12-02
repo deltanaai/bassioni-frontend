@@ -207,19 +207,22 @@ export default function OffersPage() {
                     <th className="p-4 text-right text-sm font-semibold text-gray-700">
                       #
                     </th>
-                    <th className="p-4 text-right text-sm font-semibold text-gray-700">
+                    <th className="p-4 text-center text-sm font-semibold text-gray-700">
+                      المنتج
+                    </th>
+                    <th className="p-4 text-center text-sm font-semibold text-gray-700">
                       نوع العرض
                     </th>
-                    <th className="p-4 text-right text-sm font-semibold text-gray-700">
+                    <th className="p-4 text-center text-sm font-semibold text-gray-700">
                       الوصف
                     </th>
-                    <th className="p-4 text-right text-sm font-semibold text-gray-700">
+                    <th className="p-4 text-center text-sm font-semibold text-gray-700">
                       تفاصيل العرض
                     </th>
-                    <th className="p-4 text-right text-sm font-semibold text-gray-700">
+                    <th className="p-4 text-center text-sm font-semibold text-gray-700">
                       الحالة
                     </th>
-                    <th className="p-4 text-right text-sm font-semibold text-gray-700">
+                    <th className="p-4 text-center text-sm font-semibold text-gray-700">
                       الفترة
                     </th>
                     <th className="p-4 text-right text-sm font-semibold text-gray-700">
@@ -246,7 +249,10 @@ export default function OffersPage() {
                         <td className="p-4 text-sm font-medium text-gray-900">
                           {offer.id}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 text-center text-sm font-medium text-gray-900">
+                          {offer.product.name}
+                        </td>
+                        <td className="p-4 text-center">
                           <span
                             className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                               offerType === "DISCOUNT"
@@ -259,10 +265,10 @@ export default function OffersPage() {
                               : "اشتري واحصل على"}
                           </span>
                         </td>
-                        <td className="max-w-xs truncate p-4 text-sm text-gray-700">
+                        <td className="max-w-xs text-center truncate p-4 text-sm text-gray-700">
                           {offer.description || "لا يوجد وصف"}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 text-center">
                           {offerType === "DISCOUNT" ? (
                             <span className="text-sm font-bold text-emerald-600">
                               {offer.discount}%
@@ -280,7 +286,7 @@ export default function OffersPage() {
                             </div>
                           )}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 text-center">
                           <span
                             className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                               offer.active
@@ -291,11 +297,11 @@ export default function OffersPage() {
                             {offer.active ? "نشط" : "غير نشط"}
                           </span>
                         </td>
-                        <td className="p-4 text-sm text-gray-600">
+                        <td className="p-4 text-sm text-center text-gray-600">
                           {formatIsoToArabicDate(offer.start_date)} إلى{" "}
                           {formatIsoToArabicDate(offer.end_date)}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 text-center">
                           <button
                             onClick={() => setEditing(offer)}
                             className="flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 transition-colors hover:bg-blue-200"
@@ -380,15 +386,15 @@ function EditOfferModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-gray-800 bg-gray-950">
-        <div className="flex items-center justify-between border-b border-gray-800 p-6">
-          <h2 className="text-xl font-bold text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-lg">
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900">
             تعديل العرض #{offer.id}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-300"
+            className="text-gray-500 hover:text-gray-700"
           >
             <FiX className="h-6 w-6" />
           </button>
@@ -397,7 +403,7 @@ function EditOfferModal({
         <div className="space-y-4 p-6">
           {/* نوع العرض */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               نوع العرض
             </label>
             <select
@@ -406,13 +412,12 @@ function EditOfferModal({
                 setForm({
                   ...form,
                   offerType: e.target.value as "DISCOUNT" | "BUY_X_GET_Y",
-                  // Reset conditional fields when switching offer type
                   discount: "",
                   freeQuantity: "",
                   maxRedemptions: "",
                 })
               }
-              className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             >
               <option value="DISCOUNT">خصم</option>
               <option value="BUY_X_GET_Y">اشتري واحصل على</option>
@@ -420,7 +425,7 @@ function EditOfferModal({
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-300">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               وصف العرض
             </label>
             <input
@@ -428,32 +433,30 @@ function EditOfferModal({
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
 
-          {/* نسبة الخصم - يظهر فقط إذا كان النوع خصم */}
           {form.offerType === "DISCOUNT" && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
                 نسبة الخصم %
               </label>
               <input
                 type="number"
                 value={form.discount}
                 onChange={(e) => setForm({ ...form, discount: e.target.value })}
-                className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 min="0"
                 max="100"
               />
             </div>
           )}
 
-          {/* الكمية المجانية والحد الأقصى - تظهر فقط إذا كان النوع اشتري واحصل على */}
           {form.offerType === "BUY_X_GET_Y" && (
             <>
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-300">
+                <label className="mb-1 block text-sm font-medium text-gray-700">
                   الكمية المجانية
                 </label>
                 <input
@@ -462,12 +465,12 @@ function EditOfferModal({
                   onChange={(e) =>
                     setForm({ ...form, freeQuantity: e.target.value })
                   }
-                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   min="1"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-300">
+                <label className="mb-1 block text-sm font-medium text-gray-700">
                   الحد الأقصى لعمليات الاسترداد
                 </label>
                 <input
@@ -476,7 +479,7 @@ function EditOfferModal({
                   onChange={(e) =>
                     setForm({ ...form, maxRedemptions: e.target.value })
                   }
-                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   min="1"
                 />
               </div>
@@ -485,7 +488,7 @@ function EditOfferModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
                 تاريخ البداية
               </label>
               <input
@@ -494,19 +497,19 @@ function EditOfferModal({
                 onChange={(e) =>
                   setForm({ ...form, startDate: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
                 تاريخ النهاية
               </label>
               <input
                 type="date"
                 value={form.endDate}
                 onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                className="w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           </div>
@@ -516,23 +519,23 @@ function EditOfferModal({
               type="checkbox"
               checked={form.active}
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
-              className="rounded border-gray-700 bg-gray-900"
+              className="rounded border-gray-300 bg-gray-100"
             />
-            <label className="text-sm text-gray-300">عرض نشط</label>
+            <label className="text-sm text-gray-700">عرض نشط</label>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 rounded-b-2xl border-t border-gray-800 bg-gray-900 p-6">
+        <div className="flex justify-end gap-3 rounded-b-2xl border-t border-gray-200 bg-gray-50 p-6">
           <button
             onClick={onClose}
-            className="rounded-xl border border-gray-700 px-6 py-2 text-gray-300 hover:bg-gray-800"
+            className="rounded-xl border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-100"
           >
             إلغاء
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="rounded-xl bg-purple-600 px-6 py-2 text-white hover:bg-purple-700 disabled:opacity-50"
+            className="rounded-xl bg-emerald-600 px-6 py-2 text-white hover:bg-emerald-700 disabled:opacity-50"
           >
             {isLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
           </button>
