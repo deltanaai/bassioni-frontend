@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -14,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllRoles } from "@/lib/actions/company/role.action";
+import { useRolesManagement } from "../../settings/roles/_hooks/useRolesManagement";
 
 const AddEmployeeFormSchema = z.object({
   name: z.string().min(1, "الاسم مطلوب"),
@@ -54,13 +53,9 @@ export default function AddEmployeeModal({
 
   const selectedRoleId = watch("roleId");
 
-  // Fetch roles
-  const { data: rolesResponse } = useQuery({
-    queryKey: ["roles"],
-    queryFn: () => getAllRoles({}),
-  });
-
-  const roles = rolesResponse?.data?.data || [];
+  // Fetch roles using useRolesManagement hook
+  const { roles, isLoading: isLoadingRoles } = useRolesManagement();
+  console.log("Roles:", roles);
 
   const handleClose = () => {
     reset();
@@ -161,10 +156,14 @@ export default function AddEmployeeModal({
               <Select
                 value={selectedRoleId?.toString()}
                 onValueChange={(value) => setValue("roleId", parseInt(value))}
-                disabled={isLoading}
+                disabled={isLoading || isLoadingRoles}
               >
                 <SelectTrigger className="h-[42px] w-full flex-row-reverse justify-between rounded-lg border-gray-800/50 bg-gray-950/50 text-right text-white backdrop-blur-xl transition-all focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20">
-                  <SelectValue placeholder="اختر الدور" />
+                  <SelectValue
+                    placeholder={
+                      isLoadingRoles ? "جاري التحميل..." : "اختر الدور"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent className="rounded-lg border-gray-800/50 bg-gray-900/95 text-right text-white backdrop-blur-xl">
                   {roles.map((role) => (
