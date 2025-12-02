@@ -18,6 +18,7 @@ export const orderEndpoints = {
     fetchHandler(`${API_URL}company/orders/${orderId}/status`, {
       method: "PUT",
       body: JSON.stringify(payload),
+      auth: true,
     }),
 
   assignToWarehouse: ({
@@ -30,6 +31,7 @@ export const orderEndpoints = {
     fetchHandler(`${API_URL}company/orders/${orderId}/assign`, {
       method: "POST",
       body: JSON.stringify(payload),
+      auth: true,
     }),
 
   listCompanyOrders: () =>

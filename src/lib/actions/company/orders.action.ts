@@ -46,6 +46,7 @@ export async function updateOrderStatus(
   const validationResult = await action({
     params,
     schema: UpdateOrderStatusSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {
@@ -82,6 +83,7 @@ export async function assignOrderToWarehouse(
   const validationResult = await action({
     params,
     schema: AssignOrderToWarehouseSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {
