@@ -171,23 +171,21 @@ export async function updateEmployee(
     password,
     passwordConfirmation,
     roleId,
-    warehouseId,
+    warehouses,
     active,
     address,
   } = validationResult.params!;
 
   const payload: UpdateEmployeePayload = {
-    ...(name && { name }),
-    ...(email && { email }),
-    ...(phone && { phone }),
-    ...(password && { password }),
-    ...(passwordConfirmation && {
-      password_confirmation: passwordConfirmation,
-    }),
-    ...(roleId && { role_id: roleId }),
-    ...(warehouseId !== undefined && { warehouse_id: warehouseId }),
-    ...(active !== undefined && { active }),
-    ...(address !== undefined && { address }),
+    email,
+    name,
+    password,
+    password_confirmation: passwordConfirmation,
+    phone,
+    role_id: roleId,
+    warehouses: warehouses ?? null,
+    active,
+    address: address ?? null,
   };
 
   try {
