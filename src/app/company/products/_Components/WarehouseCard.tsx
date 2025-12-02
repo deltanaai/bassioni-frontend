@@ -1,14 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  Lock,
-  Package,
-  Plus,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, Lock, Plus } from "lucide-react";
 import React, { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";

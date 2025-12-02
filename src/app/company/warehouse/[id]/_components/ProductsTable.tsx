@@ -3,6 +3,8 @@ import { Eye, Package2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { getCompanyPrice } from "@/lib/actions/company/companyPrice.action";
 
 interface ProductsTableProps {
   products: WarehouseProductsIndex[];
@@ -13,6 +15,25 @@ export default function ProductsTable({
   products = [],
   onViewBatches,
 }: ProductsTableProps) {
+  //بنجيب نسبه الخصم لكل منتج
+  const { data: discountsMap } = useQuery({
+    queryKey: ["discounts", products.map((p) => p.id)],
+    queryFn: async () => {
+      const results = await Promise.all(
+        products.map((p) => getCompanyPrice({ productId: p.id }))
+      );
+
+      const map: Record<number, number> = {};
+      results.forEach((res, i) => {
+        map[products[i].id] = Number(res?.data?.discount_percent ?? 0);
+      });
+
+      return map;
+    },
+    enabled: products.length > 0,
+  });
+  console.log(discountsMap, "discountss");
+
   // Helper function to get stock status
   const getStockStatus = (status: string) => {
     switch (status) {
@@ -46,7 +67,7 @@ export default function ProductsTable({
       <table className="w-full">
         <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
           <tr>
-            <th className="p-4 text-right text-sm font-semibold text-gray-700">
+            <th className="p-4 text-center text-sm font-semibold text-gray-700">
               المنتج
             </th>
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
@@ -61,9 +82,22 @@ export default function ProductsTable({
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               عدد الدفعات
             </th>
-            <th className="p-4 text-center text-sm font-semibold text-gray-700">
-              السعر (بعد الخصم)
+            <th className="p-4 text-center text-sm font-semibold text-gray-700 min-w-[140px]">
+              سعر الجمهور(بدون ضريبة)
             </th>
+            <th className="p-4 text-center text-sm font-semibold text-gray-700">
+              قيمة الضريبة
+            </th>
+            <th className="p-4 text-center text-sm font-semibold text-gray-700">
+              نسبة الخصم
+            </th>
+            <th className="p-4 text-center text-sm font-semibold text-gray-700 min-w-[130px]">
+              السعر بالخصم (بدون ضريبة)
+            </th>
+            <th className="p-4 text-center text-sm font-semibold text-gray-700 min-w-[130px]">
+              السعر بالخصم (بضريبة)
+            </th>
+
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               القيمة الإجمالية
             </th>
@@ -124,10 +158,32 @@ export default function ProductsTable({
                   </span>
                 </td>
                 <td className="p-4 text-center">
+                  <span className="text-sm font-medium text-gray-900 min-w-[200px]">
+                    {product.price_without_tax.toLocaleString()} ج.م
+                  </span>
+                </td>
+                <td className="p-4 text-center">
                   <span className="text-sm font-medium text-gray-900">
+                    {product.tax.toLocaleString()} ج.م
+                  </span>
+                </td>
+                <td className="p-4 text-center">
+                  <span className="text-sm font-medium text-gray-900">
+                    {discountsMap?.[product.id] ?? 0}%
+                  </span>
+                </td>
+                <td className="p-4 text-center">
+                  <span className="text-sm font-medium text-gray-900 min-w-[130px]">
+                    {product.price_after_discount_without_tax.toLocaleString()}{" "}
+                    ج.م
+                  </span>
+                </td>
+                <td className="p-4 text-center">
+                  <span className="text-sm font-medium text-gray-900 min-w-[130px]">
                     {product.price_after_discount_with_tax.toLocaleString()} ج.م
                   </span>
                 </td>
+
                 <td className="p-4 text-center">
                   <span className="text-sm font-bold text-emerald-600">
                     {totalValue.toLocaleString()} ج.م
