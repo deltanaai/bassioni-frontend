@@ -92,6 +92,7 @@ export default function InvoiceForm({
       <InvoiceActions
         type={type}
         items={rows}
+        source={source}
         partyId={partyId}
         onClear={() => {
           setRows([]);

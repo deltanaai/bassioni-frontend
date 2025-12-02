@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
 import { ProductRow } from "./InvoiceTable";
 import { indexPhamacyProducts } from "@/lib/actions/pharma/pharmaProducts.action";
-import { th } from "zod/v4/locales";
 
 interface Props {
   rows: ProductRow[];
@@ -130,8 +129,8 @@ export default function ProductSearch({
           {filteredProducts.map((p) => (
             <li
               key={p.id}
-              className={`p-2  cursor-pointer${
-                theme === "dark" ? " hover:bg-gray-800" : "hover:bg-gray-100"
+              className={`p-2 cursor-pointer${
+                theme === "dark" ? " hover:bg-gray-800" : " hover:bg-gray-100"
               }`}
               onClick={() => handleAddProduct(p)}
             >
