@@ -30,6 +30,11 @@ export const pharmaMainLinks = [
   { name: "السلة", href: ROUTES_PHARMA.CART, Icon: ShoppingBasket },
 ];
 
+export const pharmaInvoicesLinks = [
+  { name: "فواتير البيع", href: ROUTES_PHARMA.SELL_INVOICES, Icon: Archive },
+  { name: "فواتير الشراء", href: ROUTES_PHARMA.BUY_INVOICES, Icon: Archive },
+];
+
 export const pharmaOrderLinks = [
   { name: "طلباتي", href: ROUTES_PHARMA.MY_ORDERS, Icon: Send },
   { name: "الفواتير", href: ROUTES_PHARMA.INVOICE, Icon: Archive },

@@ -39,6 +39,8 @@ export const ROUTES_PHARMA = {
   ADD_EMPLOYEE: "/pharma/add-employee",
   SYSTEM: "/pharma/system",
   BRANCH: (id: number) => `/pharma/branches/${id}`,
+  BUY_INVOICES:"/pharma/offline_invoices/buy",
+  SELL_INVOICES:"/pharma/offline_invoices/sell",
 };
 
 export const ROUTES_COMPANY = {

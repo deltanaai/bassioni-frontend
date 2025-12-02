@@ -24,7 +24,7 @@ export default function InvoiceHeader({
   onNotesChange,
 }: Props) {
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-4 gap-4 ">
       <div>
         <label className="block mb-1 text-sm font-medium">
           {partyType === "supplier" ? "المورد" : "العميل"}
