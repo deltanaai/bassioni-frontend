@@ -7,6 +7,7 @@ import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   pharmaDiscountLinks,
+  pharmaInvoicesLinks,
   pharmaMainLinks,
   pharmaOrderLinks,
   pharmaProductLinks,
@@ -100,6 +101,24 @@ export function PharmaSidebar({
             </PharmaSidebarNavLink>
           ))}
         </div>
+
+        {/* offline_incoices */}
+        <PharmaSidebarSection
+          title="الفواتير offline"
+          isCollapsed={isCollapsed}
+          defaultExpanded={true}
+        >
+          {pharmaInvoicesLinks.map((link) => (
+            <PharmaSidebarNavLink
+              key={link.href}
+              href={link.href}
+              icon={<link.Icon className="h-5 w-5" />}
+              isCollapsed={isCollapsed}
+            >
+              {link.name}
+            </PharmaSidebarNavLink>
+          ))}
+        </PharmaSidebarSection>
 
         {/* Orders Section */}
         <PharmaSidebarSection
