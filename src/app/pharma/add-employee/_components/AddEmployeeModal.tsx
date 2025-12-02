@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllRoles } from "@/lib/actions/company/role.action";
+import { indexPharmacyRoles } from "@/lib/actions/pharma/roles.action";
 
 const AddEmployeeFormSchema = z.object({
   name: z.string().min(1, "الاسم مطلوب"),
@@ -57,10 +57,11 @@ export default function AddEmployeeModal({
   // Fetch roles
   const { data: rolesResponse } = useQuery({
     queryKey: ["roles"],
-    queryFn: () => getAllRoles({}),
+    queryFn: () => indexPharmacyRoles({}),
   });
 
-  const roles = rolesResponse?.data?.data || [];
+  const roles = rolesResponse?.data || [];
+  console.log(roles, "roles");
 
   const handleClose = () => {
     reset();
