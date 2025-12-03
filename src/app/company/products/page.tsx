@@ -1,17 +1,17 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { Package } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { ROUTES_COMPANY } from "@/constants/routes";
 import { getMasterProducts } from "@/lib/actions/company/masterProducts";
 
 import ProductDetailsModal from "./_Components/ProductDetailModal";
 import ProductFilters from "./_Components/ProductFilters";
 import ProductSearch from "./_Components/ProductSearch";
 import ProductsTable from "./_Components/ProductsTable";
-import Link from "next/link";
-import { ROUTES_COMPANY } from "@/constants/routes";
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");

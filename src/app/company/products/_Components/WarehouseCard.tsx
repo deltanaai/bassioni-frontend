@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  getAllWarehouseProducts,
+  
   getProductsByWarehouse,
 } from "@/lib/actions/company/warehouseProducts.action";
 
@@ -19,30 +19,20 @@ interface WarehouseCardProps {
   id: number;
   name: string;
   productId: number;
-  expandedWarehouses: number[];
-  onToggleWarehouse: (index: number) => void;
+ 
 }
 
 const WarehouseCard = ({
   id,
   name,
   productId,
-  expandedWarehouses,
-  onToggleWarehouse,
+  
 }: WarehouseCardProps) => {
   const [isAddBatchOpen, setIsAddBatchOpen] = useState(false);
   const [isSetReservedStockOpen, setIsSetReservedStockOpen] = useState(false);
   const [showAllBatches, setShowAllBatches] = useState(false);
 
-  const { data, isLoading: isWarehouseLoading } = useQuery({
-    queryKey: ["warehouseProductDetails", id, productId],
-    queryFn: () =>
-      getAllWarehouseProducts({
-        warehouseId: id,
-        filters: { id: productId },
-      }),
-    enabled: !!productId,
-  });
+ 
 
   const { data: warehouseProductDetails, isLoading: isBatchesLoading } =
     useQuery({
@@ -55,10 +45,7 @@ const WarehouseCard = ({
       enabled: !!productId,
     });
 
-  const warehouseProduct = data?.data?.[0];
-  const totalBatches = warehouseProduct?.total_batches || 0;
-  const totalStock = warehouseProduct?.total_stock || 0;
-  const reservedStock = warehouseProduct?.reserved_stock || 0;
+  
 
   const batchDetails = warehouseProductDetails?.data || [];
 
@@ -98,7 +85,7 @@ const WarehouseCard = ({
     return "جيد";
   };
 
-  if (isWarehouseLoading || isBatchesLoading) {
+  if (  isBatchesLoading) {
     return (
       <div className="space-y-2">
         <Skeleton className="h-16 w-full" />

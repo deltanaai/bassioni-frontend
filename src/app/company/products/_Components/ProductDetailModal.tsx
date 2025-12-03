@@ -14,7 +14,6 @@ import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { indexCompanyProducts } from "@/lib/actions/company/companyProducts.action";
-import { showMasterProduct } from "@/lib/actions/company/masterProducts";
 import { getAllWarehouses } from "@/lib/actions/company/warehouse.action";
 import { getAllWarehouseProducts } from "@/lib/actions/company/warehouseProducts.action";
 
@@ -34,7 +33,7 @@ export default function ProductDetailsModal({
     number[]
   >([]);
 
-  const { data: MasterProductInfo } = useQuery({
+  const { data: MasterProductInfo, isLoading: productLoading } = useQuery({
     queryKey: ["MasterproductInfo", numericProductId],
     queryFn: () => indexCompanyProducts(),
     enabled: !!numericProductId && isOpen && !isNaN(numericProductId),
@@ -46,12 +45,8 @@ export default function ProductDetailsModal({
 
   const totalBatches = MasterProductDetail?.total_batches || 0;
   const totalStock = MasterProductDetail?.total_stock || 0;
-
-  const { data: productDetails, isLoading: productLoading } = useQuery({
-    queryKey: ["productDetails", numericProductId],
-    queryFn: () => showMasterProduct({ id: numericProductId }),
-    enabled: !!numericProductId && isOpen && !isNaN(numericProductId),
-  });
+  const totalReservedStock = MasterProductDetail?.total_reserved_stock || 0;
+  const totalWarehouses = MasterProductDetail?.total_warehouses || 0;
 
   const { data: warehousesResponse, isLoading: warehousesLoading } = useQuery({
     queryKey: ["warehouses"],
@@ -64,7 +59,12 @@ export default function ProductDetailsModal({
   // Fetch warehouse products data to get stats for each warehouse
   const warehouseProductsQueries = useQueries({
     queries: warehouses.map((warehouse) => ({
-      queryKey: ["warehouseProductStats", warehouse.id, numericProductId],
+      queryKey: [
+        "warehouseProductStats",
+        warehouse.id,
+        numericProductId,
+        "modal",
+      ],
       queryFn: async () => {
         const result = await getAllWarehouseProducts({
           warehouseId: warehouse.id,
@@ -74,12 +74,12 @@ export default function ProductDetailsModal({
         return result;
       },
       enabled: isOpen && !!numericProductId && warehouses.length > 0,
+      staleTime: 0, // Always fetch fresh data
+      refetchOnMount: true,
     })),
   });
 
   if (!isOpen) return null;
-
-  const displayProductDetails = productDetails?.data;
 
   const toggleWarehouse = (warehouseId: number) => {
     if (onToggleWarehouse) {
@@ -109,8 +109,14 @@ export default function ProductDetailsModal({
     if (!queryResult?.data?.data || !Array.isArray(queryResult.data.data))
       return { batches: 0, quantity: 0, reserved: 0 };
 
-    const warehouseProduct = queryResult.data.data[0];
-    if (!warehouseProduct) return { batches: 0, quantity: 0, reserved: 0 };
+    // ✅ FIX: Find the correct product by ID instead of taking [0]
+    const warehouseProduct = queryResult.data.data.find(
+      (product) => product.id === numericProductId
+    );
+
+    if (!warehouseProduct) {
+      return { batches: 0, quantity: 0, reserved: 0 };
+    }
 
     return {
       batches: warehouseProduct.total_batches || 0,
@@ -118,13 +124,6 @@ export default function ProductDetailsModal({
       reserved: warehouseProduct.reserved_stock || 0,
     };
   };
-
-  // Calculate total reserved stock across all warehouses
-  const totalReservedStock = warehouseProductsQueries.reduce((sum, query) => {
-    if (!query?.data?.data || !Array.isArray(query.data.data)) return sum;
-    const warehouseProduct = query.data.data[0];
-    return sum + (warehouseProduct?.reserved_stock || 0);
-  }, 0);
 
   if (productLoading || warehousesLoading) {
     return (
@@ -141,7 +140,7 @@ export default function ProductDetailsModal({
     );
   }
 
-  if (!displayProductDetails) {
+  if (!MasterProductDetail) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
         <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-8 shadow-lg">
@@ -184,7 +183,7 @@ export default function ProductDetailsModal({
             {/* Product Info Summary */}
             <div className="rounded-lg border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-4">
               <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                {displayProductDetails.name ?? productName}
+                {MasterProductDetail.name ?? productName}
               </h3>
 
               {/* Stats Grid - 4 columns like pharmacy */}
@@ -196,7 +195,7 @@ export default function ProductDetailsModal({
                   <div>
                     <p className="text-xs text-gray-600">عدد المخازن</p>
                     <p className="text-xl font-bold text-gray-900">
-                      {warehouses?.length || 0}
+                      {totalWarehouses}
                     </p>
                   </div>
                 </div>
@@ -310,8 +309,8 @@ export default function ProductDetailsModal({
                             id={warehouse.id}
                             name={warehouse.name}
                             productId={numericProductId}
-                            expandedWarehouses={expandedWarehouses}
-                            onToggleWarehouse={onToggleWarehouse}
+                            // expandedWarehouses={expandedWarehouses}
+                            // onToggleWarehouse={onToggleWarehouse}
                           />
                         </div>
                       )}
