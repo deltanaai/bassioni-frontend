@@ -107,16 +107,14 @@ export default function OffersPage() {
         </div>
 
         <div className="flex gap-3">
-          {selectedIds.length > 0 && (
-            <button
-              onClick={() => deleteMutation.mutate({ offerIds: selectedIds })}
-              disabled={deleteMutation.isPending}
-              className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
-            >
-              <FiTrash2 className="h-4 w-4" />
-              حذف المحدد ({selectedIds.length})
-            </button>
-          )}
+          <button
+            onClick={() => deleteMutation.mutate({ offerIds: selectedIds })}
+            disabled={deleteMutation.isPending || selectedIds.length === 0}
+            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
+          >
+            <FiTrash2 className="h-4 w-4" />
+            حذف المحدد ({selectedIds.length})
+          </button>
 
           <button
             onClick={() => setIsCreateOpen(true)}
@@ -265,7 +263,7 @@ export default function OffersPage() {
                               : "اشتري واحصل على"}
                           </span>
                         </td>
-                        <td className="max-w-xs text-center truncate p-4 text-sm text-gray-700">
+                        <td className="max-w-xs truncate p-4 text-center text-sm text-gray-700">
                           {offer.description || "لا يوجد وصف"}
                         </td>
                         <td className="p-4 text-center">
@@ -297,7 +295,7 @@ export default function OffersPage() {
                             {offer.active ? "نشط" : "غير نشط"}
                           </span>
                         </td>
-                        <td className="p-4 text-sm text-center text-gray-600">
+                        <td className="p-4 text-center text-sm text-gray-600">
                           {formatIsoToArabicDate(offer.start_date)} إلى{" "}
                           {formatIsoToArabicDate(offer.end_date)}
                         </td>
