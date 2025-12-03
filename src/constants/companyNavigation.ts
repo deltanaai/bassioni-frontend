@@ -70,7 +70,7 @@ export const companySettingsLinks: NavLink[] = [
 ];
 
 export const companyHeaderLinks: NavLink[] = [
-  { name: "تقارير", href: "/company/", Icon: Package },
+  // { name: "تقارير", href: "/company/", Icon: Package },
   { name: "المخازن", href: ROUTES_COMPANY.WAREHOUSES, Icon: Package },
   { name: "الموظفين", href: ROUTES_COMPANY.ADD_EMPLOYEE, Icon: Users },
   { name: "النظام", href: ROUTES_COMPANY.SYSTEM, Icon: Store },

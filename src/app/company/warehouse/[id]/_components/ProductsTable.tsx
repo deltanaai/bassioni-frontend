@@ -98,9 +98,9 @@ export default function ProductsTable({
               السعر بالخصم (بضريبة)
             </th>
 
-            <th className="p-4 text-center text-sm font-semibold text-gray-700">
+            {/* <th className="p-4 text-center text-sm font-semibold text-gray-700">
               القيمة الإجمالية
-            </th>
+            </th> */}
             <th className="p-4 text-center text-sm font-semibold text-gray-700">
               الحالة
             </th>
@@ -184,11 +184,11 @@ export default function ProductsTable({
                   </span>
                 </td>
 
-                <td className="p-4 text-center">
+                {/* <td className="p-4 text-center">
                   <span className="text-sm font-bold text-emerald-600">
                     {totalValue.toLocaleString()} ج.م
                   </span>
-                </td>
+                </td> */}
                 <td className="p-4 text-center">
                   <Badge
                     className={`${
