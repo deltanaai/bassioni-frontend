@@ -14,7 +14,7 @@ export const ROUTES_OWNER = {
   ADMINS: "/owner/admins",
   SLIDERS: "/owner/slider",
   ROLES: "/owner/roles",
-  PRODUCT_REQUESTS: "/owner/product-requests"
+  PRODUCT_REQUESTS: "/owner/product-requests",
 };
 
 export const ROUTES_PHARMA = {
@@ -34,13 +34,13 @@ export const ROUTES_PHARMA = {
   DISCOUNT: "/pharma/discount",
   CART: "/pharma/cart",
   COMPANIESPRODUCTS: "/pharma/companies-products",
-  COMPANIES: "/pharma/warehouse",
+  COMPANIES: "/pharma/companies",
   BRANCHES: "/pharma/branches",
   ADD_EMPLOYEE: "/pharma/add-employee",
   SYSTEM: "/pharma/system",
   BRANCH: (id: number) => `/pharma/branches/${id}`,
-  BUY_INVOICES:"/pharma/offline_invoices/buy",
-  SELL_INVOICES:"/pharma/offline_invoices/sell",
+  BUY_INVOICES: "/pharma/offline_invoices/buy",
+  SELL_INVOICES: "/pharma/offline_invoices/sell",
 };
 
 export const ROUTES_COMPANY = {
@@ -63,9 +63,8 @@ export const ROUTES_COMPANY = {
   ADMINISTRATION: "/company/administration",
   OFFERS: "/company/offers",
   PHARMACIES_ORDERS: "/company/pharmacies-orders",
-  REQUESTS_PRODUCTS:'/company/products/request',
-  NEW_PRODUCT_REQ: '/company/products/request/new',
-  BUY_INVOICES:"/company/offline_invoices/buy",
-  SELL_INVOICES:"/company/offline_invoices/sell"
-
+  REQUESTS_PRODUCTS: "/company/products/request",
+  NEW_PRODUCT_REQ: "/company/products/request/new",
+  BUY_INVOICES: "/company/offline_invoices/buy",
+  SELL_INVOICES: "/company/offline_invoices/sell",
 };

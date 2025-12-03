@@ -83,8 +83,8 @@ export default function EditRoleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl border-gray-800 bg-gray-950 shadow-2xl">
-        <DialogHeader className="border-b border-gray-800 pb-4">
+      <DialogContent className="max-w-4xl border-gray-700 !bg-gray-900 shadow-2xl">
+        <DialogHeader className="border-b border-gray-700 pb-4">
           <DialogTitle className="text-xl font-semibold text-gray-100">
             تعديل الدور: {role.name}
           </DialogTitle>
@@ -92,7 +92,7 @@ export default function EditRoleDialog({
 
         {isLoadingDetails ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -102,7 +102,7 @@ export default function EditRoleDialog({
             <div className="space-y-2">
               <Label
                 htmlFor="name"
-                className="text-sm font-medium text-gray-400"
+                className="text-sm font-medium text-gray-300"
               >
                 اسم الدور
               </Label>
@@ -110,7 +110,7 @@ export default function EditRoleDialog({
                 id="name"
                 {...register("name")}
                 placeholder="مثال: مدير الصيدلية"
-                className="border-gray-800 bg-gray-900 text-gray-100 placeholder:text-gray-600 focus:border-blue-500"
+                className="border-gray-700 bg-gray-800 text-gray-100 placeholder:text-gray-500 focus:border-blue-500"
               />
               {errors.name && (
                 <p className="text-sm text-red-400">{errors.name.message}</p>
@@ -131,7 +131,7 @@ export default function EditRoleDialog({
             )}
 
             {/* Actions */}
-            <div className="flex gap-3 border-t border-gray-800 pt-4">
+            <div className="flex gap-3 border-t border-gray-700 pt-4">
               <Button
                 type="submit"
                 disabled={updateMutation.isPending}
@@ -143,7 +143,7 @@ export default function EditRoleDialog({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="flex-1 border-gray-800 bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                className="flex-1 border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-gray-100"
               >
                 إلغاء
               </Button>

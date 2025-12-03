@@ -57,10 +57,19 @@ export default function EditEmployeeModal({
     formState: { errors },
   } = useForm<EditEmployeeFormData>({
     resolver: zodResolver(EditEmployeeFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      passwordConfirmation: "",
+      address: "",
+      active: true,
+    },
   });
 
   const selectedRoleId = watch("roleId");
-  const isActive = watch("active");
+  const isActive = watch("active") ?? true;
 
   // Fetch roles
   const { data: rolesResponse } = useQuery({
@@ -74,12 +83,14 @@ export default function EditEmployeeModal({
     if (employee) {
       const employeeRole = roles.find((r) => r.name === employee.role);
       reset({
-        name: employee.name,
-        email: employee.email,
-        phone: employee.phone,
+        name: employee.name || "",
+        email: employee.email || "",
+        phone: employee.phone || "",
         roleId: employeeRole?.id,
         address: employee.address || "",
-        active: employee.active,
+        active: employee.active ?? true,
+        password: "",
+        passwordConfirmation: "",
       });
     }
   }, [employee, roles, reset]);
