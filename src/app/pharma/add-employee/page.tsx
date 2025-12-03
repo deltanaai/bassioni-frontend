@@ -6,12 +6,6 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  addEmployee,
-  deleteEmployees,
-  getAllEmployees,
-  updateEmployee,
-} from "@/lib/actions/company/employee.action";
 import { queryClient } from "@/lib/queryClient";
 
 import AddEmployeeModal from "./_components/AddEmployeeModal";
@@ -20,6 +14,7 @@ import EditEmployeeModal from "./_components/EditEmployeeModal";
 import EmployeeCard from "./_components/EmployeeCard";
 import EmployeeFilters from "./_components/EmployeeFilters";
 import EmployeeSearch from "./_components/EmployeeSearch";
+import { mockEmployeeActions } from "./_mock/employeesMockData";
 
 export default function EmployeesPage() {
   // State
@@ -33,10 +28,10 @@ export default function EmployeesPage() {
     null
   );
 
-  // Fetch employees
+  // Fetch employees (using mock data)
   const { data: employeesResponse, isLoading } = useQuery({
     queryKey: ["employees"],
-    queryFn: () => getAllEmployees({}),
+    queryFn: mockEmployeeActions.getAllEmployees,
   });
 
   const employees = employeesResponse?.data?.data || [];
@@ -62,9 +57,9 @@ export default function EmployeesPage() {
     });
   }, [employees, searchQuery, selectedRole, selectedStatus]);
 
-  // Mutations
+  // Mutations (using mock data)
   const addEmployeeMutation = useMutation({
-    mutationFn: addEmployee,
+    mutationFn: mockEmployeeActions.addEmployee,
     onSuccess: (res) => {
       if (res.success === true) {
         queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -80,7 +75,7 @@ export default function EmployeesPage() {
   });
 
   const editEmployeeMutation = useMutation({
-    mutationFn: updateEmployee,
+    mutationFn: mockEmployeeActions.updateEmployee,
     onSuccess: (res) => {
       if (res.success === true) {
         queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -97,7 +92,7 @@ export default function EmployeesPage() {
   });
 
   const deleteEmployeeMutation = useMutation({
-    mutationFn: deleteEmployees,
+    mutationFn: mockEmployeeActions.deleteEmployees,
     onSuccess: (res) => {
       if (res.success === true) {
         queryClient.invalidateQueries({ queryKey: ["employees"] });
